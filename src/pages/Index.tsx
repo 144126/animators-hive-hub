@@ -27,7 +27,7 @@ const Index = () => {
   // Show dashboard for logged-in users
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+      {/* Header with Navigation */}
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -35,11 +35,21 @@ const Index = () => {
             <h1 className="text-2xl font-bold">The Home for Animators</h1>
           </div>
           
+          {/* Main Navigation */}
+          <nav className="hidden md:flex items-center space-x-6">
+            <Button variant="ghost" className="text-base font-medium">
+              Discover
+            </Button>
+            <Button variant="ghost" className="text-base font-medium">
+              Communities
+            </Button>
+          </nav>
+          
+          {/* User Profile Section */}
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
+            <Button variant="ghost" size="icon">
               <User className="h-5 w-5" />
-              <span className="text-sm font-medium">Welcome back!</span>
-            </div>
+            </Button>
             <Button variant="outline" onClick={signOut}>
               <LogOut className="h-4 w-4 mr-2" />
               Sign Out

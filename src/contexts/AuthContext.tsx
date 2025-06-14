@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session, AuthChangeEvent } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
@@ -47,8 +46,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false)
 
       // Handle user profile creation on sign up
-      if (event === 'SIGNED_UP' && session?.user) {
-        console.log('User signed up, creating profile...')
+      if (event === 'SIGNED_IN' && session?.user) {
+        console.log('User signed in, checking profile...')
       }
     })
 
