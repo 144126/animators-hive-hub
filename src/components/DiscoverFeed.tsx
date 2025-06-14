@@ -8,12 +8,29 @@ import { Loader2 } from 'lucide-react'
 
 type SortType = 'new' | 'top'
 
+interface Post {
+  id: string
+  title: string
+  thumbnail_url: string | null
+  video_url: string | null
+  upvote_count: number
+  created_at: string
+  author: {
+    username: string
+    avatar_url: string | null
+  }
+  community: {
+    name: string
+    display_name: string
+  } | null
+}
+
 export const DiscoverFeed: React.FC = () => {
   const [sortBy, setSortBy] = useState<SortType>('new')
 
   const { data: posts, isLoading, error } = useQuery({
     queryKey: ['posts', sortBy],
-    queryFn: async () => {
+    queryFn: async (): Promise<Post[]> => {
       console.log('Fetching posts with sort:', sortBy)
       
       let query = supabase
