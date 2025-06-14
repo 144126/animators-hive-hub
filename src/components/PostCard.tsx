@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Play } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 interface PostCardProps {
   post: {
@@ -25,8 +26,14 @@ interface PostCardProps {
 }
 
 export const PostCard: React.FC<PostCardProps> = ({ post }) => {
+  const navigate = useNavigate()
+
+  const handleClick = () => {
+    navigate(`/post/${post.id}`)
+  }
+
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer">
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={handleClick}>
       <div className="relative aspect-video bg-muted">
         {post.thumbnail_url ? (
           <img 
