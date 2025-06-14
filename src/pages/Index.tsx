@@ -1,24 +1,12 @@
 
-import React, { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { AuthModal } from '@/components/auth/AuthModal'
+import React from 'react'
+import { LandingPage } from '@/components/LandingPage'
 import { useAuth } from '@/contexts/AuthContext'
+import { Button } from '@/components/ui/button'
 import { LogOut, User, Video, Users, Heart, BookOpen } from 'lucide-react'
 
 const Index = () => {
-  const [authModalOpen, setAuthModalOpen] = useState(false)
-  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
   const { user, signOut, loading } = useAuth()
-
-  const openSignIn = () => {
-    setAuthMode('signin')
-    setAuthModalOpen(true)
-  }
-
-  const openSignUp = () => {
-    setAuthMode('signup')
-    setAuthModalOpen(true)
-  }
 
   if (loading) {
     return (
@@ -31,6 +19,12 @@ const Index = () => {
     )
   }
 
+  // Show landing page for logged-out users
+  if (!user) {
+    return <LandingPage />
+  }
+
+  // Show dashboard for logged-in users
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -42,52 +36,27 @@ const Index = () => {
           </div>
           
           <div className="flex items-center space-x-4">
-            {user ? (
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <User className="h-5 w-5" />
-                  <span className="text-sm font-medium">Welcome back!</span>
-                </div>
-                <Button variant="outline" onClick={signOut}>
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
-                </Button>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-2">
-                <Button variant="outline" onClick={openSignIn}>
-                  Sign In
-                </Button>
-                <Button onClick={openSignUp}>
-                  Sign Up
-                </Button>
-              </div>
-            )}
+            <div className="flex items-center space-x-2">
+              <User className="h-5 w-5" />
+              <span className="text-sm font-medium">Welcome back!</span>
+            </div>
+            <Button variant="outline" onClick={signOut}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
+      {/* Dashboard Content */}
       <main className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold mb-4">
-            Welcome to The Home for Animators
+            Welcome to Your Dashboard
           </h2>
           <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Connect with fellow animators, share your work, discover amazing content, 
-            and grow your skills in the ultimate animation community.
+            Start exploring communities, sharing your work, and connecting with fellow animators.
           </p>
-          
-          {!user && (
-            <div className="flex justify-center space-x-4">
-              <Button size="lg" onClick={openSignUp}>
-                Join the Community
-              </Button>
-              <Button variant="outline" size="lg" onClick={openSignIn}>
-                Sign In
-              </Button>
-            </div>
-          )}
         </div>
 
         {/* Features Grid */}
@@ -141,25 +110,17 @@ const Index = () => {
           </div>
         </div>
 
-        {user && (
-          <div className="text-center">
-            <h3 className="text-2xl font-semibold mb-4">Ready to explore?</h3>
-            <p className="text-muted-foreground mb-6">
-              Start by browsing communities or sharing your first animation!
-            </p>
-            <div className="flex justify-center space-x-4">
-              <Button size="lg">Browse Communities</Button>
-              <Button variant="outline" size="lg">Upload Animation</Button>
-            </div>
+        <div className="text-center">
+          <h3 className="text-2xl font-semibold mb-4">Ready to explore?</h3>
+          <p className="text-muted-foreground mb-6">
+            Start by browsing communities or sharing your first animation!
+          </p>
+          <div className="flex justify-center space-x-4">
+            <Button size="lg">Browse Communities</Button>
+            <Button variant="outline" size="lg">Upload Animation</Button>
           </div>
-        )}
+        </div>
       </main>
-
-      <AuthModal 
-        isOpen={authModalOpen} 
-        onClose={() => setAuthModalOpen(false)}
-        initialMode={authMode}
-      />
     </div>
   )
 }
