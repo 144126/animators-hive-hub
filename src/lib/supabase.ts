@@ -1,14 +1,24 @@
 
 import { createClient } from '@supabase/supabase-js'
 
+// In Lovable projects with Supabase integration, these should be available
+// If not, we'll provide helpful error messages
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables')
+if (!supabaseUrl) {
+  console.error('VITE_SUPABASE_URL is missing. Please ensure your Supabase integration is properly configured.')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+if (!supabaseAnonKey) {
+  console.error('VITE_SUPABASE_ANON_KEY is missing. Please ensure your Supabase integration is properly configured.')
+}
+
+// Create a fallback client with dummy values if env vars are missing (for development)
+const url = supabaseUrl || 'https://placeholder.supabase.co'
+const key = supabaseAnonKey || 'placeholder-key'
+
+export const supabase = createClient(url, key)
 
 // Database types
 export type Database = {
