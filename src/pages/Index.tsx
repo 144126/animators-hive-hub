@@ -4,6 +4,7 @@ import { LandingPage } from '@/components/LandingPage'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { LogOut, User, Video, Users, Heart, BookOpen } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 const Index = () => {
   const { user, signOut, loading } = useAuth()
@@ -47,9 +48,11 @@ const Index = () => {
           
           {/* User Profile Section */}
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-            </Button>
+            <Link to="/profile">
+              <Button variant="ghost" size="icon">
+                <User className="h-5 w-5" />
+              </Button>
+            </Link>
             <Button variant="outline" onClick={signOut}>
               <LogOut className="h-4 w-4 mr-2" />
               Sign Out
