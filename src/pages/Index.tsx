@@ -3,8 +3,9 @@ import React from 'react'
 import { LandingPage } from '@/components/LandingPage'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
-import { LogOut, User, Video, Users, Heart, BookOpen } from 'lucide-react'
+import { LogOut, User, Video } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { DiscoverFeed } from '@/components/DiscoverFeed'
 
 const Index = () => {
   const { user, signOut, loading } = useAuth()
@@ -61,78 +62,16 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Dashboard Content */}
-      <main className="container mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4">
-            Welcome to Your Dashboard
-          </h2>
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Start exploring communities, sharing your work, and connecting with fellow animators.
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold mb-2">Discover</h2>
+          <p className="text-muted-foreground">
+            Explore amazing animations from our community
           </p>
         </div>
 
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          <div className="text-center p-6 rounded-lg border">
-            <Video className="h-12 w-12 text-primary mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Share Your Work</h3>
-            <p className="text-muted-foreground">
-              Upload and showcase your animation projects to get feedback from the community.
-            </p>
-          </div>
-          
-          <div className="text-center p-6 rounded-lg border">
-            <Users className="h-12 w-12 text-primary mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Join Communities</h3>
-            <p className="text-muted-foreground">
-              Connect with like-minded animators in specialized communities.
-            </p>
-          </div>
-          
-          <div className="text-center p-6 rounded-lg border">
-            <Heart className="h-12 w-12 text-primary mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Support Creators</h3>
-            <p className="text-muted-foreground">
-              Upvote amazing content and help talented animators get discovered.
-            </p>
-          </div>
-          
-          <div className="text-center p-6 rounded-lg border">
-            <BookOpen className="h-12 w-12 text-primary mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Create Playlists</h3>
-            <p className="text-muted-foreground">
-              Organize your favorite animations into custom playlists.
-            </p>
-          </div>
-          
-          <div className="text-center p-6 rounded-lg border">
-            <Video className="h-12 w-12 text-primary mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Learn & Grow</h3>
-            <p className="text-muted-foreground">
-              Discover tutorials, tips, and techniques from experienced animators.
-            </p>
-          </div>
-          
-          <div className="text-center p-6 rounded-lg border">
-            <Users className="h-12 w-12 text-primary mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Network</h3>
-            <p className="text-muted-foreground">
-              Build connections and collaborate with animators worldwide.
-            </p>
-          </div>
-        </div>
-
-        <div className="text-center">
-          <h3 className="text-2xl font-semibold mb-4">Ready to explore?</h3>
-          <p className="text-muted-foreground mb-6">
-            Start by browsing communities or sharing your first animation!
-          </p>
-          <div className="flex justify-center space-x-4">
-            <Button size="lg">Browse Communities</Button>
-            <Button variant="outline" size="lg">Upload Animation</Button>
-          </div>
-        </div>
+        <DiscoverFeed />
       </main>
     </div>
   )
