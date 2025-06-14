@@ -4,9 +4,10 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Play, Heart, MessageCircle } from 'lucide-react'
+import { ArrowLeft, Play, MessageCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { CommentsSection } from './CommentsSection'
+import { UpvoteButton } from './UpvoteButton'
 
 interface PostDetailViewProps {
   post: {
@@ -109,17 +110,19 @@ export const PostDetailView: React.FC<PostDetailViewProps> = ({ post }) => {
               )}
             </div>
 
-            {/* Stats */}
-            <div className="flex items-center space-x-6 text-sm text-muted-foreground">
-              <div className="flex items-center space-x-1">
-                <Heart className="h-4 w-4" />
-                <span>{post.upvote_count} upvotes</span>
-              </div>
-              <div className="flex items-center space-x-1">
+            {/* Stats and Actions */}
+            <div className="flex items-center space-x-6">
+              <UpvoteButton 
+                postId={post.id} 
+                upvoteCount={post.upvote_count}
+              />
+              <div className="flex items-center space-x-1 text-muted-foreground">
                 <MessageCircle className="h-4 w-4" />
                 <span>{post.comment_count} comments</span>
               </div>
-              <span>{new Date(post.created_at).toLocaleDateString()}</span>
+              <span className="text-sm text-muted-foreground">
+                {new Date(post.created_at).toLocaleDateString()}
+              </span>
             </div>
 
             {/* Description */}

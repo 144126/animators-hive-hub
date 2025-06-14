@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Play } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { UpvoteButton } from './UpvoteButton'
 
 interface PostCardProps {
   post: {
@@ -72,9 +73,15 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
           )}
         </div>
         
-        <div className="flex items-center justify-between mt-3 text-sm text-muted-foreground">
-          <span>{post.upvote_count} upvotes</span>
-          <span>{new Date(post.created_at).toLocaleDateString()}</span>
+        <div className="flex items-center justify-between mt-3">
+          <UpvoteButton 
+            postId={post.id} 
+            upvoteCount={post.upvote_count} 
+            variant="minimal"
+          />
+          <span className="text-sm text-muted-foreground">
+            {new Date(post.created_at).toLocaleDateString()}
+          </span>
         </div>
       </CardContent>
     </Card>
