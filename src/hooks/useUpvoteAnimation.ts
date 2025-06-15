@@ -41,6 +41,7 @@ export const useUpvoteAnimation = (animationId: string) => {
         .from('upvotes')
         .insert({
           user_id: user.id,
+          post_id: animationId, // Using post_id field for animation upvotes
           animation_id: animationId
         })
       
