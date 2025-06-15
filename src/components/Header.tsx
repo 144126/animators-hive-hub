@@ -14,7 +14,7 @@ const Header = () => {
       <div className="container flex h-14 items-center">
         <div className="mr-auto flex items-center">
           <Link to="/" className="mr-6 flex items-center space-x-2">
-            <span className="font-bold">Animotion</span>
+            <span className="font-bold">Animation</span>
           </Link>
           <nav className="hidden items-center space-x-6 text-sm font-medium md:flex">
             <NavLink
