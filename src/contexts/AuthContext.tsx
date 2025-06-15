@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session, AuthChangeEvent } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
@@ -46,56 +47,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(session?.user ?? null)
       setLoading(false)
 
-      // Handle user profile creation on sign up
+      // Handle user profile creation on sign up or Google sign in
       if (event === 'SIGNED_IN' && session?.user) {
-        console.log('User signed in, checking profile...');
-        const user = session.user;
-        
+        console.log('User signed in, checking profile...')
+        const user = session.user
+
         const { data: profile } = await supabase
           .from('users')
           .select('id')
           .eq('id', user.id)
-          .single();
+          .single()
 
         if (!profile) {
-          console.log('No profile found, creating one for new user.');
+          console.log('No profile found, creating one for new user.')
 
           // Generate a unique username from email or name
-          let username = user.user_metadata.full_name?.replace(/\s/g, '').toLowerCase() || user.email?.split('@')[0] || `user${Date.now()}`;
-          let isUsernameTaken = true;
-          let newUsername = username;
-          let attempt = 1;
+          let username = user.user_metadata.full_name?.replace(/\s/g, '').toLowerCase() || user.email?.split('@')[0] || `user${Date.now()}`
+          let isUsernameTaken = true
+          let newUsername = username
+          let attempt = 1
 
           while (isUsernameTaken) {
             const { data: existingUser } = await supabase
               .from('users')
               .select('username')
               .eq('username', newUsername)
-              .single();
+              .single()
             
             if (existingUser) {
-              newUsername = `${username}${attempt}`;
-              attempt++;
+              newUsername = `${username}${attempt}`
+              attempt++
             } else {
-              isUsernameTaken = false;
+              isUsernameTaken = false
             }
           }
-          username = newUsername;
+          username = newUsername
 
           const { error: profileError } = await supabase.from('users').insert({
             id: user.id,
             username: username,
             display_name: user.user_metadata.full_name || username,
             avatar_url: user.user_metadata.avatar_url,
-          });
+          })
 
           if (profileError) {
-            console.error('Error creating user profile for OAuth user:', profileError);
+            console.error('Error creating user profile for OAuth user:', profileError)
             toast({
               title: "Profile Creation Error",
               description: "Could not create your user profile.",
               variant: "destructive",
-            });
+            })
+          } else {
+            console.log('Profile created successfully for OAuth user')
           }
         }
       }
@@ -131,8 +134,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) throw error
 
-      if (data.user) {
-        // Create user profile
+      if (data.user && !data.session) {
+        // User needs email confirmation
+        toast({
+          title: "Account created!",
+          description: "Please check your email to verify your account.",
+        })
+      } else if (data.user && data.session) {
+        // User is automatically signed in
         const { error: profileError } = await supabase
           .from('users')
           .insert({
@@ -143,14 +152,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (profileError) {
           console.error('Error creating user profile:', profileError)
-          throw new Error('Failed to create user profile')
+          toast({
+            title: "Profile Creation Error",
+            description: "Account created but profile creation failed.",
+            variant: "destructive",
+          })
+        } else {
+          toast({
+            title: "Account created!",
+            description: "Welcome to the animation community!",
+          })
         }
       }
-
-      toast({
-        title: "Account created!",
-        description: "Please check your email to verify your account.",
-      })
     } catch (error: any) {
       console.error('Sign up error:', error)
       toast({
@@ -167,7 +180,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signIn = async (email: string, password: string) => {
     try {
       setLoading(true)
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
@@ -193,24 +206,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signInWithGoogle = async () => {
     try {
-      setLoading(true);
+      setLoading(true)
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: window.location.origin,
         },
-      });
-      if (error) throw error;
+      })
+      if (error) throw error
     } catch (error: any) {
-      console.error('Google Sign In Error:', error);
+      console.error('Google Sign In Error:', error)
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive",
-      });
-      setLoading(false);
+      })
+      setLoading(false)
     }
-  };
+  }
 
   const signOut = async () => {
     try {
