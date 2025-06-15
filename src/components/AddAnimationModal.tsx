@@ -32,6 +32,7 @@ export const AddAnimationModal = () => {
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
   const [communityId, setCommunityId] = useState<string>('')
+  const [newCommunityName, setNewCommunityName] = useState('')
   const [isUploading, setIsUploading] = useState(false)
   const { user } = useAuth()
   const queryClient = useQueryClient()
@@ -105,6 +106,24 @@ export const AddAnimationModal = () => {
     return data.publicUrl
   }
 
+  // Function to create a new community
+  const createCommunity = async (name: string): Promise<string> => {
+    const communityName = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+    
+    const { data, error } = await supabase
+      .from('communities')
+      .insert({
+        name: communityName,
+        display_name: name,
+        creator_id: user!.id
+      })
+      .select()
+      .single()
+
+    if (error) throw error
+    return data.id
+  }
+
   const createAnimationMutation = useMutation({
     mutationFn: async (animationData: {
       title: string
@@ -118,8 +137,14 @@ export const AddAnimationModal = () => {
       
       let videoUrl = null
       let thumbnailUrl = null
+      let finalCommunityId = animationData.community_id
       
       try {
+        // Create new community if needed
+        if (communityId === 'create-new' && newCommunityName.trim()) {
+          finalCommunityId = await createCommunity(newCommunityName.trim())
+        }
+
         // Upload video file if provided
         if (videoFile) {
           videoUrl = await uploadFile(videoFile, 'animation-videos', 'videos')
@@ -147,7 +172,8 @@ export const AddAnimationModal = () => {
           .insert({
             ...animationData,
             video_url: videoUrl,
-            thumbnail_url: thumbnailUrl
+            thumbnail_url: thumbnailUrl,
+            community_id: finalCommunityId
           })
           .select()
           .single()
@@ -161,6 +187,7 @@ export const AddAnimationModal = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['animations'] })
       queryClient.invalidateQueries({ queryKey: ['posts'] })
+      queryClient.invalidateQueries({ queryKey: ['communities'] })
       toast.success('Animation uploaded successfully!')
       setOpen(false)
       resetForm()
@@ -178,6 +205,7 @@ export const AddAnimationModal = () => {
     setVideoFile(null)
     setThumbnailFile(null)
     setCommunityId('')
+    setNewCommunityName('')
     if (videoInputRef.current) videoInputRef.current.value = ''
     if (thumbnailInputRef.current) thumbnailInputRef.current.value = ''
   }
@@ -197,6 +225,11 @@ export const AddAnimationModal = () => {
 
     if (!videoFile) {
       toast.error('Please select a video file')
+      return
+    }
+
+    if (communityId === 'create-new' && !newCommunityName.trim()) {
+      toast.error('Please enter a community name')
       return
     }
 
@@ -245,6 +278,13 @@ export const AddAnimationModal = () => {
       }
       
       setThumbnailFile(file)
+    }
+  }
+
+  const handleCommunityChange = (value: string) => {
+    setCommunityId(value)
+    if (value !== 'create-new') {
+      setNewCommunityName('')
     }
   }
 
@@ -377,12 +417,18 @@ export const AddAnimationModal = () => {
 
           <div className="space-y-2">
             <Label htmlFor="community">Community (Optional)</Label>
-            <Select value={communityId} onValueChange={setCommunityId} disabled={isUploading}>
+            <Select value={communityId} onValueChange={handleCommunityChange} disabled={isUploading}>
               <SelectTrigger>
                 <SelectValue placeholder="Select a community" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">No community</SelectItem>
+                <SelectItem value="create-new">
+                  <div className="flex items-center">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create New Community
+                  </div>
+                </SelectItem>
                 {communities?.map((community) => (
                   <SelectItem key={community.id} value={community.id}>
                     {community.display_name}
@@ -391,6 +437,22 @@ export const AddAnimationModal = () => {
               </SelectContent>
             </Select>
           </div>
+
+          {communityId === 'create-new' && (
+            <div className="space-y-2">
+              <Label htmlFor="new-community-name">New Community Name *</Label>
+              <Input
+                id="new-community-name"
+                value={newCommunityName}
+                onChange={(e) => setNewCommunityName(e.target.value)}
+                placeholder="Enter community name"
+                disabled={isUploading}
+              />
+              <p className="text-xs text-muted-foreground">
+                The community will be created and your animation will be added to it
+              </p>
+            </div>
+          )}
 
           <div className="flex justify-end space-x-3">
             <Button 
