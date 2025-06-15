@@ -1,4 +1,3 @@
-
 import React from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
@@ -7,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Video, User, LogOut, ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import PlaylistsTab from '@/components/PlaylistsTab'
 
 const UserProfile = () => {
   const { user, signOut, loading } = useAuth()
@@ -116,23 +116,7 @@ const UserProfile = () => {
           </TabsContent>
           
           <TabsContent value="playlists" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Playlists</CardTitle>
-                <CardDescription>
-                  Collections of animations you've saved
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Video className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">No playlists yet</p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Create playlists to organize your favorite animations!
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <PlaylistsTab />
           </TabsContent>
         </Tabs>
       </main>
