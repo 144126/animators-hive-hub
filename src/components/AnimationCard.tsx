@@ -99,7 +99,10 @@ export const AnimationCard = ({ animation }: AnimationCardProps) => {
           </div>
           
           <div className="flex items-center space-x-2">
-            <UpvoteButton animationId={animation.id} />
+            <UpvoteButton 
+              postId={animation.id} 
+              upvoteCount={animation.upvote_count} 
+            />
             <AddToPlaylistModal 
               animationId={animation.id} 
               animationTitle={animation.title}

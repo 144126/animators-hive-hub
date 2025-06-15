@@ -14,6 +14,7 @@ interface Animation {
   thumbnail_url: string | null
   video_url: string | null
   upvote_count: number
+  comment_count: number
   created_at: string
   author: {
     username: string
@@ -41,6 +42,7 @@ export const DiscoverAnimationsFeed: React.FC<{ communityId?: string }> = ({ com
           thumbnail_url,
           video_url,
           upvote_count,
+          comment_count,
           created_at,
           author:users!author_id (
             username,
