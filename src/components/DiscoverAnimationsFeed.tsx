@@ -3,28 +3,10 @@ import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/integrations/supabase/client'
 import { Button } from '@/components/ui/button'
-import { PostCard } from './PostCard'
 import { AnimationCard } from './AnimationCard'
 import { Loader2 } from 'lucide-react'
 
 type SortType = 'new' | 'top'
-
-interface Post {
-  id: string
-  title: string
-  thumbnail_url: string | null
-  video_url: string | null
-  upvote_count: number
-  created_at: string
-  author: {
-    username: string
-    avatar_url: string | null
-  }
-  community: {
-    name: string
-    display_name: string
-  } | null
-}
 
 interface Animation {
   id: string
@@ -43,11 +25,10 @@ interface Animation {
   } | null
 }
 
-export const DiscoverFeed: React.FC<{ communityId?: string }> = ({ communityId }) => {
+export const DiscoverAnimationsFeed: React.FC<{ communityId?: string }> = ({ communityId }) => {
   const [sortBy, setSortBy] = useState<SortType>('new')
 
-  // First try to fetch animations
-  const { data: animations, isLoading: animationsLoading, error: animationsError } = useQuery({
+  const { data: animations, isLoading, error } = useQuery({
     queryKey: ['animations', sortBy, communityId],
     queryFn: async (): Promise<Animation[]> => {
       console.log('Fetching animations with sort:', sortBy, 'and communityId:', communityId)
@@ -94,64 +75,10 @@ export const DiscoverFeed: React.FC<{ communityId?: string }> = ({ communityId }
     }
   })
 
-  // Fallback to posts if animations fail or are empty
-  const { data: posts, isLoading: postsLoading, error: postsError } = useQuery({
-    queryKey: ['posts', sortBy, communityId],
-    queryFn: async (): Promise<Post[]> => {
-      console.log('Fetching posts with sort:', sortBy, 'and communityId:', communityId)
-      
-      let query = supabase
-        .from('posts')
-        .select(`
-          id,
-          title,
-          thumbnail_url,
-          video_url,
-          upvote_count,
-          created_at,
-          author:users!author_id (
-            username,
-            avatar_url
-          ),
-          community:communities (
-            name,
-            display_name
-          )
-        `)
-
-      if (communityId) {
-        query = query.eq('community_id', communityId)
-      }
-
-      // Sort by the selected option
-      if (sortBy === 'new') {
-        query = query.order('created_at', { ascending: false })
-      } else {
-        query = query.order('upvote_count', { ascending: false })
-      }
-
-      const { data, error } = await query.limit(20)
-
-      if (error) {
-        console.error('Error fetching posts:', error)
-        throw error
-      }
-
-      console.log('Fetched posts:', data)
-      return data || []
-    },
-    enabled: !animations || animations.length === 0
-  })
-
-  const isLoading = animationsLoading || postsLoading
-  const error = animationsError || postsError
-  const hasAnimations = animations && animations.length > 0
-  const hasPosts = posts && posts.length > 0
-
-  if (error && !hasAnimations && !hasPosts) {
+  if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-muted-foreground">Failed to load content</p>
+        <p className="text-muted-foreground">Failed to load animations</p>
         <p className="text-sm text-muted-foreground mt-2">
           {error instanceof Error ? error.message : 'Unknown error'}
         </p>
@@ -181,12 +108,12 @@ export const DiscoverFeed: React.FC<{ communityId?: string }> = ({ communityId }
       {isLoading && (
         <div className="text-center py-12">
           <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading content...</p>
+          <p className="text-muted-foreground">Loading animations...</p>
         </div>
       )}
 
-      {/* Content Grid - Prefer animations over posts */}
-      {!isLoading && hasAnimations && (
+      {/* Animations Grid */}
+      {!isLoading && animations && animations.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {animations.map((animation) => (
             <AnimationCard key={animation.id} animation={animation} />
@@ -194,18 +121,10 @@ export const DiscoverFeed: React.FC<{ communityId?: string }> = ({ communityId }
         </div>
       )}
 
-      {!isLoading && !hasAnimations && hasPosts && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
-        </div>
-      )}
-
       {/* Empty State */}
-      {!isLoading && !hasAnimations && !hasPosts && (
+      {!isLoading && animations && animations.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">No content found</p>
+          <p className="text-muted-foreground">No animations found</p>
           <p className="text-sm text-muted-foreground mt-2">
             Be the first to share your work!
           </p>

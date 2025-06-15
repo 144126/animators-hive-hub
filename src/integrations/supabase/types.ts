@@ -9,8 +9,66 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      animations: {
+        Row: {
+          author_id: string
+          comment_count: number | null
+          community_id: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+          upvote_count: number | null
+          video_url: string | null
+        }
+        Insert: {
+          author_id: string
+          comment_count?: number | null
+          community_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+          upvote_count?: number | null
+          video_url?: string | null
+        }
+        Update: {
+          author_id?: string
+          comment_count?: number | null
+          community_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
+          upvote_count?: number | null
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "animations_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "animations_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
+          animation_id: string | null
           author_id: string
           content: string
           created_at: string | null
@@ -21,6 +79,7 @@ export type Database = {
           upvote_count: number | null
         }
         Insert: {
+          animation_id?: string | null
           author_id: string
           content: string
           created_at?: string | null
@@ -31,6 +90,7 @@ export type Database = {
           upvote_count?: number | null
         }
         Update: {
+          animation_id?: string | null
           author_id?: string
           content?: string
           created_at?: string | null
@@ -41,6 +101,13 @@ export type Database = {
           upvote_count?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "comments_animation_id_fkey"
+            columns: ["animation_id"]
+            isOneToOne: false
+            referencedRelation: "animations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "comments_author_id_fkey"
             columns: ["author_id"]
@@ -53,13 +120,6 @@ export type Database = {
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "comments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "comments_post_id_fkey"
-            columns: ["post_id"]
-            isOneToOne: false
-            referencedRelation: "posts"
             referencedColumns: ["id"]
           },
         ]
@@ -233,18 +293,21 @@ export type Database = {
       }
       upvotes: {
         Row: {
+          animation_id: string | null
           created_at: string
           id: string
           post_id: string
           user_id: string
         }
         Insert: {
+          animation_id?: string | null
           created_at?: string
           id?: string
           post_id: string
           user_id: string
         }
         Update: {
+          animation_id?: string | null
           created_at?: string
           id?: string
           post_id?: string
@@ -252,10 +315,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "upvotes_post_id_fkey"
-            columns: ["post_id"]
+            foreignKeyName: "upvotes_animation_id_fkey"
+            columns: ["animation_id"]
             isOneToOne: false
-            referencedRelation: "posts"
+            referencedRelation: "animations"
             referencedColumns: ["id"]
           },
         ]

@@ -5,9 +5,11 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Video, User, LogOut, ArrowLeft, Plus, Edit } from 'lucide-react'
+import { Video, User, LogOut, ArrowLeft, Edit } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import PlaylistsTab from '@/components/PlaylistsTab'
+import { AddAnimationModal } from '@/components/AddAnimationModal'
+import { DiscoverAnimationsFeed } from '@/components/DiscoverAnimationsFeed'
 
 const UserProfile = () => {
   const { user, signOut, loading } = useAuth()
@@ -115,10 +117,7 @@ const UserProfile = () => {
                     Animations you've shared with the community
                   </CardDescription>
                 </div>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Animation
-                </Button>
+                <AddAnimationModal />
               </CardHeader>
               <CardContent>
                 <div className="text-center py-12">

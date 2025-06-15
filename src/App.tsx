@@ -10,6 +10,7 @@ import UserProfile from "./pages/UserProfile";
 import EditProfile from "./pages/EditProfile";
 import PlaylistDetail from "./pages/PlaylistDetail";
 import PostDetail from "./pages/PostDetail";
+import AnimationDetail from "./pages/AnimationDetail";
 import NotFound from "./pages/NotFound";
 import CommunitiesPage from "./pages/Communities";
 import CommunityPage from "./pages/CommunityPage";
@@ -31,6 +32,7 @@ const App = () => (
               <Route path="/profile/edit" element={<EditProfile />} />
               <Route path="/playlist/:playlistId" element={<PlaylistDetail />} />
               <Route path="/post/:postId" element={<PostDetail />} />
+              <Route path="/animation/:animationId" element={<AnimationDetail />} />
               <Route path="/communities" element={<CommunitiesPage />} />
               <Route path="/c/:communityName" element={<CommunityPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
