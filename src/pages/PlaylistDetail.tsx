@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, ListMusic, Video } from 'lucide-react';
+import { AnimationCard } from '@/components/AnimationCard';
 
 interface Playlist {
   id: string;
@@ -47,16 +48,17 @@ const PlaylistDetail = () => {
         .select(`
           id,
           post_id,
-          posts:post_id (
+          animations:post_id (
             id,
             title,
+            description,
             thumbnail_url,
             video_url,
-            author_id,
-            users:author_id (
-              username,
-              display_name
-            )
+            upvote_count,
+            comment_count,
+            created_at,
+            author:users!animations_author_id_fkey(username, avatar_url),
+            community:communities(name, display_name)
           )
         `)
         .eq('playlist_id', playlistId)
@@ -139,32 +141,12 @@ const PlaylistDetail = () => {
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
               </div>
             ) : playlistItems && playlistItems.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {playlistItems.map((item: any) => (
-                  <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <div className="aspect-video bg-muted relative overflow-hidden">
-                      {item.posts?.thumbnail_url ? (
-                        <img 
-                          src={item.posts.thumbnail_url} 
-                          alt={item.posts?.title || 'Animation'} 
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Video className="h-12 w-12 text-muted-foreground" />
-                        </div>
-                      )}
-                    </div>
-                    <CardContent className="p-4">
-                      <h3 className="font-semibold line-clamp-2 mb-2">
-                        {item.posts?.title || 'Untitled Animation'}
-                      </h3>
-                      <p className="text-sm text-muted-foreground">
-                        by {item.posts?.users?.display_name || item.posts?.users?.username || 'Unknown'}
-                      </p>
-                    </CardContent>
-                  </Card>
-                ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {playlistItems
+                  .filter((item: any) => item.animations) // Only show items that have valid animation data
+                  .map((item: any) => (
+                    <AnimationCard key={item.id} animation={item.animations} />
+                  ))}
               </div>
             ) : (
               <div className="text-center py-12">
@@ -172,7 +154,7 @@ const PlaylistDetail = () => {
                 <p className="text-muted-foreground">No animations in this playlist yet</p>
                 {isOwner && (
                   <p className="text-sm text-muted-foreground mt-2">
-                    Add animations to your playlist to see them here!
+                    Add animations to your playlist from your animations page!
                   </p>
                 )}
               </div>
