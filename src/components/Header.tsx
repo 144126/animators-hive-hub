@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -7,6 +7,7 @@ import { AuthModal } from '@/components/auth/AuthModal';
 
 const Header = () => {
   const { user, loading } = useAuth();
+  const [isAuthModalOpen, setAuthModalOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -43,7 +44,12 @@ const Header = () => {
                   <Link to="/profile">Profile</Link>
                 </Button>
               ) : (
-                <AuthModal />
+                <>
+                  <Button variant="ghost" size="sm" onClick={() => setAuthModalOpen(true)}>
+                    Sign In
+                  </Button>
+                  <AuthModal isOpen={isAuthModalOpen} onClose={() => setAuthModalOpen(false)} />
+                </>
               )}
             </>
           )}
