@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -57,7 +56,11 @@ const PlaylistsTab = () => {
       if (!user) throw new Error('You must be logged in to create a playlist.');
       const { data, error } = await supabase
         .from('playlists')
-        .insert({ ...values, user_id: user.id })
+        .insert({
+          name: values.name,
+          description: values.description || null,
+          user_id: user.id,
+        })
         .select()
         .single();
       
