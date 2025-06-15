@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Video, Edit } from 'lucide-react'
+import { Edit } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import PlaylistsTab from '@/components/PlaylistsTab'
 import { AddAnimationModal } from '@/components/AddAnimationModal'
+import { UserAnimationsGrid } from '@/components/UserAnimationsGrid'
 
 const UserProfile = () => {
   const { user, loading } = useAuth()
@@ -92,13 +93,7 @@ const UserProfile = () => {
                 <AddAnimationModal />
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12">
-                  <Video className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">No animations yet</p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Start sharing your work to see it here!
-                  </p>
-                </div>
+                <UserAnimationsGrid />
               </CardContent>
             </Card>
           </TabsContent>
