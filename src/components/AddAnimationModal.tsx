@@ -103,7 +103,7 @@ export const AddAnimationModal = () => {
       description: description.trim() || null,
       video_url: videoUrl.trim() || null,
       thumbnail_url: thumbnailUrl.trim() || null,
-      community_id: communityId || null,
+      community_id: communityId === 'none' ? null : communityId || null,
       author_id: user.id
     })
   }
@@ -180,7 +180,7 @@ export const AddAnimationModal = () => {
                 <SelectValue placeholder="Select a community" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">No community</SelectItem>
+                <SelectItem value="none">No community</SelectItem>
                 {communities?.map((community) => (
                   <SelectItem key={community.id} value={community.id}>
                     {community.display_name}
