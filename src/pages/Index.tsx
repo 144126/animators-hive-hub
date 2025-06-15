@@ -2,13 +2,10 @@
 import React from 'react'
 import { LandingPage } from '@/components/LandingPage'
 import { useAuth } from '@/contexts/AuthContext'
-import { Button } from '@/components/ui/button'
-import { LogOut, User, Video } from 'lucide-react'
-import { Link } from 'react-router-dom'
 import { DiscoverFeed } from '@/components/DiscoverFeed'
 
 const Index = () => {
-  const { user, signOut, loading } = useAuth()
+  const { user, loading } = useAuth()
 
   if (loading) {
     return (
@@ -29,39 +26,6 @@ const Index = () => {
   // Show dashboard for logged-in users
   return (
     <div className="min-h-screen bg-background">
-      {/* Header with Navigation */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Video className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold">The Home for Animators</h1>
-          </div>
-          
-          {/* Main Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
-            <Button variant="ghost" className="text-base font-medium">
-              Discover
-            </Button>
-            <Button variant="ghost" className="text-base font-medium">
-              Communities
-            </Button>
-          </nav>
-          
-          {/* User Profile Section */}
-          <div className="flex items-center space-x-4">
-            <Link to="/profile">
-              <Button variant="ghost" size="icon">
-                <User className="h-5 w-5" />
-              </Button>
-            </Link>
-            <Button variant="outline" onClick={signOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
-          </div>
-        </div>
-      </header>
-
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
