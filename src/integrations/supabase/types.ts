@@ -368,6 +368,10 @@ export type Database = {
         Args: { p_playlist_id: string }
         Returns: boolean
       }
+      validate_content_security: {
+        Args: { content_text: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
