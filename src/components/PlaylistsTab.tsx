@@ -13,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { toast } from '@/components/ui/use-toast';
 import { Loader2, Plus, ListMusic } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const playlistSchema = z.object({
   name: z.string().min(1, 'Playlist name is required').max(100),
@@ -164,7 +165,9 @@ const PlaylistsTab = () => {
                   <CardDescription className="line-clamp-3 h-[60px]">{playlist.description || 'No description.'}</CardDescription>
                 </CardHeader>
                 <CardContent className="mt-auto">
-                    <Button variant="outline" className="w-full" disabled>View Playlist</Button>
+                  <Button asChild variant="outline" className="w-full">
+                    <Link to={`/playlist/${playlist.id}`}>View Playlist</Link>
+                  </Button>
                 </CardContent>
               </Card>
             ))}

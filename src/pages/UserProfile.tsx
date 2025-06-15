@@ -1,10 +1,11 @@
+
 import React from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Video, User, LogOut, ArrowLeft } from 'lucide-react'
+import { Video, User, LogOut, ArrowLeft, Plus, Edit } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import PlaylistsTab from '@/components/PlaylistsTab'
 
@@ -80,10 +81,20 @@ const UserProfile = () => {
           </Avatar>
           
           <div className="flex-1">
-            <h1 className="text-3xl font-bold mb-2">{displayName}</h1>
-            <p className="text-muted-foreground text-lg mb-4">{bio}</p>
-            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-              <span>Member since {new Date(user.created_at).toLocaleDateString()}</span>
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h1 className="text-3xl font-bold mb-2">{displayName}</h1>
+                <p className="text-muted-foreground text-lg mb-4">{bio}</p>
+                <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                  <span>Member since {new Date(user.created_at).toLocaleDateString()}</span>
+                </div>
+              </div>
+              <Link to="/profile/edit">
+                <Button variant="outline">
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Profile
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -97,11 +108,17 @@ const UserProfile = () => {
           
           <TabsContent value="animations" className="mt-6">
             <Card>
-              <CardHeader>
-                <CardTitle>Your Animations</CardTitle>
-                <CardDescription>
-                  Animations you've shared with the community
-                </CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle>Your Animations</CardTitle>
+                  <CardDescription>
+                    Animations you've shared with the community
+                  </CardDescription>
+                </div>
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Animation
+                </Button>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-12">

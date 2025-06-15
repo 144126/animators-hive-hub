@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import UserProfile from "./pages/UserProfile";
+import EditProfile from "./pages/EditProfile";
+import PlaylistDetail from "./pages/PlaylistDetail";
 import PostDetail from "./pages/PostDetail";
 import NotFound from "./pages/NotFound";
 import CommunitiesPage from "./pages/Communities";
@@ -26,6 +28,8 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/profile" element={<UserProfile />} />
+              <Route path="/profile/edit" element={<EditProfile />} />
+              <Route path="/playlist/:playlistId" element={<PlaylistDetail />} />
               <Route path="/post/:postId" element={<PostDetail />} />
               <Route path="/communities" element={<CommunitiesPage />} />
               <Route path="/c/:communityName" element={<CommunityPage />} />
