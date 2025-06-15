@@ -9,6 +9,9 @@ import Index from "./pages/Index";
 import UserProfile from "./pages/UserProfile";
 import PostDetail from "./pages/PostDetail";
 import NotFound from "./pages/NotFound";
+import CommunitiesPage from "./pages/Communities";
+import CommunityPage from "./pages/CommunityPage";
+import MainLayout from "./components/MainLayout";
 
 const queryClient = new QueryClient();
 
@@ -19,13 +22,17 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/profile" element={<UserProfile />} />
-            <Route path="/post/:postId" element={<PostDetail />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <MainLayout>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/profile" element={<UserProfile />} />
+              <Route path="/post/:postId" element={<PostDetail />} />
+              <Route path="/communities" element={<CommunitiesPage />} />
+              <Route path="/c/:communityName" element={<CommunityPage />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </MainLayout>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>

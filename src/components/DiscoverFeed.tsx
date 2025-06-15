@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/integrations/supabase/client'
@@ -25,13 +24,13 @@ interface Post {
   } | null
 }
 
-export const DiscoverFeed: React.FC = () => {
+export const DiscoverFeed: React.FC<{ communityId?: string }> = ({ communityId }) => {
   const [sortBy, setSortBy] = useState<SortType>('new')
 
   const { data: posts, isLoading, error } = useQuery({
-    queryKey: ['posts', sortBy],
+    queryKey: ['posts', sortBy, communityId],
     queryFn: async (): Promise<Post[]> => {
-      console.log('Fetching posts with sort:', sortBy)
+      console.log('Fetching posts with sort:', sortBy, 'and communityId:', communityId)
       
       let query = supabase
         .from('posts')
@@ -51,6 +50,10 @@ export const DiscoverFeed: React.FC = () => {
             display_name
           )
         `)
+
+      if (communityId) {
+        query = query.eq('community_id', communityId)
+      }
 
       // Sort by the selected option
       if (sortBy === 'new') {
