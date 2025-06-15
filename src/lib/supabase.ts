@@ -1,24 +1,15 @@
-
 import { createClient } from '@supabase/supabase-js'
 
-// In Lovable projects with Supabase integration, these should be available
-// If not, we'll provide helpful error messages
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabaseUrl = 'https://yuewubncxzqopejwmqrf.supabase.co'
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1ZXd1Ym5jeHpxb3BlandtcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5Mjk5MDgsImV4cCI6MjA2NTUwNTkwOH0.47pIaebL9U74KxC92jqwNKlTvIBrXcu--aw5Uwl0owg'
 
-if (!supabaseUrl) {
-  console.error('VITE_SUPABASE_URL is missing. Please ensure your Supabase integration is properly configured.')
-}
-
-if (!supabaseAnonKey) {
-  console.error('VITE_SUPABASE_ANON_KEY is missing. Please ensure your Supabase integration is properly configured.')
-}
-
-// Create a fallback client with dummy values if env vars are missing (for development)
-const url = supabaseUrl || 'https://placeholder.supabase.co'
-const key = supabaseAnonKey || 'placeholder-key'
-
-export const supabase = createClient(url, key)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storage: localStorage,
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+})
 
 // Database types
 export type Database = {

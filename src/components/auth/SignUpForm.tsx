@@ -39,11 +39,6 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onToggleMode }) => {
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold">Create an account</h2>
-        <p className="text-muted-foreground">Join the animator community</p>
-      </div>
-
       <Button variant="outline" className="w-full" onClick={() => signInWithGoogle()} disabled={loading}>
         <GoogleIcon className="mr-2 h-4 w-4" />
         Sign Up with Google

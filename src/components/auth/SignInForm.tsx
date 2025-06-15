@@ -26,11 +26,6 @@ export const SignInForm: React.FC<SignInFormProps> = ({ onToggleMode }) => {
 
   return (
     <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold">Welcome back</h2>
-        <p className="text-muted-foreground">Sign in to your account</p>
-      </div>
-
       <Button variant="outline" className="w-full" onClick={() => signInWithGoogle()} disabled={loading}>
         <GoogleIcon className="mr-2 h-4 w-4" />
         Sign In with Google
