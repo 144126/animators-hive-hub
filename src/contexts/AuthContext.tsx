@@ -50,62 +50,95 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Handle user profile creation on sign up or Google sign in
       if (event === 'SIGNED_IN' && session?.user) {
         console.log('User signed in, checking profile...')
-        const user = session.user
-
-        const { data: profile } = await supabase
-          .from('users')
-          .select('id')
-          .eq('id', user.id)
-          .single()
-
-        if (!profile) {
-          console.log('No profile found, creating one for new user.')
-
-          // Generate a unique username from email or name
-          let username = user.user_metadata.full_name?.replace(/\s/g, '').toLowerCase() || user.email?.split('@')[0] || `user${Date.now()}`
-          let isUsernameTaken = true
-          let newUsername = username
-          let attempt = 1
-
-          while (isUsernameTaken) {
-            const { data: existingUser } = await supabase
-              .from('users')
-              .select('username')
-              .eq('username', newUsername)
-              .single()
-            
-            if (existingUser) {
-              newUsername = `${username}${attempt}`
-              attempt++
-            } else {
-              isUsernameTaken = false
-            }
+        
+        // Use a timeout to defer the profile creation and avoid blocking the auth flow
+        setTimeout(async () => {
+          try {
+            await ensureUserProfile(session.user)
+          } catch (error) {
+            console.error('Error ensuring user profile:', error)
           }
-          username = newUsername
-
-          const { error: profileError } = await supabase.from('users').insert({
-            id: user.id,
-            username: username,
-            display_name: user.user_metadata.full_name || username,
-            avatar_url: user.user_metadata.avatar_url,
-          })
-
-          if (profileError) {
-            console.error('Error creating user profile for OAuth user:', profileError)
-            toast({
-              title: "Profile Creation Error",
-              description: "Could not create your user profile.",
-              variant: "destructive",
-            })
-          } else {
-            console.log('Profile created successfully for OAuth user')
-          }
-        }
+        }, 100)
       }
     })
 
     return () => subscription.unsubscribe()
   }, [toast])
+
+  const ensureUserProfile = async (user: User) => {
+    try {
+      // First check if profile already exists
+      const { data: existingProfile, error: fetchError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('id', user.id)
+        .maybeSingle()
+
+      if (fetchError) {
+        console.error('Error checking for existing profile:', fetchError)
+        return
+      }
+
+      if (existingProfile) {
+        console.log('Profile already exists for user')
+        return
+      }
+
+      console.log('No profile found, creating one for new user.')
+
+      // Generate a unique username from email or name
+      let username = user.user_metadata.full_name?.replace(/\s/g, '').toLowerCase() || user.email?.split('@')[0] || `user${Date.now()}`
+      let isUsernameTaken = true
+      let newUsername = username
+      let attempt = 1
+
+      while (isUsernameTaken) {
+        const { data: existingUser } = await supabase
+          .from('users')
+          .select('username')
+          .eq('username', newUsername)
+          .maybeSingle()
+        
+        if (existingUser) {
+          newUsername = `${username}${attempt}`
+          attempt++
+        } else {
+          isUsernameTaken = false
+        }
+      }
+      username = newUsername
+
+      // Use upsert to handle potential race conditions
+      const { error: profileError } = await supabase.from('users').upsert({
+        id: user.id,
+        username: username,
+        display_name: user.user_metadata.full_name || username,
+        avatar_url: user.user_metadata.avatar_url,
+      }, {
+        onConflict: 'id',
+        ignoreDuplicates: true
+      })
+
+      if (profileError) {
+        // If it's a duplicate key error, that's actually fine - profile already exists
+        if (profileError.code === '23505') {
+          console.log('Profile already exists (caught duplicate key error)')
+          return
+        }
+        
+        console.error('Error creating user profile for OAuth user:', profileError)
+        toast({
+          title: "Profile Creation Error",
+          description: "Could not create your user profile.",
+          variant: "destructive",
+        })
+      } else {
+        console.log('Profile created successfully for OAuth user')
+      }
+    } catch (error) {
+      console.error('Unexpected error in ensureUserProfile:', error)
+    }
+  }
 
   const signUp = async (email: string, password: string, username: string) => {
     try {
@@ -116,7 +149,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .from('users')
         .select('username')
         .eq('username', username)
-        .single()
+        .maybeSingle()
 
       if (existingUser) {
         throw new Error('Username is already taken')
