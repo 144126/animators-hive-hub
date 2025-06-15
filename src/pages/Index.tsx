@@ -26,7 +26,6 @@ const Index = () => {
   // Show dashboard for logged-in users
   return (
     <div className="min-h-screen bg-background">
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold mb-2">Discover</h2>

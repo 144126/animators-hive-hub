@@ -5,14 +5,13 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Video, User, LogOut, ArrowLeft, Edit } from 'lucide-react'
+import { Video, Edit } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import PlaylistsTab from '@/components/PlaylistsTab'
 import { AddAnimationModal } from '@/components/AddAnimationModal'
-import { DiscoverAnimationsFeed } from '@/components/DiscoverAnimationsFeed'
 
 const UserProfile = () => {
-  const { user, signOut, loading } = useAuth()
+  const { user, loading } = useAuth()
 
   if (loading) {
     return (
@@ -44,33 +43,6 @@ const UserProfile = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link to="/">
-              <Button variant="ghost" size="icon">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
-            <div className="flex items-center space-x-2">
-              <Video className="h-8 w-8 text-primary" />
-              <h1 className="text-2xl font-bold">Profile</h1>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-            </Button>
-            <Button variant="outline" onClick={signOut}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
-            </Button>
-          </div>
-        </div>
-      </header>
-
       {/* Profile Content */}
       <main className="container mx-auto px-4 py-8">
         {/* User Info Section */}

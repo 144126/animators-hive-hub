@@ -97,25 +97,21 @@ const PlaylistDetail = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link to="/profile">
-              <Button variant="ghost" size="icon">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-            </Link>
-            <div className="flex items-center space-x-2">
-              <ListMusic className="h-8 w-8 text-primary" />
-              <h1 className="text-2xl font-bold">Playlist</h1>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Playlist Content */}
       <main className="container mx-auto px-4 py-8">
+        {/* Back Navigation */}
+        <div className="flex items-center space-x-4 mb-8">
+          <Link to="/profile">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
+          <div className="flex items-center space-x-2">
+            <ListMusic className="h-8 w-8 text-primary" />
+            <h1 className="text-2xl font-bold">Playlist</h1>
+          </div>
+        </div>
+
         {/* Playlist Info */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-4">{playlist.name}</h1>
