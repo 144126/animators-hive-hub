@@ -8,6 +8,7 @@ interface AuthContextType {
   session: Session | null
   signUp: (email: string, password: string, username: string) => Promise<void>
   signIn: (email: string, password: string) => Promise<void>
+  signInWithGoogle: () => Promise<void>
   signOut: () => Promise<void>
   loading: boolean
 }
@@ -47,12 +48,61 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Handle user profile creation on sign up
       if (event === 'SIGNED_IN' && session?.user) {
-        console.log('User signed in, checking profile...')
+        console.log('User signed in, checking profile...');
+        const user = session.user;
+        
+        const { data: profile } = await supabase
+          .from('users')
+          .select('id')
+          .eq('id', user.id)
+          .single();
+
+        if (!profile) {
+          console.log('No profile found, creating one for new user.');
+
+          // Generate a unique username from email or name
+          let username = user.user_metadata.full_name?.replace(/\s/g, '').toLowerCase() || user.email?.split('@')[0] || `user${Date.now()}`;
+          let isUsernameTaken = true;
+          let newUsername = username;
+          let attempt = 1;
+
+          while (isUsernameTaken) {
+            const { data: existingUser } = await supabase
+              .from('users')
+              .select('username')
+              .eq('username', newUsername)
+              .single();
+            
+            if (existingUser) {
+              newUsername = `${username}${attempt}`;
+              attempt++;
+            } else {
+              isUsernameTaken = false;
+            }
+          }
+          username = newUsername;
+
+          const { error: profileError } = await supabase.from('users').insert({
+            id: user.id,
+            username: username,
+            display_name: user.user_metadata.full_name || username,
+            avatar_url: user.user_metadata.avatar_url,
+          });
+
+          if (profileError) {
+            console.error('Error creating user profile for OAuth user:', profileError);
+            toast({
+              title: "Profile Creation Error",
+              description: "Could not create your user profile.",
+              variant: "destructive",
+            });
+          }
+        }
       }
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  }, [toast])
 
   const signUp = async (email: string, password: string, username: string) => {
     try {
@@ -141,6 +191,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }
 
+  const signInWithGoogle = async () => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+        },
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      console.error('Google Sign In Error:', error);
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      setLoading(false);
+    }
+  };
+
   const signOut = async () => {
     try {
       setLoading(true)
@@ -168,6 +239,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     session,
     signUp,
     signIn,
+    signInWithGoogle,
     signOut,
     loading,
   }
