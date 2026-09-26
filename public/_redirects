@@ -1,5 +1,0 @@
-# Cloudflare Pages — SPA fallback (react-router).
-# Serves index.html for all client-side routes like /c/:name, /profile, etc.
-# Docs: https://developers.cloudflare.com/pages/configuration/serving-pages/#single-page-application-spa-rendering
-# (Pages also auto-assumes SPA when no top-level 404.html exists — this makes it explicit.)
-/* /index.html 200
