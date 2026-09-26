@@ -1,7 +1,16 @@
+// Supabase client (auth) — credentials come from environment, never hardcoded.
+// See src/integrations/supabase/client.ts header for setup instructions.
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = 'https://yuewubncxzqopejwmqrf.supabase.co'
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1ZXd1Ym5jeHpxb3BlandtcXJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5Mjk5MDgsImV4cCI6MjA2NTUwNTkwOH0.47pIaebL9U74KxC92jqwNKlTvIBrXcu--aw5Uwl0owg'
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined
+const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ??
+  import.meta.env.VITE_SUPABASE_ANON_KEY) as string | undefined
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error(
+    'Missing Supabase environment variables. Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY in .env (local) or in Cloudflare Pages → Settings → Environment variables.'
+  )
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
