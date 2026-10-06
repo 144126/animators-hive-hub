@@ -5,15 +5,14 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev --host --port 8080",
-		"build": "vite build",
 		"preview": "vite preview",
+		"build": "vite build",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write ."
 	},
 	"dependencies": {
-		"@lucide/svelte": "^0.544.0",
-		"@supabase/supabase-js": "^2.50.0"
+		"@lucide/svelte": "^0.544.0"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.36.0",

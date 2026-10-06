@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { Plus, Loader2 } from '@lucide/svelte';
 	import { auth } from '$lib/auth.svelte';
-	import { supabase } from '$lib/supabase';
 	import { toast } from '$lib/toast.svelte';
-	import { user_playlists } from '$lib/data';
+	import { add_to_playlist, user_playlists } from '$lib/data';
 	import type { Playlist } from '$lib/types';
 
 	let { animation_id, title }: { animation_id: string; title: string } = $props();
@@ -33,8 +32,7 @@
 		if (!a.user) return;
 		busy = true;
 		try {
-			const { error } = await supabase.from('playlist_items').insert({ playlist_id: id, post_id: animation_id });
-			if (error) throw error;
+			await add_to_playlist(id, animation_id);
 			const p = playlists.find((x) => x.id === id);
 			toast('added to playlist!', `"${title}" was added to "${p?.name}"`);
 			open = false;

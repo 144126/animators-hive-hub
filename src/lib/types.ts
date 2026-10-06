@@ -18,6 +18,8 @@ export type Animation = {
 	upvote_count: number;
 	comment_count: number;
 	created_at: string;
+	author_id?: string;
+	community_id?: string | null;
 	author: Person;
 	community?: CommunityRef | null;
 };
@@ -31,6 +33,8 @@ export type Post = {
 	upvote_count: number;
 	comment_count?: number;
 	created_at: string;
+	author_id?: string;
+	community_id?: string | null;
 	author: Person;
 	community?: CommunityRef | null;
 };
@@ -48,4 +52,29 @@ export type Comment = {
 	content: string;
 	created_at: string;
 	author: Person;
+};
+
+export type Community = {
+	id: string;
+	name: string;
+	display_name: string;
+	description: string | null;
+	avatar_url: string | null;
+	banner_url?: string | null;
+	member_count: number;
+	creator_id?: string;
+};
+
+export type AuthUser = {
+	id: string;
+	email: string;
+	created_at: string;
+	user_metadata: {
+		username: string;
+		display_name?: string;
+		bio?: string;
+		avatar_url?: string;
+		location?: string;
+		website_url?: string;
+	};
 };

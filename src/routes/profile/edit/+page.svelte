@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { ArrowLeft, User, Save } from '@lucide/svelte';
 	import { goto } from '$app/navigation';
-	import { auth, display_name } from '$lib/auth.svelte';
-	import { supabase } from '$lib/supabase';
+	import { auth, display_name, set_user } from '$lib/auth.svelte';
+	import { update_profile } from '$lib/data';
 	import { toast } from '$lib/toast.svelte';
 	import Avatar from '$components/Avatar.svelte';
 
@@ -30,15 +30,7 @@
 		if (website && website.length && !/^https?:\/\//.test(website)) return toast('error', 'please enter a valid url', 'err');
 		busy = true;
 		try {
-			const { error: auth_err } = await supabase.auth.updateUser({
-				data: { display_name: display, bio, location, website_url: website }
-			});
-			if (auth_err) throw auth_err;
-			const { error } = await supabase
-				.from('users')
-				.update({ display_name: display, bio, location, website_url: website })
-				.eq('id', a.user.id);
-			if (error) throw error;
+			set_user(await update_profile({ display_name: display, bio, location, website_url: website }));
 			toast('profile updated!', 'your profile has been successfully updated.');
 			goto('/profile');
 		} catch (err) {

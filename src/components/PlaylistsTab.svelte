@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { Loader2, Plus, ListMusic } from '@lucide/svelte';
 	import { auth } from '$lib/auth.svelte';
-	import { supabase } from '$lib/supabase';
 	import { toast } from '$lib/toast.svelte';
-	import { user_playlists } from '$lib/data';
+	import { create_playlist, user_playlists } from '$lib/data';
 	import type { Playlist } from '$lib/types';
 
 	const a = auth();
@@ -35,12 +34,7 @@
 		if (!a.user || !name.trim()) return;
 		busy = true;
 		try {
-			const { error } = await supabase.from('playlists').insert({
-				name: name.trim(),
-				description: description.trim() || null,
-				user_id: a.user.id
-			});
-			if (error) throw error;
+			await create_playlist(name.trim(), description.trim() || null);
 			toast('playlist created!', 'your new playlist has been created.');
 			open = false;
 			name = '';

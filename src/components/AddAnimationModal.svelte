@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Plus, Upload } from '@lucide/svelte';
 	import { auth } from '$lib/auth.svelte';
-	import { supabase } from '$lib/supabase';
 	import { toast } from '$lib/toast.svelte';
-	import { create_community, thumb_from_video, upload_file } from '$lib/upload';
+	import { create_animation, create_community } from '$lib/data';
+	import { file_url, thumb_from_video } from '$lib/upload';
 	import CommunityCombobox from './CommunityCombobox.svelte';
 	import FileUploadSection from './FileUploadSection.svelte';
 
@@ -37,26 +37,23 @@
 		busy = true;
 		try {
 			let cid: string | null = community_id === 'none' || !community_id ? null : community_id;
-			if (community_id === 'create-new') cid = await create_community(new_name.trim(), a.user.id);
-			const video_url = await upload_file(video, 'animation-videos', 'videos', a.user.id);
-			let thumbnail_url: string | null = null;
-			if (thumb) thumbnail_url = await upload_file(thumb, 'animation-thumbnails', 'thumbnails', a.user.id);
-			else {
+			if (community_id === 'create-new') cid = await create_community(new_name.trim());
+			const video_url = file_url(video);
+			let thumbnail_url: string | null = thumb ? file_url(thumb) : null;
+			if (!thumbnail_url) {
 				try {
-					thumbnail_url = await upload_file(await thumb_from_video(video), 'animation-thumbnails', 'thumbnails', a.user.id);
+					thumbnail_url = await thumb_from_video(video);
 				} catch {
 					/* optional */
 				}
 			}
-			const { error } = await supabase.from('animations').insert({
+			await create_animation({
 				title: title.trim(),
 				description: description.trim() || null,
 				video_url,
 				thumbnail_url,
-				community_id: cid,
-				author_id: a.user.id
+				community_id: cid
 			});
-			if (error) throw error;
 			toast('animation uploaded successfully!');
 			open = false;
 			reset();

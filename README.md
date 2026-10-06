@@ -1,12 +1,11 @@
 # animators hive hub
 
-sveltekit + cloudflare + supabase. showcase animations, communities, playlists.
+sveltekit + cloudflare. all records live in vectorize index `ahh`. no d1, kv, r2, or supabase.
 
 ```sh
 pnpm i
-cp .env.example .env   # PUBLIC_SUPABASE_URL + PUBLIC_SUPABASE_PUBLISHABLE_KEY
-pnpm dev               # :8080
+pnpm dev               # :8080 (vectorize remote)
 pnpm build
 ```
 
-old `VITE_SUPABASE_*` names still work as public aliases.
+email+password only. video files stay as local blob urls (vectorize cannot hold files).

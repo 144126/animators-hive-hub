@@ -2,9 +2,8 @@
 	import { ArrowLeft, Play, MessageCircle } from '@lucide/svelte';
 	import type { Animation } from '$lib/types';
 	import { auth } from '$lib/auth.svelte';
-	import { supabase } from '$lib/supabase';
 	import { toast } from '$lib/toast.svelte';
-	import { has_animation_upvote } from '$lib/data';
+	import { has_animation_upvote, set_upvote } from '$lib/data';
 	import { cn } from '$lib/utils';
 	import Avatar from './Avatar.svelte';
 	import CommentsSection from './CommentsSection.svelte';
@@ -28,17 +27,12 @@
 		if (!a.user) return toast('error', 'please sign in to upvote animations', 'err');
 		busy = true;
 		try {
+			await set_upvote(animation.id, !voted);
 			if (voted) {
-				const { error } = await supabase.from('upvotes').delete().eq('animation_id', animation.id).eq('user_id', a.user.id);
-				if (error) throw error;
 				voted = false;
 				n = Math.max(0, n - 1);
 				toast('upvote removed');
 			} else {
-				const { error } = await supabase
-					.from('upvotes')
-					.insert({ user_id: a.user.id, post_id: animation.id, animation_id: animation.id });
-				if (error) throw error;
 				voted = true;
 				n += 1;
 				toast('animation upvoted!');

@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { MessageCircle, Send } from '@lucide/svelte';
 	import { auth } from '$lib/auth.svelte';
-	import { supabase } from '$lib/supabase';
 	import { toast } from '$lib/toast.svelte';
-	import { list_comments } from '$lib/data';
+	import { list_comments, post_comment } from '$lib/data';
 	import type { Comment } from '$lib/types';
 	import Avatar from './Avatar.svelte';
 
@@ -33,12 +32,7 @@
 		if (!a.user || !text.trim()) return;
 		busy = true;
 		try {
-			const { error } = await supabase.from('comments').insert({
-				content: text.trim(),
-				post_id,
-				author_id: a.user.id
-			});
-			if (error) throw error;
+			await post_comment(post_id, text.trim());
 			text = '';
 			toast('comment posted!');
 			await load();

@@ -1,11 +1,22 @@
 {
 	"$schema": "./node_modules/wrangler/config-schema.json",
 	"name": "animators-hive-hub",
+	"account_id": "9bdf8703c380fa82142864bf5d99a2d7",
 	"compatibility_date": "2026-09-26",
 	"compatibility_flags": ["nodejs_als"],
 	"main": ".svelte-kit/cloudflare/_worker.js",
 	"assets": {
 		"binding": "ASSETS",
 		"directory": ".svelte-kit/cloudflare"
-	}
+	},
+	"vars": {
+		"SESSION_SECRET": "ahh-session-9f3c2e1a7b84d056"
+	},
+	"vectorize": [
+		{
+			"binding": "DB",
+			"index_name": "ahh",
+			"remote": true
+		}
+	]
 }

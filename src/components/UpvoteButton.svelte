@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { ArrowUp } from '@lucide/svelte';
 	import { auth } from '$lib/auth.svelte';
-	import { supabase } from '$lib/supabase';
 	import { toast } from '$lib/toast.svelte';
-	import { has_upvote } from '$lib/data';
+	import { has_upvote, set_upvote } from '$lib/data';
 	import { cn } from '$lib/utils';
 
 	let {
@@ -39,15 +38,12 @@
 		}
 		busy = true;
 		try {
+			await set_upvote(post_id, !voted);
 			if (voted) {
-				const { error } = await supabase.from('upvotes').delete().eq('post_id', post_id).eq('user_id', a.user.id);
-				if (error) throw error;
 				voted = false;
 				n = Math.max(0, n - 1);
 				toast('upvote removed');
 			} else {
-				const { error } = await supabase.from('upvotes').insert({ user_id: a.user.id, post_id });
-				if (error) throw error;
 				voted = true;
 				n += 1;
 				toast('post upvoted!');
