@@ -13,7 +13,7 @@
 		"c": {
 			"worker_and_builds": {
 				"s": "outcome: worker `animators-hive-hub` exists and every push to mine/main builds and deploys it to https://animators-hive-hub.apexlinks.workers.dev.\n1. create it (ed's recipe): `curl -sX POST https://api.cloudflare.com/client/v4/accounts/9bdf8703c380fa82142864bf5d99a2d7/workers/workers -H \"Authorization: Bearer $CLOUDFLARE_API_TOKEN\" -H 'content-type: application/json' -d '{\"name\":\"animators-hive-hub\",\"subdomain\":{\"enabled\":true}}'`. its script tag is the `tag` in `GET .../workers/scripts`. if the token lacks rights, add Workers Scripts Edit to token `opencode-token-manager` (it has API Tokens Edit).\n2. `cf builds workers create --script-tag <tag> ...` mirroring `cf builds workers get 9d784fac3ebf48c6a9c94628f57d303f` (worker dump: provider account 60928392 / 144126, build token e5e56f11-815c-4555-8f48-ca4fa39c5414) except repo id 1407752103, repo name animators-hive-hub, branch main, deploy command `pnpm exec wrangler deploy`, previews off. run it with `--dry-run` first.\n3. `git push mine main`, then poll `cf builds list --external-script-id <tag>` until the build succeeds; on failure read `cf builds logs` and fix it.\n4. `plan critical --note \"worker tag <tag>\"`.",
-				"d": 0,
+				"d": 1,
 				"t": "curl -sf https://animators-hive-hub.apexlinks.workers.dev/api/me | grep -q '\"user\":null'"
 			},
 			"prod_secrets": {
