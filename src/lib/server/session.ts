@@ -1,10 +1,12 @@
-import type { RequestEvent } from '@sveltejs/kit';
+import { error, type RequestEvent } from '@sveltejs/kit';
 import { parse, type UserRow } from './db';
 
 const te = new TextEncoder();
 
 function secret(e: RequestEvent) {
-	return e.platform?.env?.SESSION_SECRET || 'ahh-session-9f3c2e1a7b84d056';
+	const s = e.platform?.env?.SESSION_SECRET;
+	if (!s) throw error(500, 'missing SESSION_SECRET');
+	return s;
 }
 
 export async function hash(pass: string, salt?: string) {
