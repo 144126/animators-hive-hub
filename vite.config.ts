@@ -4,5 +4,6 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
-	server: { host: true, port: 8080 }
+	server: { host: true, port: 8080 },
+	optimizeDeps: { exclude: ['@lucide/svelte'] }
 });
