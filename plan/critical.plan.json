@@ -8,7 +8,7 @@
 	},
 	"deploy_pipeline": {
 		"s": "make every push to mine/main deploy, starting with step 1's commit",
-		"d": 0,
+		"d": 1,
 		"t": "curl -sf https://animators-hive-hub.apexlinks.workers.dev/api/me | grep -q '\"user\":null'",
 		"c": {
 			"worker_and_builds": {
@@ -18,7 +18,7 @@
 			},
 			"prod_secrets": {
 				"s": "outcome: prod signs sessions with its own secret, and sign-up works live.\n1. `openssl rand -base64 32 | env -u CLOUDFLARE_API_TOKEN pnpm exec wrangler secret put SESSION_SECRET --name animators-hive-hub`. never print or store it; it differs from .dev.vars.\n2. pipe the GEMINI_API_KEY value from .dev.vars (no quotes, never printed) into `wrangler secret put GEMINI_API_KEY --name animators-hive-hub`; the vectorize code needs it until drop_vectorize.\n3. sign up `smk` + 8 random hex at the live url and expect 200. error 1102 or 'exceeded resource limits' means pbkdf2 at 80k iterations is over the free plan's 10 ms cpu: block with the output.\n4. if the classifier refuses a secret put, block with its message so ed runs it himself.",
-				"d": 0,
+				"d": 1,
 				"v": "curl -sf https://animators-hive-hub.apexlinks.workers.dev/api/me >/dev/null",
 				"t": "s=$(env -u CLOUDFLARE_API_TOKEN pnpm exec wrangler secret list --name animators-hive-hub) && echo \"$s\" | grep -q SESSION_SECRET && echo \"$s\" | grep -q GEMINI_API_KEY && r=smk$(openssl rand -hex 4) && curl -sf -X POST https://animators-hive-hub.apexlinks.workers.dev/api/auth/signup -H 'content-type: application/json' -d \"{\\\"email\\\":\\\"$r@example.com\\\",\\\"password\\\":\\\"smoke-pass-1\\\",\\\"username\\\":\\\"$r\\\"}\" | grep -q '\"user\":{'"
 			}
