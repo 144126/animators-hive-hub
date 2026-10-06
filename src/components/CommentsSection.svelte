@@ -1,0 +1,91 @@
+<script lang="ts">
+	import { MessageCircle, Send } from '@lucide/svelte';
+	import { auth } from '$lib/auth.svelte';
+	import { supabase } from '$lib/supabase';
+	import { toast } from '$lib/toast.svelte';
+	import { list_comments } from '$lib/data';
+	import type { Comment } from '$lib/types';
+	import Avatar from './Avatar.svelte';
+
+	let { post_id }: { post_id: string } = $props();
+	const a = auth();
+	let comments = $state<Comment[]>([]);
+	let loading = $state(true);
+	let text = $state('');
+	let busy = $state(false);
+
+	async function load() {
+		loading = true;
+		try {
+			comments = await list_comments(post_id);
+		} finally {
+			loading = false;
+		}
+	}
+
+	$effect(() => {
+		void post_id;
+		load();
+	});
+
+	async function submit(e: Event) {
+		e.preventDefault();
+		if (!a.user || !text.trim()) return;
+		busy = true;
+		try {
+			const { error } = await supabase.from('comments').insert({
+				content: text.trim(),
+				post_id,
+				author_id: a.user.id
+			});
+			if (error) throw error;
+			text = '';
+			toast('comment posted!');
+			await load();
+		} catch {
+			toast('error', 'failed to post comment', 'err');
+		} finally {
+			busy = false;
+		}
+	}
+</script>
+
+<div class="card">
+	<div class="flex items-center space-x-2 border-b p-6 text-lg font-semibold">
+		<MessageCircle class="h-5 w-5" />
+		<span>comments ({comments.length})</span>
+	</div>
+	<div class="space-y-6 p-6">
+		{#if a.user}
+			<form onsubmit={submit} class="space-y-4">
+				<textarea class="area min-h-[100px]" placeholder="write a comment..." bind:value={text}></textarea>
+				<div class="flex justify-end">
+					<button class="btn-sm" type="submit" disabled={!text.trim() || busy}>
+						<Send class="mr-2 h-4 w-4" />
+						{busy ? 'posting...' : 'post comment'}
+					</button>
+				</div>
+			</form>
+		{:else}
+			<div class="py-6 text-center text-muted-foreground">please log in to leave a comment</div>
+		{/if}
+		<div class="space-y-4">
+			{#if loading}
+				<div class="py-6 text-center text-muted-foreground">loading comments...</div>
+			{:else if comments.length}
+				{#each comments as c (c.id)}
+					<div class="space-y-2 border-l-2 border-muted pl-4">
+						<div class="flex items-center space-x-2">
+							<Avatar src={c.author.avatar_url} name={c.author.username} class="h-6 w-6" />
+							<span class="text-sm font-medium">{c.author.display_name || c.author.username}</span>
+							<span class="text-xs text-muted-foreground">{new Date(c.created_at).toLocaleDateString()}</span>
+						</div>
+						<p class="pl-8 text-sm">{c.content}</p>
+					</div>
+				{/each}
+			{:else}
+				<div class="py-6 text-center text-muted-foreground">no comments yet. be the first to comment!</div>
+			{/if}
+		</div>
+	</div>
+</div>

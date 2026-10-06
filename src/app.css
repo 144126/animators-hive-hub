@@ -1,0 +1,78 @@
+@import 'tailwindcss';
+
+@theme {
+	--color-background: hsl(0 0% 100%);
+	--color-foreground: hsl(222.2 84% 4.9%);
+	--color-card: hsl(0 0% 100%);
+	--color-card-foreground: hsl(222.2 84% 4.9%);
+	--color-popover: hsl(0 0% 100%);
+	--color-popover-foreground: hsl(222.2 84% 4.9%);
+	--color-primary: hsl(222.2 47.4% 11.2%);
+	--color-primary-foreground: hsl(210 40% 98%);
+	--color-secondary: hsl(210 40% 96.1%);
+	--color-secondary-foreground: hsl(222.2 47.4% 11.2%);
+	--color-muted: hsl(210 40% 96.1%);
+	--color-muted-foreground: hsl(215.4 16.3% 46.9%);
+	--color-accent: hsl(210 40% 96.1%);
+	--color-accent-foreground: hsl(222.2 47.4% 11.2%);
+	--color-destructive: hsl(0 84.2% 60.2%);
+	--color-destructive-foreground: hsl(210 40% 98%);
+	--color-border: hsl(214.3 31.8% 91.4%);
+	--color-input: hsl(214.3 31.8% 91.4%);
+	--color-ring: hsl(222.2 84% 4.9%);
+	--radius-lg: 0.5rem;
+	--radius-md: calc(0.5rem - 2px);
+	--radius-sm: calc(0.5rem - 4px);
+}
+
+@layer base {
+	* {
+		border-color: var(--color-border);
+	}
+	body {
+		background: var(--color-background);
+		color: var(--color-foreground);
+	}
+}
+
+@layer components {
+	.btn {
+		@apply inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:pointer-events-none disabled:opacity-50;
+	}
+	.btn-lg {
+		@apply inline-flex h-auto items-center justify-center rounded-md bg-primary px-8 py-4 text-lg font-medium text-primary-foreground disabled:pointer-events-none disabled:opacity-50;
+	}
+	.btn-sm {
+		@apply inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground disabled:pointer-events-none disabled:opacity-50;
+	}
+	.btn-outline {
+		@apply inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent disabled:pointer-events-none disabled:opacity-50;
+	}
+	.btn-outline-sm {
+		@apply inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-3 text-sm font-medium hover:bg-accent disabled:pointer-events-none disabled:opacity-50;
+	}
+	.btn-ghost {
+		@apply inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium hover:bg-accent disabled:pointer-events-none disabled:opacity-50;
+	}
+	.btn-ghost-sm {
+		@apply inline-flex h-9 items-center justify-center rounded-md px-3 text-sm font-medium hover:bg-accent disabled:pointer-events-none disabled:opacity-50;
+	}
+	.btn-icon {
+		@apply inline-flex h-10 w-10 items-center justify-center rounded-md hover:bg-accent disabled:pointer-events-none disabled:opacity-50;
+	}
+	.field {
+		@apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring disabled:opacity-50;
+	}
+	.area {
+		@apply w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring disabled:opacity-50;
+	}
+	.card {
+		@apply rounded-lg border bg-card text-card-foreground shadow-sm;
+	}
+	.overlay {
+		@apply fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4;
+	}
+	.modal {
+		@apply relative w-full rounded-lg border bg-background p-6 shadow-lg;
+	}
+}
