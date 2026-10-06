@@ -24,9 +24,9 @@ export const POST: RequestHandler = async (e) => {
 		pass: await hash(password),
 		created_at: new Date().toISOString()
 	};
-	await put(d, id, { k: 'u', n: username, j: JSON.stringify(u) });
-	await put(d, `name:${username}`, { k: 'u', j: JSON.stringify({ id }) });
-	await put(d, `mail:${email}`, { k: 'u', j: JSON.stringify({ id }) });
+	await put(d, id, { k: 'u', n: username, j: JSON.stringify(u) }, e.platform);
+	await put(d, `name:${username}`, { k: 'u', j: JSON.stringify({ id }) }, e.platform);
+	await put(d, `mail:${email}`, { k: 'u', j: JSON.stringify({ id }) }, e.platform);
 	await write_session(e, id);
 	return j({ user: public_user(u) });
 };

@@ -31,8 +31,8 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 		member_count: 1,
 		creator_id: locals.user.id
 	};
-	await put(d, row.id, { k: 'c', n: slug, j: JSON.stringify(row) });
-	await put(d, `cname:${slug}`, { k: 'c', j: JSON.stringify({ id: row.id }) });
-	await cat_add(d, 'c', row.id);
+	await put(d, row.id, { k: 'c', n: slug, j: JSON.stringify(row) }, platform);
+	await put(d, `cname:${slug}`, { k: 'c', j: JSON.stringify({ id: row.id }) }, platform);
+	await cat_add(d, 'c', row.id, platform);
 	return j({ item: row });
 };

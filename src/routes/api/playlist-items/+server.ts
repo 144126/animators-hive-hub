@@ -12,7 +12,7 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 		.some((x) => x && x.playlist_id === body.playlist_id && x.animation_id === body.animation_id);
 	if (exists) return j({ error: 'duplicate key value' }, 400);
 	const row: ItemRow = { id: crypto.randomUUID(), playlist_id: body.playlist_id, animation_id: body.animation_id };
-	await put(d, row.id, { k: 'i', j: JSON.stringify(row) });
-	await cat_add(d, 'i', row.id);
+	await put(d, row.id, { k: 'i', j: JSON.stringify(row) }, platform);
+	await cat_add(d, 'i', row.id, platform);
 	return j({ item: row });
 };

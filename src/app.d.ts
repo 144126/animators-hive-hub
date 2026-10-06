@@ -21,7 +21,7 @@ declare global {
 			user: { id: string; email: string; username: string } | null;
 		}
 		interface Platform {
-			env: { DB: VecIndex; SESSION_SECRET?: string };
+			env: { DB: VecIndex; SESSION_SECRET?: string; GEMINI_API_KEY?: string };
 			ctx?: { waitUntil(p: Promise<unknown>): void };
 			caches?: CacheStorage;
 		}

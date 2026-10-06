@@ -39,7 +39,7 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 		author_id: locals.user.id,
 		community_id: body.community_id || null
 	};
-	await put(d, row.id, { k: 'a', t: String(Date.parse(row.created_at)), u: row.author_id, c: row.community_id || '', j: JSON.stringify(row) });
-	await cat_add(d, 'a', row.id);
+	await put(d, row.id, { k: 'a', t: String(Date.parse(row.created_at)), u: row.author_id, c: row.community_id || '', j: JSON.stringify(row) }, platform);
+	await cat_add(d, 'a', row.id, platform);
 	return j({ item: await hydrate(d, row) });
 };

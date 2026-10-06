@@ -1,6 +1,7 @@
 # animators hive hub
 
-sveltekit + cloudflare. all records live in vectorize index `ahh`. no d1, kv, r2, or supabase.
+sveltekit + cloudflare. all records live in vectorize index `ahh` (768d cosine).
+embeddings from gemini-embedding-2 (hosted EmbeddingGemma 2 / the youtube model).
 
 ```sh
 pnpm i

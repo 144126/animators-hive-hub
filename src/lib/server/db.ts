@@ -1,4 +1,5 @@
 import { error } from '@sveltejs/kit';
+import { as_doc, embed, gemini_key } from './embed';
 
 type VecMeta = Record<string, string | number | boolean | string[]>;
 type Vec = { id: string; metadata?: VecMeta };
@@ -18,15 +19,24 @@ export function db(p?: App.Platform) {
 	return x;
 }
 
-export function vec(s: string) {
-	const o = new Array(32).fill(0);
-	for (let i = 0; i < s.length; i++) o[i % 32] += (s.charCodeAt(i) * (i + 1)) % 97;
-	const n = Math.hypot(...o) || 1;
-	return o.map((x) => x / n);
+function seed(id: string, meta: VecMeta) {
+	const raw = typeof meta.j === 'string' ? meta.j : '';
+	let title = typeof meta.n === 'string' ? meta.n : id;
+	let text = raw || id;
+	if (raw.startsWith('{')) {
+		try {
+			const o = JSON.parse(raw) as Record<string, unknown>;
+			title = String(o.title || o.display_name || o.username || o.name || title);
+			text = String(o.description || o.content || o.bio || o.email || text);
+		} catch {
+			/* keep */
+		}
+	}
+	return as_doc(title, text);
 }
 
-export async function put(d: VecIndex, id: string, meta: VecMeta) {
-	await d.upsert([{ id, values: vec(id), metadata: meta }]);
+export async function put(d: VecIndex, id: string, meta: VecMeta, p?: App.Platform) {
+	await d.upsert([{ id, values: await embed(seed(id, meta), gemini_key(p)), metadata: meta }]);
 }
 
 export async function one(d: VecIndex, id: string) {
@@ -50,14 +60,14 @@ export function parse<T>(r: Vec | null | undefined): T | null {
 	}
 }
 
-export async function cat_add(d: VecIndex, k: string, id: string) {
+export async function cat_add(d: VecIndex, k: string, id: string, p?: App.Platform) {
 	const cid = `cat:${k}`;
 	const cur = await one(d, cid);
 	const s = typeof cur?.metadata?.s === 'string' ? cur.metadata.s : '';
 	const ids = s.split(',').filter(Boolean);
 	if (ids.includes(id)) return;
 	ids.push(id);
-	await put(d, cid, { k: 'z', s: ids.join(',') });
+	await put(d, cid, { k: 'z', s: ids.join(',') }, p);
 }
 
 export async function cat_ids(d: VecIndex, k: string) {

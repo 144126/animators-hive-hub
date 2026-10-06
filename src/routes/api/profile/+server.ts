@@ -17,6 +17,6 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 	u.bio = (body.bio || '').slice(0, 500);
 	u.location = (body.location || '').slice(0, 100);
 	u.website_url = body.website_url || '';
-	await put(d, u.id, { k: 'u', n: u.username, j: JSON.stringify(u) });
+	await put(d, u.id, { k: 'u', n: u.username, j: JSON.stringify(u) }, platform);
 	return j({ user: public_user(u) });
 };

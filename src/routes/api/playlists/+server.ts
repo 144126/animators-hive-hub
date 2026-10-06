@@ -24,7 +24,7 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 		created_at: new Date().toISOString()
 	};
 	const d = db(platform);
-	await put(d, row.id, { k: 'l', u: row.user_id, j: JSON.stringify(row) });
-	await cat_add(d, 'l', row.id);
+	await put(d, row.id, { k: 'l', u: row.user_id, j: JSON.stringify(row) }, platform);
+	await cat_add(d, 'l', row.id, platform);
 	return j({ item: row });
 };

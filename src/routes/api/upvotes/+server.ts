@@ -21,16 +21,16 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 	const host = parse<AnimRow>(await one(d, body.target));
 	const has = !!(await one(d, id));
 	if (body.on && !has) {
-		await put(d, id, { k: 'v', u: locals.user.id, j: '1' });
+		await put(d, id, { k: 'v', u: locals.user.id, j: '1' }, platform);
 		if (host) {
 			host.upvote_count += 1;
-			await put(d, host.id, { k: 'a', t: String(Date.parse(host.created_at)), u: host.author_id, c: host.community_id || '', j: JSON.stringify(host) });
+			await put(d, host.id, { k: 'a', t: String(Date.parse(host.created_at)), u: host.author_id, c: host.community_id || '', j: JSON.stringify(host) }, platform);
 		}
 	} else if (!body.on && has) {
 		await d.deleteByIds([id]);
 		if (host) {
 			host.upvote_count = Math.max(0, host.upvote_count - 1);
-			await put(d, host.id, { k: 'a', t: String(Date.parse(host.created_at)), u: host.author_id, c: host.community_id || '', j: JSON.stringify(host) });
+			await put(d, host.id, { k: 'a', t: String(Date.parse(host.created_at)), u: host.author_id, c: host.community_id || '', j: JSON.stringify(host) }, platform);
 		}
 	}
 	return j({ ok: true });

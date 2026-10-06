@@ -44,12 +44,12 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 		author_id: locals.user.id,
 		post_id: body.post_id
 	};
-	await put(d, row.id, { k: 'n', j: JSON.stringify(row) });
-	await cat_add(d, 'n', row.id);
+	await put(d, row.id, { k: 'n', j: JSON.stringify(row) }, platform);
+	await cat_add(d, 'n', row.id, platform);
 	const host = parse<AnimRow>(await one(d, body.post_id));
 	if (host) {
 		host.comment_count += 1;
-		await put(d, host.id, { k: 'a', t: String(Date.parse(host.created_at)), u: host.author_id, c: host.community_id || '', j: JSON.stringify(host) });
+		await put(d, host.id, { k: 'a', t: String(Date.parse(host.created_at)), u: host.author_id, c: host.community_id || '', j: JSON.stringify(host) }, platform);
 	}
 	return j({ item: { ...row, author: person(parse<UserRow>(await one(d, locals.user.id))) } });
 };
