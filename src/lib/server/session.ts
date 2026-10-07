@@ -1,5 +1,5 @@
 import { error, type RequestEvent } from '@sveltejs/kit';
-import type { UserRow } from './db';
+import { delete_session, insert_session, session_user, sql, type UserRow } from './db';
 
 const te = new TextEncoder();
 
@@ -39,6 +39,11 @@ async function sign(msg: string, key: string) {
 	return btoa(String.fromCharCode(...new Uint8Array(mac)));
 }
 
+export async function token_id(tok: string) {
+	const buf = await crypto.subtle.digest('SHA-256', te.encode(tok));
+	return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
 export async function write_session(e: RequestEvent, id: string) {
 	const exp = Date.now() + 30 * 24 * 60 * 60 * 1000;
 	const msg = `${id}.${exp}`;
@@ -50,9 +55,12 @@ export async function write_session(e: RequestEvent, id: string) {
 		secure: e.url.protocol === 'https:',
 		maxAge: 30 * 24 * 60 * 60
 	});
+	await insert_session(sql(e.platform), await token_id(tok), id, exp);
 }
 
-export function clear_session(e: RequestEvent) {
+export async function clear_session(e: RequestEvent) {
+	const tok = e.cookies.get('ahh');
+	if (tok && e.platform?.env?.DB) await delete_session(sql(e.platform), await token_id(tok));
 	e.cookies.delete('ahh', { path: '/' });
 }
 
@@ -65,8 +73,9 @@ export async function read_session(e: RequestEvent) {
 	const mac = tok.slice(i + 1);
 	if ((await sign(msg, secret(e))) !== mac) return null;
 	const [id, exp] = msg.split('.');
-	if (!id || Date.now() > Number(exp)) return null;
-	return id;
+	if (!id || Date.now() > Number(exp) || !e.platform?.env?.DB) return null;
+	const uid = await session_user(sql(e.platform), await token_id(tok));
+	return uid === id ? id : null;
 }
 
 export function public_user(u: UserRow) {
@@ -74,6 +83,7 @@ export function public_user(u: UserRow) {
 		id: u.id,
 		email: u.email,
 		created_at: u.created_at,
+		p: !!u.pass, // p: has a password
 		user_metadata: {
 			username: u.username,
 			display_name: u.display_name,

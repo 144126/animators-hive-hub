@@ -114,3 +114,7 @@ export async function delete_playlist(id: string) {
 export async function delete_playlist_item(id: string) {
 	await api(`/api/playlist-items?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
 }
+
+export async function change_password(o: string, n: string) {
+	await api('/api/auth/password', { method: 'POST', body: JSON.stringify({ o, n }) });
+}

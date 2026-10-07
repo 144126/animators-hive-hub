@@ -494,6 +494,31 @@ export async function set_pass(d: D1Database, id: string, pass: string) {
 	await d.prepare('update u set p = ? where i = ?').bind(pass, id).run();
 }
 
+export async function insert_session(d: D1Database, id: string, user_id: string, exp: number) {
+	await d.prepare('delete from s where u = ? and x <= ?').bind(user_id, Date.now()).run();
+	await d
+		.prepare('insert into s (i, u, x, t) values (?, ?, ?, ?)')
+		.bind(id, user_id, exp, Date.now())
+		.run();
+}
+
+export async function session_user(d: D1Database, id: string) {
+	const r = await d
+		.prepare('select u, x from s where i = ?')
+		.bind(id)
+		.first<{ u: string; x: number }>();
+	if (!r || r.x <= Date.now()) return null;
+	return r.u;
+}
+
+export async function delete_session(d: D1Database, id: string) {
+	await d.prepare('delete from s where i = ?').bind(id).run();
+}
+
+export async function delete_other_sessions(d: D1Database, user_id: string, keep: string) {
+	await d.prepare('delete from s where u = ? and i != ?').bind(user_id, keep).run();
+}
+
 export async function delete_user(d: D1Database, id: string) {
 	const { results } = await d
 		.prepare('select v, im from a where u = ?')

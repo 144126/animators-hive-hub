@@ -3,7 +3,7 @@
 	import { ArrowLeft, User, Save } from '@lucide/svelte';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { auth, display_name } from '$lib/auth.svelte';
-	import { update_profile } from '$lib/data';
+	import { change_password, update_profile } from '$lib/data';
 	import { toast } from '$lib/toast.svelte';
 	import { upload } from '$lib/upload';
 	import Avatar from '$components/Avatar.svelte';
@@ -17,6 +17,9 @@
 	let avatar_busy = $state(false);
 	let busy = $state(false);
 	let primed = $state(false);
+	let old_pass = $state('');
+	let new_pass = $state('');
+	let pass_busy = $state(false);
 
 	$effect(() => {
 		if (!a.user || primed) return;
@@ -44,6 +47,23 @@
 			toast('upload failed', err instanceof Error ? err.message : '', 'err');
 		} finally {
 			avatar_busy = false;
+		}
+	}
+
+	async function save_pass(e: Event) {
+		e.preventDefault();
+		if (!a.user) return;
+		pass_busy = true;
+		try {
+			await change_password(old_pass, new_pass);
+			old_pass = '';
+			new_pass = '';
+			await invalidateAll();
+			toast('password updated');
+		} catch (err) {
+			toast('failed to update password', err instanceof Error ? err.message : '', 'err');
+		} finally {
+			pass_busy = false;
 		}
 	}
 
@@ -139,6 +159,37 @@
 					</button>
 					<a class="btn-outline" href={resolve('/profile')}>cancel</a>
 				</div>
+			</form>
+		</div>
+		<div class="card mt-6 p-6">
+			<h2 class="text-lg font-semibold">password</h2>
+			<p class="mb-6 text-sm text-muted-foreground">
+				{a.user.p
+					? 'change your password. other sessions will end.'
+					: 'set a password for email sign in.'}
+			</p>
+			<form onsubmit={save_pass} class="space-y-4">
+				{#if a.user.p}
+					<div class="space-y-2">
+						<label class="text-sm font-medium" for="op">old password</label>
+						<input id="op" class="field" type="password" bind:value={old_pass} required />
+					</div>
+				{/if}
+				<div class="space-y-2">
+					<label class="text-sm font-medium" for="np">new password</label>
+					<input
+						id="np"
+						class="field"
+						type="password"
+						bind:value={new_pass}
+						minlength="6"
+						maxlength="200"
+						required
+					/>
+				</div>
+				<button class="btn" type="submit" disabled={pass_busy || new_pass.length < 6}
+					>{pass_busy ? 'saving...' : a.user.p ? 'change password' : 'set password'}</button
+				>
 			</form>
 		</div>
 	</main>

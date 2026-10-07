@@ -65,6 +65,29 @@ const dup = await call('/api/auth/signup', {
 	body: { email: `x${an}@example.com`, password: 'smoke-pass-1', username: an.toUpperCase() }
 });
 if (dup.status !== 400) fail('duplicate username any case', dup.status);
+const a2 = await call('/api/auth/signin', {
+	body: { email: `${an}@example.com`, password: 'smoke-pass-1' }
+});
+const a2c = (a2.headers.get('set-cookie') || '').split(';')[0];
+if (!a2c || (await json(await call('/api/me', { cookie: a2c }))).user?.id !== a.id)
+	fail('second sign in', a2.status);
+const pw = await call('/api/auth/password', {
+	cookie: a.cookie,
+	body: { o: 'smoke-pass-1', n: 'smoke-pass-2' }
+});
+if (pw.status !== 200) fail('change password', await json(pw));
+if ((await json(await call('/api/me', { cookie: a2c }))).user !== null)
+	fail('other session ended', a2c);
+if ((await json(await call('/api/me', { cookie: a.cookie }))).user?.id !== a.id)
+	fail('current session kept', a.cookie);
+const old_in = await call('/api/auth/signin', {
+	body: { email: `${an}@example.com`, password: 'smoke-pass-1' }
+});
+if (old_in.status !== 400) fail('old password rejected', old_in.status);
+const new_in = await call('/api/auth/signin', {
+	body: { email: `${an}@example.com`, password: 'smoke-pass-2' }
+});
+if (new_in.status !== 200) fail('new password signs in', new_in.status);
 const b = await signup(name());
 const pub = await call(`/u/${an}`);
 if (pub.status !== 200 || !(await pub.text()).includes(an)) fail('public profile', pub.status);
