@@ -3,7 +3,7 @@
 	const items = $derived(toasts());
 </script>
 
-<div class="fixed right-4 top-4 z-[80] flex w-80 flex-col gap-2">
+<div class="fixed right-4 top-4 z-[80] flex w-80 flex-col gap-2" aria-live="polite">
 	{#each items as t (t.id)}
 		<div
 			class="rounded-md border bg-background px-3 py-2 text-sm shadow {t.kind === 'err'

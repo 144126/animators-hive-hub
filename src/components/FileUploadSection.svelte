@@ -28,8 +28,12 @@
 			{video ? video.name : 'select video file'}
 		</button>
 		{#if video}
-			<button type="button" class="btn-icon" onclick={() => (video = null)} {disabled}
-				><X class="h-4 w-4" /></button
+			<button
+				type="button"
+				class="btn-icon"
+				onclick={() => (video = null)}
+				{disabled}
+				aria-label="clear video"><X class="h-4 w-4" /></button
 			>
 		{/if}
 	</div>
@@ -52,8 +56,12 @@
 			{thumb ? thumb.name : 'select thumbnail image'}
 		</button>
 		{#if thumb}
-			<button type="button" class="btn-icon" onclick={() => (thumb = null)} {disabled}
-				><X class="h-4 w-4" /></button
+			<button
+				type="button"
+				class="btn-icon"
+				onclick={() => (thumb = null)}
+				{disabled}
+				aria-label="clear thumbnail"><X class="h-4 w-4" /></button
 			>
 		{/if}
 	</div>

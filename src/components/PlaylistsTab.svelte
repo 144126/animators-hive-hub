@@ -6,6 +6,7 @@
 	import { toast } from '$lib/toast.svelte';
 	import { create_playlist } from '$lib/data';
 	import type { Playlist } from '$lib/types';
+	import Modal from './Modal.svelte';
 
 	const a = auth();
 	let { playlists }: { playlists: Playlist[] } = $props();
@@ -71,48 +72,29 @@
 	</div>
 </div>
 
-{#if open}
-	<div
-		class="overlay"
-		onclick={() => (open = false)}
-		onkeydown={(e) => e.key === 'Escape' && (open = false)}
-		role="presentation"
-	>
-		<div
-			class="modal max-w-md"
-			tabindex="-1"
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
-			role="dialog"
-			aria-modal="true"
-		>
-			<h2 class="text-lg font-semibold">create a new playlist</h2>
-			<p class="mb-4 text-sm text-muted-foreground">
-				give your playlist a name and an optional description.
-			</p>
-			<form onsubmit={create} class="space-y-4">
-				<div class="space-y-2">
-					<label class="text-sm font-medium" for="pname">name</label>
-					<input
-						id="pname"
-						class="field"
-						bind:value={name}
-						placeholder="e.g., epic fights"
-						required
-						maxlength="100"
-					/>
-				</div>
-				<div class="space-y-2">
-					<label class="text-sm font-medium" for="pdesc">description (optional)</label>
-					<textarea id="pdesc" class="area" bind:value={description} maxlength="500"></textarea>
-				</div>
-				<div class="flex justify-end gap-2">
-					<button class="btn-ghost" type="button" onclick={() => (open = false)}>cancel</button>
-					<button class="btn" type="submit" disabled={busy}
-						>{busy ? 'creating...' : 'create'}</button
-					>
-				</div>
-			</form>
+<Modal bind:open title="create a new playlist">
+	<p class="mb-4 text-sm text-muted-foreground">
+		give your playlist a name and an optional description.
+	</p>
+	<form onsubmit={create} class="space-y-4">
+		<div class="space-y-2">
+			<label class="text-sm font-medium" for="pname">name</label>
+			<input
+				id="pname"
+				class="field"
+				bind:value={name}
+				placeholder="e.g., epic fights"
+				required
+				maxlength="100"
+			/>
 		</div>
-	</div>
-{/if}
+		<div class="space-y-2">
+			<label class="text-sm font-medium" for="pdesc">description (optional)</label>
+			<textarea id="pdesc" class="area" bind:value={description} maxlength="500"></textarea>
+		</div>
+		<div class="flex justify-end gap-2">
+			<button class="btn-ghost" type="button" onclick={() => (open = false)}>cancel</button>
+			<button class="btn" type="submit" disabled={busy}>{busy ? 'creating...' : 'create'}</button>
+		</div>
+	</form>
+</Modal>
