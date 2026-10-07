@@ -97,7 +97,7 @@
 	},
 	"ui": {
 		"s": "mobile, one header, dialogs, uploads, names",
-		"d": 0,
+		"d": 1,
 		"c": {
 			"mobile_nav": {
 				"s": "outcome: discover and communities are reachable on phones, and the account menu behaves.\n1. src/components/Header.svelte: below md the nav shows as compact links (short words or icons with aria-labels) instead of being hidden.\n2. the account menu closes on an outside click and on Escape.",
@@ -131,7 +131,7 @@
 			},
 			"titles_and_name": {
 				"s": "outcome: one name everywhere and a real title on every page.\n1. the app is 'animators hive hub' (lowercase) in src/components/Header.svelte (replacing 'animation'), src/components/LandingPage.svelte and the description in src/app.html.\n2. every page sets `<svelte:head><title>`: '<page> · animators hive hub' for discover, communities, c/<name>, u/<username>, the playlist name, profile and edit profile (animation pages already have one).\n3. the default title in src/routes/+layout.svelte stays only as the fallback.",
-				"d": 0,
+				"d": 1,
 				"v": "grep -q 'video/webm' src/components/FileUploadSection.svelte",
 				"t": "grep -q 'animators hive hub' src/components/Header.svelte && test \"$(grep -rl '<title>' src/routes | wc -l)\" -ge 8 && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null"
 			}

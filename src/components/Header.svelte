@@ -34,7 +34,7 @@
 <header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
 	<div class="container mx-auto flex h-14 items-center px-4">
 		<div class="mr-auto flex items-center">
-			<a href={resolve('/')} class="mr-6 font-bold">animation</a>
+			<a href={resolve('/')} class="mr-6 font-bold">animators hive hub</a>
 			<nav class="flex items-center space-x-4 text-sm font-medium md:space-x-6">
 				<a
 					href={resolve('/')}

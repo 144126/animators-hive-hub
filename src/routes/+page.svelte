@@ -8,6 +8,10 @@
 	const a = auth();
 </script>
 
+<svelte:head>
+	<title>discover · animators hive hub</title>
+</svelte:head>
+
 {#if !a.user}
 	<LandingPage />
 {:else}

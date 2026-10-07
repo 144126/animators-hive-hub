@@ -23,6 +23,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>{data.c.display_name} · animators hive hub</title>
+</svelte:head>
+
 <div class="container mx-auto p-4 sm:p-6">
 	<div class="mb-6 flex items-end">
 		<Avatar src={data.c.avatar_url} name={data.c.display_name} class="h-24 w-24 md:h-32 md:w-32" />

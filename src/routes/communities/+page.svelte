@@ -5,6 +5,10 @@
 	let { data } = $props();
 </script>
 
+<svelte:head>
+	<title>communities · animators hive hub</title>
+</svelte:head>
+
 <div class="container mx-auto p-4 sm:p-6">
 	<h1 class="mb-6 text-3xl font-bold">communities</h1>
 	<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

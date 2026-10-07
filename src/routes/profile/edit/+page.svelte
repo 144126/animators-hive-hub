@@ -108,6 +108,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>edit profile · animators hive hub</title>
+</svelte:head>
+
 {#if !a.user}
 	<div class="flex min-h-screen items-center justify-center">
 		<div class="text-center">

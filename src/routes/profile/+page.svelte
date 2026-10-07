@@ -14,6 +14,10 @@
 	const bio = $derived(a.user?.user_metadata?.bio || 'no bio available yet.');
 </script>
 
+<svelte:head>
+	<title>profile · animators hive hub</title>
+</svelte:head>
+
 {#if !a.user}
 	<div class="flex min-h-screen items-center justify-center">
 		<div class="text-center">

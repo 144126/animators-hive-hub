@@ -62,6 +62,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>{playlist.name} · animators hive hub</title>
+</svelte:head>
+
 <main class="container mx-auto px-4 py-8">
 	<div class="mb-8 flex items-center space-x-4">
 		<a class="btn-icon" href={resolve('/profile')} aria-label="back"

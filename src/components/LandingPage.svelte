@@ -9,7 +9,7 @@
 			<h1
 				class="mb-6 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-5xl font-bold text-transparent md:text-6xl"
 			>
-				the home for animators
+				animators hive hub
 			</h1>
 			<p class="mx-auto mb-12 max-w-2xl text-xl leading-relaxed text-muted-foreground md:text-2xl">
 				showcase your work, connect with peers, and get the feedback you need to grow
