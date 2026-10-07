@@ -18,5 +18,22 @@
 			"migrations_dir": "migrations"
 		}
 	],
-	"r2_buckets": [{ "binding": "M", "bucket_name": "ahh" }]
+	"r2_buckets": [{ "binding": "M", "bucket_name": "ahh" }],
+	"ratelimits": [
+		{
+			"name": "RL_AUTH",
+			"namespace_id": "1008",
+			"simple": { "limit": 30, "period": 60 }
+		},
+		{
+			"name": "RL_WRITE",
+			"namespace_id": "1017",
+			"simple": { "limit": 120, "period": 60 }
+		},
+		{
+			"name": "RL_MEDIA",
+			"namespace_id": "1026",
+			"simple": { "limit": 30, "period": 60 }
+		}
+	]
 }

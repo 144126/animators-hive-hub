@@ -161,7 +161,7 @@
 			},
 			"rate_limits": {
 				"s": "outcome: abusive request rates get a 429 before reaching any route.\n1. wrangler.jsonc `ratelimits`: RL_AUTH namespace_id \"1008\" limit 30, RL_WRITE \"1017\" limit 120, RL_MEDIA \"1026\" limit 30, all `period: 60` (ids 1001-1007 belong to ed's other workers). type them in src/app.d.ts with `RateLimit` from @cloudflare/workers-types.\n2. src/hooks.server.ts, after reading the session and before resolve: POST /api/auth/* and GET /login/google use RL_AUTH keyed by `cf-connecting-ip` (fallback 'local'); POST /api/media uses RL_MEDIA; every other non-GET /api/* uses RL_WRITE; those two are keyed by the signed-in user id, else the ip. over the limit: 429 json `{ error: 'too many requests, try again in a minute' }`.\n3. confirm by hand that the 31st sign-in within a minute gets 429, then wait a minute before the gate.",
-				"d": 0,
+				"d": 1,
 				"v": "test -f migrations/0002_sessions.sql",
 				"t": "grep -q '\"ratelimits\"' wrangler.jsonc && grep -q 'RL_AUTH' src/hooks.server.ts && grep -q 'too many requests' src/hooks.server.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
 			},
