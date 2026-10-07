@@ -30,13 +30,29 @@
 					<div>
 						<h1 class="mb-2 text-3xl font-bold">{name}</h1>
 						<p class="mb-4 text-lg text-muted-foreground">{bio}</p>
-						<p class="text-sm text-muted-foreground">
-							member since {new Date(a.user.created_at).toLocaleDateString()}
-						</p>
+						<div class="flex flex-wrap gap-x-4 text-sm text-muted-foreground">
+							{#if a.user.user_metadata?.location}<span>{a.user.user_metadata.location}</span>{/if}
+							{#if a.user.user_metadata?.website_url}
+								<a
+									href={a.user.user_metadata.website_url}
+									target="_blank"
+									rel="nofollow noopener noreferrer external"
+									class="text-primary hover:underline">{a.user.user_metadata.website_url}</a
+								>
+							{/if}
+							<span>member since {new Date(a.user.created_at).toLocaleDateString()}</span>
+						</div>
 					</div>
-					<a class="btn-outline" href={resolve('/profile/edit')}
-						><Edit class="mr-2 h-4 w-4" /> edit profile</a
-					>
+					<div class="flex flex-col gap-2">
+						<a class="btn-outline" href={resolve('/profile/edit')}
+							><Edit class="mr-2 h-4 w-4" /> edit profile</a
+						>
+						<a
+							class="btn-ghost"
+							href={resolve('/u/[username]', { username: a.user.user_metadata.username })}
+							>view public profile</a
+						>
+					</div>
 				</div>
 			</div>
 		</div>

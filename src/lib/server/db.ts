@@ -124,6 +124,10 @@ export async function user_by_email(d: D1Database, email: string) {
 	return to_user(await d.prepare(`${user_sel} where e = ?`).bind(email).first<UserDb>());
 }
 
+export async function user_by_username(d: D1Database, n: string) {
+	return to_user(await d.prepare(`${user_sel} where n = ?`).bind(n).first<UserDb>());
+}
+
 export async function save_profile(
 	d: D1Database,
 	id: string,

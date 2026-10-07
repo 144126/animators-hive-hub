@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { MessageCircle, Send } from '@lucide/svelte';
 	import { auth } from '$lib/auth.svelte';
 	import { toast } from '$lib/toast.svelte';
@@ -54,8 +55,14 @@
 				{#each comments as c (c.id)}
 					<div class="space-y-2 border-l-2 border-muted pl-4">
 						<div class="flex items-center space-x-2">
-							<Avatar src={c.author.avatar_url} name={c.author.username} class="h-6 w-6" />
-							<span class="text-sm font-medium">{c.author.display_name || c.author.username}</span>
+							<a
+								href={resolve('/u/[username]', { username: c.author.username })}
+								class="flex items-center space-x-2 hover:underline"
+							>
+								<Avatar src={c.author.avatar_url} name={c.author.username} class="h-6 w-6" />
+								<span class="text-sm font-medium">{c.author.display_name || c.author.username}</span
+								>
+							</a>
 							<span class="text-xs text-muted-foreground"
 								>{new Date(c.created_at).toLocaleDateString()}</span
 							>

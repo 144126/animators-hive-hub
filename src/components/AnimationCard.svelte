@@ -33,14 +33,17 @@
 			<p class="mb-3 line-clamp-2 text-sm text-muted-foreground">{animation.description}</p>
 		{/if}
 		<div class="mb-3 flex items-center justify-between">
-			<div class="flex items-center space-x-2">
+			<a
+				href={resolve('/u/[username]', { username: animation.author.username })}
+				class="flex items-center space-x-2 hover:underline"
+			>
 				<Avatar
 					src={animation.author.avatar_url}
 					name={animation.author.username}
 					class="h-6 w-6"
 				/>
 				<span class="text-sm text-muted-foreground">{animation.author.username}</span>
-			</div>
+			</a>
 			{#if animation.community}
 				<a
 					href={resolve('/c/[communityName]', { communityName: animation.community.name })}

@@ -41,7 +41,7 @@
 		"c": {
 			"public_profiles": {
 				"s": "outcome: every user has a public page, and every author name leads to it.\n1. db.ts `user_by_username(d, n)` (case-insensitive through the column collation).\n2. new src/routes/u/[username]/+page.server.ts `{ p, a }` (p = username, display name, avatar, bio, location, website, member since, never the email; a = their first 20 animations) and +page.svelte with load more; unknown name gives 404.\n3. the author avatar and name in src/components/AnimationCard.svelte, src/components/AnimationDetailView.svelte and src/components/CommentsSection.svelte link to it with `resolve('/u/[username]', { username })`.\n4. the website renders as a link with `rel=\"nofollow noopener noreferrer\"`; src/routes/profile/+page.svelte shows location, website and a 'view public profile' link.\n5. smoke: GET /u/<A> is 200 and contains A's username; /u/nobody_here_9 is 404.",
-				"d": 0,
+				"d": 1,
 				"v": "grep -q 'offset' src/lib/server/db.ts",
 				"t": "test -f 'src/routes/u/[username]/+page.server.ts' && grep -qF '/u/[username]' src/components/AnimationCard.svelte && grep -q 'nofollow' 'src/routes/u/[username]/+page.svelte' && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
 			},

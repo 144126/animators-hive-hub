@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { ArrowLeft, Play, MessageCircle } from '@lucide/svelte';
 	import type { Animation, Comment } from '$lib/types';
 	import Avatar from './Avatar.svelte';
@@ -43,7 +44,10 @@
 			<div class="space-y-4">
 				<h1 class="text-3xl font-bold">{animation.title}</h1>
 				<div class="flex items-center justify-between">
-					<div class="flex items-center space-x-3">
+					<a
+						href={resolve('/u/[username]', { username: animation.author.username })}
+						class="flex items-center space-x-3 hover:underline"
+					>
 						<Avatar
 							src={animation.author.avatar_url}
 							name={animation.author.username}
@@ -55,7 +59,7 @@
 							</p>
 							<p class="text-sm text-muted-foreground">@{animation.author.username}</p>
 						</div>
-					</div>
+					</a>
 					{#if animation.community}
 						<span class="rounded-full bg-secondary px-2 py-0.5 text-sm"
 							>{animation.community.display_name}</span

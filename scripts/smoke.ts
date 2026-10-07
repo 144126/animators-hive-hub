@@ -66,6 +66,9 @@ const dup = await call('/api/auth/signup', {
 });
 if (dup.status !== 400) fail('duplicate username any case', dup.status);
 const b = await signup(name());
+const pub = await call(`/u/${an}`);
+if (pub.status !== 200 || !(await pub.text()).includes(an)) fail('public profile', pub.status);
+if ((await call('/u/nobody_here_9')).status !== 404) fail('missing profile 404', 'nobody_here_9');
 
 const up = async (type: string) => {
 	const r = await call('/api/media', {
