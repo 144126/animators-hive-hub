@@ -249,5 +249,9 @@ if (
 	).status !== 400
 )
 	fail('deleted sign in fails', bn);
+if ((await call('/api/auth/signout', { method: 'POST', cookie: a.cookie })).status !== 200)
+	fail('sign out', a.cookie);
+if ((await json(await call('/api/me', { cookie: a.cookie }))).user !== null)
+	fail('sign out kills session', a.cookie);
 
 console.log(`smoke ok ${an} ${video.split('/').pop()} ${image.split('/').pop()}`);

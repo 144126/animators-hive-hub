@@ -2,7 +2,7 @@
 
 sveltekit + cloudflare workers. records in d1 `ahh`, media in r2 `ahh`.
 
-run: `pnpm dev` (:8080). `.dev.vars` needs `SESSION_SECRET`, `GOOGLE_ID`, `GOOGLE_SECRET`.
+run: `pnpm dev` (:8080). `.dev.vars` needs `GOOGLE_ID`, `GOOGLE_SECRET`.
 
 migrate: `pnpm exec wrangler d1 migrations apply ahh --local`
 

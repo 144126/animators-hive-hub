@@ -1,13 +1,7 @@
-import { error, type RequestEvent } from '@sveltejs/kit';
-import { delete_session, insert_session, session_user, sql, type UserRow } from './db';
+import type { RequestEvent } from '@sveltejs/kit';
+import { delete_session, insert_session, sql, user_by_session, type UserRow } from './db';
 
 const te = new TextEncoder();
-
-function secret(e: RequestEvent) {
-	const s = e.platform?.env?.SESSION_SECRET;
-	if (!s) throw error(500, 'missing SESSION_SECRET');
-	return s;
-}
 
 export async function hash(pass: string, salt?: string) {
 	const s = salt ?? crypto.randomUUID();
@@ -27,27 +21,22 @@ export async function check(pass: string, stored: string) {
 	return (await hash(pass, salt)) === stored;
 }
 
-async function sign(msg: string, key: string) {
-	const k = await crypto.subtle.importKey(
-		'raw',
-		te.encode(key),
-		{ name: 'HMAC', hash: 'SHA-256' },
-		false,
-		['sign']
-	);
-	const mac = await crypto.subtle.sign('HMAC', k, te.encode(msg));
-	return btoa(String.fromCharCode(...new Uint8Array(mac)));
-}
-
 export async function token_id(tok: string) {
 	const buf = await crypto.subtle.digest('SHA-256', te.encode(tok));
 	return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
+function rand_tok() {
+	const b = crypto.getRandomValues(new Uint8Array(32));
+	return btoa(String.fromCharCode(...b))
+		.replaceAll('+', '-')
+		.replaceAll('/', '_')
+		.replaceAll('=', '');
+}
+
 export async function write_session(e: RequestEvent, id: string) {
 	const exp = Date.now() + 30 * 24 * 60 * 60 * 1000;
-	const msg = `${id}.${exp}`;
-	const tok = `${msg}.${await sign(msg, secret(e))}`;
+	const tok = rand_tok();
 	e.cookies.set('ahh', tok, {
 		path: '/',
 		httpOnly: true,
@@ -66,16 +55,8 @@ export async function clear_session(e: RequestEvent) {
 
 export async function read_session(e: RequestEvent) {
 	const tok = e.cookies.get('ahh');
-	if (!tok) return null;
-	const i = tok.lastIndexOf('.');
-	if (i < 0) return null;
-	const msg = tok.slice(0, i);
-	const mac = tok.slice(i + 1);
-	if ((await sign(msg, secret(e))) !== mac) return null;
-	const [id, exp] = msg.split('.');
-	if (!id || Date.now() > Number(exp) || !e.platform?.env?.DB) return null;
-	const uid = await session_user(sql(e.platform), await token_id(tok));
-	return uid === id ? id : null;
+	if (!tok || !e.platform?.env?.DB) return null;
+	return user_by_session(sql(e.platform), await token_id(tok));
 }
 
 export function public_user(u: UserRow) {

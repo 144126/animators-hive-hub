@@ -155,7 +155,7 @@
 			},
 			"db_sessions": {
 				"s": "outcome: sessions live in d1, signing out kills the token on the server, and SESSION_SECRET is no longer used.\n1. migrations/0002_sessions.sql:\n-- s session: i sha-256 hex of the cookie token, u user, x expires ms, t created ms\ncreate table s (i text primary key, u text not null references u (i) on delete cascade, x integer not null, t integer not null);\ncreate index s_u on s (u);\n2. src/lib/server/session.ts: write_session makes 32 random bytes (base64url) as cookie `ahh` (same flags), stores their sha-256 hex with a 30-day expiry, and deletes that user's expired rows. read_session hashes the cookie and returns the user row from db.ts `user_by_session(d, hash)` (join u, `x > now`) in one query. clear_session deletes the row and the cookie. delete sign(), secret() and every SESSION_SECRET use.\n3. src/hooks.server.ts uses the row; src/routes/api/auth/signout/+server.ts awaits clear_session.\n4. drop SESSION_SECRET from src/app.d.ts, .env.example, README.md and .dev.vars (prod's secret goes in step prod_verify).\n5. smoke: after sign-out, A's old cookie gets `/api/me` user null.",
-				"d": 0,
+				"d": 1,
 				"v": "grep -q 'function secret' src/lib/server/session.ts",
 				"t": "test -f migrations/0002_sessions.sql && grep -q 'user_by_session' src/lib/server/db.ts && ! grep -rq SESSION_SECRET src .env.example README.md && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
 			},

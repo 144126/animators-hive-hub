@@ -536,6 +536,17 @@ export async function session_user(d: D1Database, id: string) {
 	return r.u;
 }
 
+export async function user_by_session(d: D1Database, id: string) {
+	return to_user(
+		await d
+			.prepare(
+				'select u.i as id, u.e as email, u.n as username, u.d as display_name, u.b as bio, u.a as avatar_url, u.l as location, u.w as website_url, u.p as pass, u.t from u join s on s.u = u.i where s.i = ? and s.x > ?'
+			)
+			.bind(id, Date.now())
+			.first<UserDb>()
+	);
+}
+
 export async function delete_session(d: D1Database, id: string) {
 	await d.prepare('delete from s where i = ?').bind(id).run();
 }
