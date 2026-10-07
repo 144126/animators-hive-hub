@@ -17,7 +17,7 @@
 			},
 			"ssr_detail": {
 				"s": "outcome: an animation page arrives with its comments and the viewer's vote.\n1. src/routes/animation/[animationId]/+page.server.ts: `{ a, n }` (a = get_anim with the viewer, n = list_notes); `error(404, 'not found')` when missing. the page drops its $effect fetch and its loading/err state.\n2. src/components/CommentsSection.svelte takes the comments as a prop and calls `invalidateAll()` after posting.\n3. src/components/AnimationDetailView.svelte uses src/components/UpvoteButton.svelte instead of its own toggle (fixes the bare-number button and the stale count).\n4. the page sets `<svelte:head>`: title '<animation title> · animators hive hub', meta description, og:image = thumbnail.",
-				"d": 0,
+				"d": 1,
 				"v": "test -f src/routes/+page.server.ts",
 				"t": "test -f 'src/routes/animation/[animationId]/+page.server.ts' && ! grep -q 'set_upvote' src/components/AnimationDetailView.svelte && grep -q 'og:image' 'src/routes/animation/[animationId]/+page.svelte' && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
 			},

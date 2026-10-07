@@ -1,32 +1,20 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { get_animation } from '$lib/data';
-	import type { Animation } from '$lib/types';
 	import AnimationDetailView from '$components/AnimationDetailView.svelte';
 
-	let animation = $state<Animation | null>(null);
-	let loading = $state(true);
-	let err = $state(false);
-
-	$effect(() => {
-		const id = page.params.animationId;
-		if (!id) return;
-		loading = true;
-		get_animation(id)
-			.then((d) => (animation = d))
-			.catch(() => (err = true))
-			.finally(() => (loading = false));
-	});
+	let { data } = $props();
 </script>
 
-{#if loading}
-	<div class="flex min-h-screen items-center justify-center">
-		<div class="h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
-	</div>
-{:else if err || !animation}
-	<div class="flex min-h-screen items-center justify-center text-muted-foreground">
-		animation not found
-	</div>
-{:else}
-	<AnimationDetailView {animation} />
-{/if}
+<svelte:head>
+	<title>{data.a.title} · animators hive hub</title>
+	<meta
+		name="description"
+		content={data.a.description || `${data.a.title} by @${data.a.author.username}`}
+	/>
+	<meta property="og:title" content={data.a.title} />
+	{#if data.a.thumbnail_url}
+		<meta property="og:image" content={new URL(data.a.thumbnail_url, page.url).href} />
+	{/if}
+</svelte:head>
+
+<AnimationDetailView animation={data.a} comments={data.n} />

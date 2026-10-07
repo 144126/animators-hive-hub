@@ -2,30 +2,15 @@
 	import { MessageCircle, Send } from '@lucide/svelte';
 	import { auth } from '$lib/auth.svelte';
 	import { toast } from '$lib/toast.svelte';
-	import { list_comments, post_comment } from '$lib/data';
+	import { invalidateAll } from '$app/navigation';
+	import { post_comment } from '$lib/data';
 	import type { Comment } from '$lib/types';
 	import Avatar from './Avatar.svelte';
 
-	let { post_id }: { post_id: string } = $props();
+	let { post_id, comments }: { post_id: string; comments: Comment[] } = $props();
 	const a = auth();
-	let comments = $state<Comment[]>([]);
-	let loading = $state(true);
 	let text = $state('');
 	let busy = $state(false);
-
-	async function load() {
-		loading = true;
-		try {
-			comments = await list_comments(post_id);
-		} finally {
-			loading = false;
-		}
-	}
-
-	$effect(() => {
-		void post_id;
-		load();
-	});
 
 	async function submit(e: Event) {
 		e.preventDefault();
@@ -35,7 +20,7 @@
 			await post_comment(post_id, text.trim());
 			text = '';
 			toast('comment posted!');
-			await load();
+			await invalidateAll();
 		} catch {
 			toast('error', 'failed to post comment', 'err');
 		} finally {
@@ -65,9 +50,7 @@
 			<div class="py-6 text-center text-muted-foreground">please log in to leave a comment</div>
 		{/if}
 		<div class="space-y-4">
-			{#if loading}
-				<div class="py-6 text-center text-muted-foreground">loading comments...</div>
-			{:else if comments.length}
+			{#if comments.length}
 				{#each comments as c (c.id)}
 					<div class="space-y-2 border-l-2 border-muted pl-4">
 						<div class="flex items-center space-x-2">

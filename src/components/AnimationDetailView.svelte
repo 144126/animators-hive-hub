@@ -1,48 +1,11 @@
 <script lang="ts">
 	import { ArrowLeft, Play, MessageCircle } from '@lucide/svelte';
-	import type { Animation } from '$lib/types';
-	import { auth } from '$lib/auth.svelte';
-	import { toast } from '$lib/toast.svelte';
-	import { has_animation_upvote, set_upvote } from '$lib/data';
-	import { cn } from '$lib/utils';
+	import type { Animation, Comment } from '$lib/types';
 	import Avatar from './Avatar.svelte';
 	import CommentsSection from './CommentsSection.svelte';
+	import UpvoteButton from './UpvoteButton.svelte';
 
-	let { animation }: { animation: Animation } = $props();
-	const a = auth();
-	let voted = $state(false);
-	let busy = $state(false);
-	let n = $state(animation.upvote_count);
-
-	$effect(() => {
-		const uid = a.user?.id;
-		if (!uid) {
-			voted = false;
-			return;
-		}
-		has_animation_upvote(uid, animation.id).then((v) => (voted = v));
-	});
-
-	async function toggle() {
-		if (!a.user) return toast('error', 'please sign in to upvote animations', 'err');
-		busy = true;
-		try {
-			await set_upvote(animation.id, !voted);
-			if (voted) {
-				voted = false;
-				n = Math.max(0, n - 1);
-				toast('upvote removed');
-			} else {
-				voted = true;
-				n += 1;
-				toast('animation upvoted!');
-			}
-		} catch {
-			toast('error', 'failed to upvote animation', 'err');
-		} finally {
-			busy = false;
-		}
-	}
+	let { animation, comments }: { animation: Animation; comments: Comment[] } = $props();
 </script>
 
 <div class="min-h-screen bg-background">
@@ -100,17 +63,11 @@
 					{/if}
 				</div>
 				<div class="flex items-center space-x-6">
-					<button
-						class={cn(
-							'btn-outline-sm space-x-2',
-							voted && 'border-orange-500 bg-orange-500 text-white hover:bg-orange-600'
-						)}
-						type="button"
-						onclick={toggle}
-						disabled={busy}
-					>
-						<span>{n}</span>
-					</button>
+					<UpvoteButton
+						post_id={animation.id}
+						count={animation.upvote_count}
+						voted={animation.voted}
+					/>
 					<div class="flex items-center space-x-1 text-muted-foreground">
 						<MessageCircle class="h-4 w-4" />
 						<span>{animation.comment_count} comments</span>
@@ -126,7 +83,7 @@
 					</div>
 				{/if}
 			</div>
-			<CommentsSection post_id={animation.id} />
+			<CommentsSection post_id={animation.id} {comments} />
 		</div>
 	</div>
 </div>
