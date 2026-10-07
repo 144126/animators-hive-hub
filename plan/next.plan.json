@@ -1,5 +1,148 @@
 {
-	"_": "repo ~/i/edahogan/animators-hive-hub: sveltekit 2 (runes only) + tailwind v4 on cloudflare workers (@sveltejs/adapter-cloudflare). aliases $lib = src/lib, $components = src/components. bindings: d1 `DB` (database ahh), r2 `M` (bucket ahh). push to remote `mine` (public fork 144126/animators-hive-hub, branch main); never push `origin` (403).\n\ngoal: the level after plan `critical` (wip-plans/critical.plan.json): fix the app's remaining high, medium and low flaws from ~/search/animators-hive-hub-flaws.md. the project report is out of scope. settled with ed on 2026-10-07: all four tiers (security, product gaps, ux + a11y, tests + cleanup); no email sending, so no password reset or email verification; tmp/ leaves the fork in a normal commit, no history rewrite; new d1 migrations may be applied with --remote without asking.\n\ndeploy: every push to mine/main builds and deploys worker animators-hive-hub (tag ea40543f1ecf4508a33eb2fa9787c098) to https://animators-hive-hub.apexlinks.workers.dev. after each push confirm the build with `cf builds list --external-script-id ea40543f1ecf4508a33eb2fa9787c098`; a failed build belongs to the step that pushed it. apply a step's new migration with --remote before pushing it.\n\ncode rules (ed): snake_case; no comments except a non-obvious why; all ui text lowercase; tailwind utilities and the tokens in src/app.css, no inline style. new db columns, new request/response json keys and page-load return keys are single letters, each commented where defined; existing api json shapes in src/lib/types.ts stay. all sql lives in src/lib/server/db.ts (lowercase); each function takes the D1Database from `sql(platform)` first; routes and pages stay thin. a new table gets `migrations/000N_<name>.sql` with a key comment above it, applied with `wrangler d1 migrations apply ahh --local` and `--remote`. internal links and goto use `resolve()` from $app/paths (lint rule svelte/no-navigation-without-resolve); the rule rejects every query-only href, so ?query navigation uses a GET <form>. errors: map `UNIQUE constraint failed: <t>.<c>` and `FOREIGN KEY constraint failed` to 400/404 json via `j()` from src/lib/server/session.ts, never a 500. ownership checks return 'ok' | 'not found' | 'forbidden' from db.ts and become 200/404/403 in the route.\n\nchecks: every gate runs `pnpm lint && pnpm check && pnpm build`. steps that touch the api also run `node scripts/smoke.ts` against the dev server; extend it with each new api behaviour, use fresh `smk` + 8 hex users, and keep its last line `smoke ok <username> <every r2 key it left behind>`. from step e2e_setup on, steps that touch pages also run `pnpm test:e2e`. after step rate_limits, quick reruns can hit 429: wait a minute. pnpm output is filtered by rtk; prefix `rtk proxy` for raw output.\n\ndev server: `pnpm dev` serves :8080, logs to .log, and reads wrangler.jsonc and .dev.vars only at start. restart it after changing either: kill the pid from `ss -ltnp 'sport = :8080'` (never pkill -f), then `setsid pnpm dev > .log 2>&1 < /dev/null &`. wrangler: always `env -u CLOUDFLARE_API_TOKEN pnpm exec wrangler ...`.\n\ncommits: after each mark commit that step's files plus plan/ as a conventional commit `<type>(<scope>): <imperative, <=50 chars, lowercase>` with body bullets and the trailer `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`, then `git push mine main`.",
+	"_": "repo ~/i/edahogan/animators-hive-hub: sveltekit 2 (runes only) + tailwind v4 on cloudflare workers (@sveltejs/adapter-cloudflare). aliases $lib = src/lib, $components = src/components. bindings: d1 `DB` (database ahh), r2 `M` (bucket ahh). push to remote `mine` (public fork 144126/animators-hive-hub, branch main); never push `origin` (403).\n\ngoal: the level after plan `critical` (wip-plans/critical.plan.json): fix the app's remaining high, medium and low flaws from ~/search/animators-hive-hub-flaws.md. the project report is out of scope. settled with ed on 2026-10-07: all four tiers (security, product gaps, ux + a11y, tests + cleanup); no email sending, so no password reset or email verification; tmp/ leaves the fork in a normal commit, no history rewrite; new d1 migrations may be applied with --remote without asking.\n\ndeploy: every push to mine/main builds and deploys worker animators-hive-hub (tag ea40543f1ecf4508a33eb2fa9787c098) to https://animators-hive-hub.apexlinks.workers.dev. after each push confirm the build with `cf builds list --external-script-id ea40543f1ecf4508a33eb2fa9787c098`; a failed build belongs to the step that pushed it. apply a step's new migration with --remote before pushing it.\n\ncode rules (ed): snake_case; no comments except a non-obvious why; all ui text lowercase; tailwind utilities and the tokens in src/app.css, no inline style. new db columns, new request/response json keys and page-load return keys are single letters, each commented where defined; existing api json shapes in src/lib/types.ts stay. all sql lives in src/lib/server/db.ts (lowercase); each function takes the D1Database from `sql(platform)` first; routes and pages stay thin. a new table gets `migrations/000N_<name>.sql` with a key comment above it, applied with `wrangler d1 migrations apply ahh --local` and `--remote`. internal links and goto use `resolve()` from $app/paths (lint rule svelte/no-navigation-without-resolve); the rule rejects every query-only href, so ?query navigation uses a GET <form>. errors: map `UNIQUE constraint failed: <t>.<c>` and `FOREIGN KEY constraint failed` to 400/404 json via `j()` from src/lib/server/session.ts, never a 500. ownership checks return 'ok' | 'not found' | 'forbidden' from db.ts and become 200/404/403 in the route.\n\nchecks: every gate runs `pnpm lint && pnpm check && pnpm build`. steps that touch the api also run `node scripts/smoke.ts` against the dev server; extend it with each new api behaviour, use fresh `smk` + 8 hex users, and keep its last line `smoke ok <username> <every r2 key it left behind>`. from step e2e_setup on, steps that touch pages also run `pnpm test:e2e`. after step rate_limits, quick reruns can hit 429: wait a minute. pnpm output is filtered by rtk; prefix `rtk proxy` for raw output.\n\ndev server: `pnpm dev` serves :8080, logs to .log, and reads wrangler.jsonc and .dev.vars only at start. restart it after changing either: kill the pid from `ss -ltnp 'sport = :8080'` (never pkill -f), then `setsid pnpm dev > .log 2>&1 < /dev/null &`. wrangler: always `env -u CLOUDFLARE_API_TOKEN pnpm exec wrangler ...`.\n\ncommits: after each mark commit that step's files plus plan/ as a conventional commit `<type>(<scope>): <imperative, <=50 chars, lowercase>` with body bullets and the trailer `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`, then `git push mine main`.\n\norder (ed, 2026-10-07): this is a school project to submit soon, so the visible work (ssr, people, ownership, community_join, ui, dead_code) runs first; security, e2e_setup and prod_verify come after. steps before e2e_setup do not run e2e.",
+	"ssr": {
+		"s": "render pages on the server instead of fetching in $effect",
+		"d": 0,
+		"c": {
+			"ssr_auth": {
+				"s": "outcome: the first byte already shows the right signed-in or signed-out page, and no auth state is shared between requests.\n1. new src/routes/+layout.server.ts returns `{ u }` (u = the signed-in AuthUser or null, commented). hooks stores `public_user(row)` (src/lib/server/session.ts) in locals.user; type App.Locals.user and App.PageData.u as AuthUser | null in src/app.d.ts.\n2. src/lib/auth.svelte.ts: `auth()` returns `{ get user() }` reading `page.data.u` from $app/state. delete the module-level user/loading/started state, the /api/me fetch, `session`, `loading` and `set_user`. sign_in, sign_up, sign_out and the profile save call `invalidateAll()` after the api call.\n3. remove every `a.loading` branch (src/routes/+page.svelte, src/routes/profile/+page.svelte, src/routes/profile/edit/+page.svelte, src/components/Header.svelte); src/components/auth/SignInForm.svelte and SignUpForm.svelte keep their own `busy`.\n4. smoke: GET / with A's cookie returns html containing 'discover' and not 'sign up now'.",
+				"d": 0,
+				"t": "test -f src/routes/+layout.server.ts && ! grep -q '/api/me' src/lib/auth.svelte.ts && ! grep -rq 'a\\.loading' src && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
+			},
+			"ssr_feed": {
+				"s": "outcome: discover and community pages arrive with their first 20 animations, and cards know the viewer's votes.\n1. list_anims and get_anim take an optional viewer id and add `voted` (left join v) to each row; add `voted?: boolean` to Animation in src/lib/types.ts. src/components/UpvoteButton.svelte takes `voted` as a prop and stops fetching /api/upvotes per card.\n2. src/routes/+page.server.ts: signed in, `{ a, s }` (a = animations, s = sort 'new' or 'top' from ?sort); signed out, `{ a: [], s: 'new' }`. src/routes/c/[communityName]/+page.server.ts: `{ c, a, s }` (c = comm_by_slug, `error(404)` when missing).\n3. src/components/DiscoverFeed.svelte is presentational (props items, sort); the new/top toggle is a GET <form> with two `name=\"sort\"` buttons.\n4. src/components/AddAnimationModal.svelte calls `invalidateAll()` after a successful create; drop the `onuploaded` and `rev` plumbing.",
+				"d": 0,
+				"v": "test -f src/routes/+layout.server.ts",
+				"t": "test -f src/routes/+page.server.ts && test -f 'src/routes/c/[communityName]/+page.server.ts' && ! grep -q 'list_animations' src/components/DiscoverFeed.svelte && ! grep -q 'has_upvote' src/components/UpvoteButton.svelte && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
+			},
+			"ssr_detail": {
+				"s": "outcome: an animation page arrives with its comments and the viewer's vote.\n1. src/routes/animation/[animationId]/+page.server.ts: `{ a, n }` (a = get_anim with the viewer, n = list_notes); `error(404, 'not found')` when missing. the page drops its $effect fetch and its loading/err state.\n2. src/components/CommentsSection.svelte takes the comments as a prop and calls `invalidateAll()` after posting.\n3. src/components/AnimationDetailView.svelte uses src/components/UpvoteButton.svelte instead of its own toggle (fixes the bare-number button and the stale count).\n4. the page sets `<svelte:head>`: title '<animation title> · animators hive hub', meta description, og:image = thumbnail.",
+				"d": 0,
+				"v": "test -f src/routes/+page.server.ts",
+				"t": "test -f 'src/routes/animation/[animationId]/+page.server.ts' && ! grep -q 'set_upvote' src/components/AnimationDetailView.svelte && grep -q 'og:image' 'src/routes/animation/[animationId]/+page.svelte' && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
+			},
+			"ssr_lists": {
+				"s": "outcome: communities, playlist and profile pages arrive server-rendered.\n1. src/routes/communities/+page.server.ts `{ c }` (c = list_comms).\n2. src/routes/playlist/[playlistId]/+page.server.ts `{ l, i }` (l = playlist, i = items) from one get_list call, which ends the double fetch of /api/playlists/[id]; 404 when missing.\n3. src/routes/profile/+page.server.ts: signed out, redirect 303 to /; else `{ a, l }` (a = my animations via list_anims author_id, l = my playlists). src/components/UserAnimationsGrid.svelte and src/components/PlaylistsTab.svelte take them as props and `invalidateAll()` after creating.\n4. delete every src/lib/data.ts function that no longer has a caller.",
+				"d": 0,
+				"v": "test -f 'src/routes/animation/[animationId]/+page.server.ts'",
+				"t": "test -f src/routes/communities/+page.server.ts && test -f 'src/routes/playlist/[playlistId]/+page.server.ts' && test -f src/routes/profile/+page.server.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
+			},
+			"load_more": {
+				"s": "outcome: every animation list can go past 20.\n1. list_anims takes `offset` (a multiple of 20, 0-2000); GET /api/animations accepts `offset`.\n2. src/components/DiscoverFeed.svelte and src/components/UserAnimationsGrid.svelte show a 'load more' button while the last page held 20 items; it fetches the next page with the same sort, community and author filters and appends.\n3. smoke: `?author_id=<A>&offset=5` returns exactly 1 of A's 6 animations.",
+				"d": 0,
+				"v": "test -f src/routes/profile/+page.server.ts",
+				"t": "grep -q 'offset' src/lib/server/db.ts && grep -q 'offset' src/routes/api/animations/+server.ts && grep -q 'load more' src/components/DiscoverFeed.svelte && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
+			}
+		}
+	},
+	"people": {
+		"s": "public profiles and avatars",
+		"d": 0,
+		"c": {
+			"public_profiles": {
+				"s": "outcome: every user has a public page, and every author name leads to it.\n1. db.ts `user_by_username(d, n)` (case-insensitive through the column collation).\n2. new src/routes/u/[username]/+page.server.ts `{ p, a }` (p = username, display name, avatar, bio, location, website, member since, never the email; a = their first 20 animations) and +page.svelte with load more; unknown name gives 404.\n3. the author avatar and name in src/components/AnimationCard.svelte, src/components/AnimationDetailView.svelte and src/components/CommentsSection.svelte link to it with `resolve('/u/[username]', { username })`.\n4. the website renders as a link with `rel=\"nofollow noopener noreferrer\"`; src/routes/profile/+page.svelte shows location, website and a 'view public profile' link.\n5. smoke: GET /u/<A> is 200 and contains A's username; /u/nobody_here_9 is 404.",
+				"d": 0,
+				"v": "grep -q 'offset' src/lib/server/db.ts",
+				"t": "test -f 'src/routes/u/[username]/+page.server.ts' && grep -qF '/u/[username]' src/components/AnimationCard.svelte && grep -q 'nofollow' 'src/routes/u/[username]/+page.svelte' && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
+			},
+			"avatar_upload": {
+				"s": "outcome: users set their own avatar.\n1. src/routes/profile/edit/+page.svelte: an avatar picker (image only, up to 5 MiB) uploads with `upload()` from src/lib/upload.ts and saves `avatar_url` with the rest of the profile; drop the 'managed through your authentication provider' text.\n2. POST /api/profile accepts an `avatar_url` that matches `^/media/[0-9a-f-]{36}$` or starts with `https://lh3.googleusercontent.com/` (google pictures); anything else gets 400. save_profile writes column a.\n3. smoke: setting A's avatar to its uploaded image works; `javascript:x` gets 400.",
+				"d": 0,
+				"v": "test -f 'src/routes/u/[username]/+page.server.ts'",
+				"t": "grep -q 'avatar_url' src/routes/api/profile/+server.ts && ! grep -q 'authentication provider' 'src/routes/profile/edit/+page.svelte' && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
+			}
+		}
+	},
+	"ownership": {
+		"s": "edit and delete what you own",
+		"d": 0,
+		"c": {
+			"anim_edit_delete": {
+				"s": "outcome: authors edit and delete their own animations, and deleted files leave r2.\n1. db.ts `update_anim(d, user_id, id, { title, description, community_id })` and `delete_anim(d, user_id, id)`; delete also returns the media paths of the row it removed.\n2. src/routes/api/animations/[id]/+server.ts PATCH and DELETE (401 signed out, 403 forbidden, 404 missing); DELETE removes both r2 keys with `M.delete`.\n3. src/components/AnimationDetailView.svelte, for the author: an inline 'edit' form (title, description) and 'delete' (confirm()), then goto the author's /u page.\n4. smoke, on a separate animation so earlier checks keep theirs: B's PATCH and DELETE get 403; A's title edit shows in GET; after A deletes, GET is 404 and its /media/ video is 404.",
+				"d": 0,
+				"v": "grep -q 'avatar_url' src/routes/api/profile/+server.ts",
+				"t": "grep -q 'export async function delete_anim' src/lib/server/db.ts && grep -q 'DELETE' 'src/routes/api/animations/[id]/+server.ts' && grep -q 'PATCH' 'src/routes/api/animations/[id]/+server.ts' && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
+			},
+			"comment_delete": {
+				"s": "outcome: authors delete their own comments and counts stay exact.\n1. db.ts `delete_note(d, user_id, id)` deletes and recounts a.n in one batch; list_notes rows gain `author_id`.\n2. DELETE /api/comments?id=<id> (401/403/404).\n3. src/components/CommentsSection.svelte: a delete button (aria-label 'delete comment') on your own comments, then `invalidateAll()`.\n4. smoke: B deleting A's comment gets 403; after A deletes it, comment_count is 0.",
+				"d": 0,
+				"v": "grep -q 'export async function delete_anim' src/lib/server/db.ts",
+				"t": "grep -q 'export async function delete_note' src/lib/server/db.ts && grep -q 'DELETE' src/routes/api/comments/+server.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
+			},
+			"playlist_manage": {
+				"s": "outcome: owners rename, delete and prune their playlists.\n1. db.ts `update_list`, `delete_list` and `delete_item(d, user_id, item_id)`, each checking ownership.\n2. src/routes/api/playlists/[id]/+server.ts PATCH `{ name, description }` and DELETE; src/routes/api/playlist-items/+server.ts DELETE ?id=<item id>.\n3. src/routes/playlist/[playlistId]/+page.svelte, for the owner: a rename form, 'delete playlist' (confirm(), then goto /profile) and a remove button per item, each followed by `invalidateAll()`.\n4. smoke: B renaming A's playlist gets 403; A removes the item, the playlist has 0 items; A deletes it, GET is 404.",
+				"d": 0,
+				"v": "grep -q 'export async function delete_note' src/lib/server/db.ts",
+				"t": "grep -q 'export async function delete_list' src/lib/server/db.ts && grep -q 'export async function delete_item' src/lib/server/db.ts && grep -q 'DELETE' src/routes/api/playlist-items/+server.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
+			},
+			"password_change": {
+				"s": "outcome: signed-in users change or set their password, and their other sessions end.\n1. POST /api/auth/password `{ o, n }` (o = old password, n = new; commented). an account with a password must send the right o (400 'wrong password'); google-only accounts (empty pass) set one without o. n is 6-200 chars.\n2. on success store the new hash and delete the user's other session rows, keeping the current one.\n3. AuthUser gains `p` (p = has a password, commented) so src/routes/profile/edit/+page.svelte hides the old-password field for google-only accounts; add a 'password' section there.\n4. smoke: sign A in twice (cookies 1 and 2); change the password with cookie 1; cookie 2 gets user null; the new password signs in and the old one fails.",
+				"d": 0,
+				"v": "grep -q 'export async function delete_list' src/lib/server/db.ts",
+				"t": "test -f src/routes/api/auth/password/+server.ts && grep -q 'wrong password' src/routes/api/auth/password/+server.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
+			},
+			"account_delete": {
+				"s": "outcome: users delete their account and everything they made.\n1. DELETE /api/me with json `{ n }` (n = the username typed to confirm; a mismatch gets 400).\n2. db.ts `delete_user(d, id)` collects the r2 keys of their animations' videos and thumbnails and of a /media/ avatar, then deletes the user row; the schema cascades to everything else, sessions included (communities they created go too, by design). the route deletes those r2 keys and the cookie.\n3. src/routes/profile/edit/+page.svelte: a 'delete account' section with a username input and a confirm button, then goto '/'.\n4. smoke: B deletes B; B's cookie gets user null and B's sign-in fails.",
+				"d": 0,
+				"v": "test -f src/routes/api/auth/password/+server.ts",
+				"t": "grep -q 'export async function delete_user' src/lib/server/db.ts && grep -q 'DELETE' src/routes/api/me/+server.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
+			}
+		}
+	},
+	"community_join": {
+		"s": "outcome: people join and leave communities, and member counts are real.\n1. migrations/0003_members.sql:\n-- cm community member: c community, u user, t joined ms\ncreate table cm (c text not null references c (i) on delete cascade, u text not null references u (i) on delete cascade, t integer not null, primary key (c, u)) without rowid;\ncreate index cm_u on cm (u);\ninsert or ignore into cm (c, u, t) select i, u, t from c;\nupdate c set m = (select count(*) from cm where cm.c = c.i);\n2. db.ts: insert_comm also adds the creator to cm; `set_member(d, user_id, comm_id, on)` changes cm and recounts c.m in one batch; comm_by_slug takes the viewer and adds `j` (j = viewer joined, commented).\n3. POST /api/communities/[name]/join `{ o }` (o = on). src/routes/c/[communityName]/+page.svelte shows the member count and a join/leave button.\n4. smoke: B joins A's community, member_count is 2; B leaves, it is 1.",
+		"d": 0,
+		"v": "grep -q 'export async function delete_user' src/lib/server/db.ts",
+		"t": "test -f migrations/0003_members.sql && grep -q 'export async function set_member' src/lib/server/db.ts && test -f 'src/routes/api/communities/[name]/join/+server.ts' && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
+	},
+	"ui": {
+		"s": "mobile, one header, dialogs, uploads, names",
+		"d": 0,
+		"c": {
+			"mobile_nav": {
+				"s": "outcome: discover and communities are reachable on phones, and the account menu behaves.\n1. src/components/Header.svelte: below md the nav shows as compact links (short words or icons with aria-labels) instead of being hidden.\n2. the account menu closes on an outside click and on Escape.",
+				"d": 0,
+				"v": "test -f migrations/0003_members.sql",
+				"t": "! grep -q '<nav class=\"hidden' src/components/Header.svelte && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null"
+			},
+			"one_header": {
+				"s": "outcome: every page has one header and one h1, and svelte-check has no warnings.\n1. src/components/LandingPage.svelte drops its own <header> (the layout has one) and keeps one h1.\n2. src/routes/profile/edit/+page.svelte drops its extra <header>; src/routes/playlist/[playlistId]/+page.svelte keeps one h1 (the playlist name).\n3. src/components/AnimationCard.svelte shows the vote count once (drop the heart stat).\n4. src/routes/+error.svelte uses theme tokens (bg-background, text-muted-foreground, text-primary) instead of gray and blue.\n5. clear the remaining svelte-check warnings (src/components/auth/AuthModal.svelte).",
+				"d": 0,
+				"v": "! grep -q '<nav class=\"hidden' src/components/Header.svelte",
+				"t": "! grep -q '<header' src/components/LandingPage.svelte && ! grep -q '<header' 'src/routes/profile/edit/+page.svelte' && ! grep -q 'Heart' src/components/AnimationCard.svelte && pnpm lint && pnpm exec svelte-check --tsconfig ./tsconfig.json --fail-on-warnings && pnpm build && curl -sf localhost:8080/api/me >/dev/null"
+			},
+			"combobox_fix": {
+				"s": "outcome: the community picker is quick, correct and keeps its label.\nsrc/components/CommunityCombobox.svelte: fetch only while open; debounce typing by 200 ms; ignore any response older than the latest request (a counter); remember the picked community's display name so the label survives a new search.",
+				"d": 0,
+				"v": "! grep -q '<header' src/components/LandingPage.svelte",
+				"t": "grep -q 'setTimeout' src/components/CommunityCombobox.svelte && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null"
+			},
+			"modal_a11y": {
+				"s": "outcome: every dialog works by keyboard and screen reader.\n1. new src/components/Modal.svelte (props: bindable open, title, children): focuses the first focusable element on open, traps Tab inside, closes on Escape from anywhere (window listener) and on a backdrop click, restores focus on close, locks body scroll, and uses role=dialog, aria-modal and aria-labelledby.\n2. use it in src/components/auth/AuthModal.svelte, src/components/AddAnimationModal.svelte, src/components/AddToPlaylistModal.svelte and the create dialog in src/components/PlaylistsTab.svelte, deleting their hand-rolled overlays.\n3. src/components/Toasts.svelte gets aria-live=\"polite\"; icon-only links and buttons (back, close, menu) get aria-labels.",
+				"d": 0,
+				"v": "grep -q 'setTimeout' src/components/CommunityCombobox.svelte",
+				"t": "test -f src/components/Modal.svelte && ! grep -q 'class=\"overlay\"' src/components/AddAnimationModal.svelte && ! grep -q 'class=\"overlay\"' src/components/auth/AuthModal.svelte && grep -q 'aria-live' src/components/Toasts.svelte && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null"
+			},
+			"upload_ux": {
+				"s": "outcome: uploads never hang and the form tells the truth.\n1. src/lib/upload.ts thumb_from_video rejects after 10 s without a frame.\n2. src/components/AddAnimationModal.svelte names the running part ('uploading video...', 'making thumbnail...', 'saving...'); on failure it keeps the form filled and shows the server's error text.\n3. src/components/FileUploadSection.svelte accepts `video/mp4,video/webm,video/quicktime` and says 'mp4, webm or mov'; no more promise of avi, which browsers cannot play.",
+				"d": 0,
+				"v": "test -f src/components/Modal.svelte",
+				"t": "grep -q 'setTimeout' src/lib/upload.ts && grep -q 'video/webm' src/components/FileUploadSection.svelte && ! grep -qi 'avi' src/components/FileUploadSection.svelte && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null"
+			},
+			"titles_and_name": {
+				"s": "outcome: one name everywhere and a real title on every page.\n1. the app is 'animators hive hub' (lowercase) in src/components/Header.svelte (replacing 'animation'), src/components/LandingPage.svelte and the description in src/app.html.\n2. every page sets `<svelte:head><title>`: '<page> · animators hive hub' for discover, communities, c/<name>, u/<username>, the playlist name, profile and edit profile (animation pages already have one).\n3. the default title in src/routes/+layout.svelte stays only as the fallback.",
+				"d": 0,
+				"v": "grep -q 'video/webm' src/components/FileUploadSection.svelte",
+				"t": "grep -q 'animators hive hub' src/components/Header.svelte && test \"$(grep -rl '<title>' src/routes | wc -l)\" -ge 8 && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null"
+			}
+		}
+	},
+	"dead_code": {
+		"s": "outcome: nothing unused is left.\n1. delete `need_user` (src/lib/server/session.ts), any src/lib/data.ts export without a caller, static/placeholder.svg and the whole supabase/ folder (and its line in .prettierignore).\n2. move the gitignored .env (dead supabase keys) to the trash: ~/.local/share/Trash/files/ plus info/<name>.trashinfo with Path= and DeletionDate=.\n3. vite.config.ts drops `server: { host: true, port: 8080 }`; package.json's dev script already sets both.\n4. README.md in at most 8 lines: run, migrate, smoke, deploy.",
+		"d": 0,
+		"v": "grep -q 'animators hive hub' src/components/Header.svelte",
+		"t": "test ! -d supabase && test ! -f static/placeholder.svg && test ! -f .env && ! grep -rq 'need_user' src && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
+	},
 	"security": {
 		"s": "close the remaining security holes",
 		"d": 0,
@@ -23,7 +166,7 @@
 				"t": "grep -q '\"ratelimits\"' wrangler.jsonc && grep -q 'RL_AUTH' src/hooks.server.ts && grep -q 'too many requests' src/hooks.server.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
 			},
 			"input_rules": {
-				"s": "outcome: the server enforces every input rule, and the forms use the same numbers.\n1. new src/lib/rules.ts (used by client and server): username `/^[a-z0-9_]{3,30}$/i`; email `/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/` up to 254 chars; password 6-200; title 1-100; description up to 2000; comment 1-1000; playlist name 1-100, description up to 500; community name 1-50; display name 1-50; bio up to 500; location up to 100; website empty or an http(s) url up to 200 that `new URL()` parses.\n2. enforce them in the api routes for sign-up, profile, animations, comments, playlists and communities: 400 `{ error: '<field> ...' }`, never silent truncation.\n3. find_or_create_google pads usernames shorter than 3 chars with random hex.\n4. forms take maxlength/minlength/pattern from src/lib/rules.ts.\n5. smoke: a username with a space gets 400; a profile website `javascript:alert(1)` gets 400.",
+				"s": "outcome: the server enforces every input rule, and the forms use the same numbers.\n1. new src/lib/rules.ts (used by client and server): username `/^[a-z0-9_]{3,30}$/i`; email `/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/` up to 254 chars; password 6-200; title 1-100; description up to 2000; comment 1-1000; playlist name 1-100, description up to 500; community name 1-50; display name 1-50; bio up to 500; location up to 100; website empty or an http(s) url up to 200 that `new URL()` parses.\n2. enforce them in the api routes for sign-up, password, profile, animations, comments, playlists and communities: 400 `{ error: '<field> ...' }`, never silent truncation.\n3. find_or_create_google pads usernames shorter than 3 chars with random hex.\n4. forms take maxlength/minlength/pattern from src/lib/rules.ts.\n5. smoke: a username with a space gets 400; a profile website `javascript:alert(1)` gets 400.",
 				"d": 0,
 				"v": "grep -q 'RL_AUTH' src/hooks.server.ts",
 				"t": "test -f src/lib/rules.ts && grep -q 'rules' src/routes/api/auth/signup/+server.ts && grep -q 'rules' src/routes/api/profile/+server.ts && grep -q 'rules' src/routes/api/animations/+server.ts && grep -q 'rules' src/routes/api/comments/+server.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
@@ -36,154 +179,10 @@
 		}
 	},
 	"e2e_setup": {
-		"s": "outcome: browser tests run with `pnpm test:e2e` against the dev server, set up like ~/i/e4.\n1. `pnpm add -D e2e @e2e-dev/web`; e2e.config.ts in the shape of ~/i/e4/e2e.config.ts (target http://localhost:8080, workers 1); package.json script `\"test:e2e\": \"e2e run\"`; docs live in node_modules/e2e/docs.\n2. tests/fixtures/tiny.mp4 from `ffmpeg -f lavfi -i color=c=black:s=320x180:d=1 -pix_fmt yuv420p tests/fixtures/tiny.mp4`.\n3. tests/core.e2e.ts: a guest sees the landing page; signing up (random smk name) lands on discover; uploading tiny.mp4 with a title puts it in the feed with a thumbnail; its page has a video whose src starts with /media/; upvote shows 1; a posted comment appears.\n4. tests/mobile.e2e.ts at 375x667: discover renders without horizontal scroll.",
+		"s": "outcome: browser tests run with `pnpm test:e2e` against the dev server, set up like ~/i/e4.\n1. `pnpm add -D e2e @e2e-dev/web`; e2e.config.ts in the shape of ~/i/e4/e2e.config.ts (target http://localhost:8080, workers 1); package.json script `\"test:e2e\": \"e2e run\"`; docs live in node_modules/e2e/docs.\n2. tests/fixtures/tiny.mp4 from `ffmpeg -f lavfi -i color=c=black:s=320x180:d=1 -pix_fmt yuv420p tests/fixtures/tiny.mp4`.\n3. tests/core.e2e.ts: a guest sees the landing page; signing up (random smk name) lands on discover; uploading tiny.mp4 with a title puts it in the feed with a thumbnail; its page has a video whose src starts with /media/; upvote shows 1; a posted comment appears.\n4. tests/mobile.e2e.ts at 375x667: discover renders without horizontal scroll, and the header reaches /communities.\n5. tests/core.e2e.ts also: open sign-in, press Escape, the dialog is gone; Tab stays inside while it is open.\n6. add `pnpm test:e2e` to README.md.",
 		"d": 0,
 		"v": "test -f src/lib/rules.ts",
-		"t": "test -f e2e.config.ts && test -f tests/core.e2e.ts && test -f tests/mobile.e2e.ts && test -f tests/fixtures/tiny.mp4 && grep -q '\"test:e2e\"' package.json && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && pnpm test:e2e"
-	},
-	"ssr": {
-		"s": "render pages on the server instead of fetching in $effect",
-		"d": 0,
-		"c": {
-			"ssr_auth": {
-				"s": "outcome: the first byte already shows the right signed-in or signed-out page, and no auth state is shared between requests.\n1. new src/routes/+layout.server.ts returns `{ u }` (u = the signed-in AuthUser or null, commented). hooks stores `public_user(row)` (src/lib/server/session.ts) in locals.user; type App.Locals.user and App.PageData.u as AuthUser | null in src/app.d.ts.\n2. src/lib/auth.svelte.ts: `auth()` returns `{ get user() }` reading `page.data.u` from $app/state. delete the module-level user/loading/started state, the /api/me fetch, `session`, `loading` and `set_user`. sign_in, sign_up, sign_out and the profile save call `invalidateAll()` after the api call.\n3. remove every `a.loading` branch (src/routes/+page.svelte, src/routes/profile/+page.svelte, src/routes/profile/edit/+page.svelte, src/components/Header.svelte); src/components/auth/SignInForm.svelte and SignUpForm.svelte keep their own `busy`.\n4. smoke: GET / with A's cookie returns html containing 'discover' and not 'sign up now'.",
-				"d": 0,
-				"v": "test -f e2e.config.ts",
-				"t": "test -f src/routes/+layout.server.ts && ! grep -q '/api/me' src/lib/auth.svelte.ts && ! grep -rq 'a\\.loading' src && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts && pnpm test:e2e"
-			},
-			"ssr_feed": {
-				"s": "outcome: discover and community pages arrive with their first 20 animations, and cards know the viewer's votes.\n1. list_anims and get_anim take an optional viewer id and add `voted` (left join v) to each row; add `voted?: boolean` to Animation in src/lib/types.ts. src/components/UpvoteButton.svelte takes `voted` as a prop and stops fetching /api/upvotes per card.\n2. src/routes/+page.server.ts: signed in, `{ a, s }` (a = animations, s = sort 'new' or 'top' from ?sort); signed out, `{ a: [], s: 'new' }`. src/routes/c/[communityName]/+page.server.ts: `{ c, a, s }` (c = comm_by_slug, `error(404)` when missing).\n3. src/components/DiscoverFeed.svelte is presentational (props items, sort); the new/top toggle is a GET <form> with two `name=\"sort\"` buttons.\n4. src/components/AddAnimationModal.svelte calls `invalidateAll()` after a successful create; drop the `onuploaded` and `rev` plumbing.",
-				"d": 0,
-				"v": "test -f src/routes/+layout.server.ts",
-				"t": "test -f src/routes/+page.server.ts && test -f 'src/routes/c/[communityName]/+page.server.ts' && ! grep -q 'list_animations' src/components/DiscoverFeed.svelte && ! grep -q 'has_upvote' src/components/UpvoteButton.svelte && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts && pnpm test:e2e"
-			},
-			"ssr_detail": {
-				"s": "outcome: an animation page arrives with its comments and the viewer's vote.\n1. src/routes/animation/[animationId]/+page.server.ts: `{ a, n }` (a = get_anim with the viewer, n = list_notes); `error(404, 'not found')` when missing. the page drops its $effect fetch and its loading/err state.\n2. src/components/CommentsSection.svelte takes the comments as a prop and calls `invalidateAll()` after posting.\n3. src/components/AnimationDetailView.svelte uses src/components/UpvoteButton.svelte instead of its own toggle (fixes the bare-number button and the stale count).\n4. the page sets `<svelte:head>`: title '<animation title> · animators hive hub', meta description, og:image = thumbnail.",
-				"d": 0,
-				"v": "test -f src/routes/+page.server.ts",
-				"t": "test -f 'src/routes/animation/[animationId]/+page.server.ts' && ! grep -q 'set_upvote' src/components/AnimationDetailView.svelte && grep -q 'og:image' 'src/routes/animation/[animationId]/+page.svelte' && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts && pnpm test:e2e"
-			},
-			"ssr_lists": {
-				"s": "outcome: communities, playlist and profile pages arrive server-rendered.\n1. src/routes/communities/+page.server.ts `{ c }` (c = list_comms).\n2. src/routes/playlist/[playlistId]/+page.server.ts `{ l, i }` (l = playlist, i = items) from one get_list call, which ends the double fetch of /api/playlists/[id]; 404 when missing.\n3. src/routes/profile/+page.server.ts: signed out, redirect 303 to /; else `{ a, l }` (a = my animations via list_anims author_id, l = my playlists). src/components/UserAnimationsGrid.svelte and src/components/PlaylistsTab.svelte take them as props and `invalidateAll()` after creating.\n4. delete every src/lib/data.ts function that no longer has a caller.",
-				"d": 0,
-				"v": "test -f 'src/routes/animation/[animationId]/+page.server.ts'",
-				"t": "test -f src/routes/communities/+page.server.ts && test -f 'src/routes/playlist/[playlistId]/+page.server.ts' && test -f src/routes/profile/+page.server.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts && pnpm test:e2e"
-			},
-			"load_more": {
-				"s": "outcome: every animation list can go past 20.\n1. list_anims takes `offset` (a multiple of 20, 0-2000); GET /api/animations accepts `offset`.\n2. src/components/DiscoverFeed.svelte and src/components/UserAnimationsGrid.svelte show a 'load more' button while the last page held 20 items; it fetches the next page with the same sort, community and author filters and appends.\n3. smoke: `?author_id=<A>&offset=5` returns exactly 1 of A's 6 animations.",
-				"d": 0,
-				"v": "test -f src/routes/profile/+page.server.ts",
-				"t": "grep -q 'offset' src/lib/server/db.ts && grep -q 'offset' src/routes/api/animations/+server.ts && grep -q 'load more' src/components/DiscoverFeed.svelte && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts && pnpm test:e2e"
-			}
-		}
-	},
-	"people": {
-		"s": "public profiles and avatars",
-		"d": 0,
-		"c": {
-			"public_profiles": {
-				"s": "outcome: every user has a public page, and every author name leads to it.\n1. db.ts `user_by_username(d, n)` (case-insensitive through the column collation).\n2. new src/routes/u/[username]/+page.server.ts `{ p, a }` (p = username, display name, avatar, bio, location, website, member since, never the email; a = their first 20 animations) and +page.svelte with load more; unknown name gives 404.\n3. the author avatar and name in src/components/AnimationCard.svelte, src/components/AnimationDetailView.svelte and src/components/CommentsSection.svelte link to it with `resolve('/u/[username]', { username })`.\n4. the website renders as a link with `rel=\"nofollow noopener noreferrer\"`; src/routes/profile/+page.svelte shows location, website and a 'view public profile' link.\n5. smoke: GET /u/<A> is 200 and contains A's username; /u/nobody_here_9 is 404.",
-				"d": 0,
-				"v": "grep -q 'offset' src/lib/server/db.ts",
-				"t": "test -f 'src/routes/u/[username]/+page.server.ts' && grep -qF '/u/[username]' src/components/AnimationCard.svelte && grep -q 'nofollow' 'src/routes/u/[username]/+page.svelte' && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts && pnpm test:e2e"
-			},
-			"avatar_upload": {
-				"s": "outcome: users set their own avatar.\n1. src/routes/profile/edit/+page.svelte: an avatar picker (image only, up to 5 MiB) uploads with `upload()` from src/lib/upload.ts and saves `avatar_url` with the rest of the profile; drop the 'managed through your authentication provider' text.\n2. POST /api/profile accepts an `avatar_url` that matches `^/media/[0-9a-f-]{36}$` or starts with `https://lh3.googleusercontent.com/` (google pictures); anything else gets 400. save_profile writes column a.\n3. smoke: setting A's avatar to its uploaded image works; `javascript:x` gets 400.",
-				"d": 0,
-				"v": "test -f 'src/routes/u/[username]/+page.server.ts'",
-				"t": "grep -q 'avatar_url' src/routes/api/profile/+server.ts && ! grep -q 'authentication provider' 'src/routes/profile/edit/+page.svelte' && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts && pnpm test:e2e"
-			}
-		}
-	},
-	"ownership": {
-		"s": "edit and delete what you own",
-		"d": 0,
-		"c": {
-			"anim_edit_delete": {
-				"s": "outcome: authors edit and delete their own animations, and deleted files leave r2.\n1. db.ts `update_anim(d, user_id, id, { title, description, community_id })` and `delete_anim(d, user_id, id)`; delete also returns the media paths of the row it removed.\n2. src/routes/api/animations/[id]/+server.ts PATCH and DELETE (401 signed out, 403 forbidden, 404 missing); DELETE removes both r2 keys with `M.delete`.\n3. src/components/AnimationDetailView.svelte, for the author: an inline 'edit' form (title, description) and 'delete' (confirm()), then goto the author's /u page.\n4. smoke, on a separate animation so earlier checks keep theirs: B's PATCH and DELETE get 403; A's title edit shows in GET; after A deletes, GET is 404 and its /media/ video is 404.",
-				"d": 0,
-				"v": "grep -q 'avatar_url' src/routes/api/profile/+server.ts",
-				"t": "grep -q 'export async function delete_anim' src/lib/server/db.ts && grep -q 'DELETE' 'src/routes/api/animations/[id]/+server.ts' && grep -q 'PATCH' 'src/routes/api/animations/[id]/+server.ts' && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts && pnpm test:e2e"
-			},
-			"comment_delete": {
-				"s": "outcome: authors delete their own comments and counts stay exact.\n1. db.ts `delete_note(d, user_id, id)` deletes and recounts a.n in one batch; list_notes rows gain `author_id`.\n2. DELETE /api/comments?id=<id> (401/403/404).\n3. src/components/CommentsSection.svelte: a delete button (aria-label 'delete comment') on your own comments, then `invalidateAll()`.\n4. smoke: B deleting A's comment gets 403; after A deletes it, comment_count is 0.",
-				"d": 0,
-				"v": "grep -q 'export async function delete_anim' src/lib/server/db.ts",
-				"t": "grep -q 'export async function delete_note' src/lib/server/db.ts && grep -q 'DELETE' src/routes/api/comments/+server.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts && pnpm test:e2e"
-			},
-			"playlist_manage": {
-				"s": "outcome: owners rename, delete and prune their playlists.\n1. db.ts `update_list`, `delete_list` and `delete_item(d, user_id, item_id)`, each checking ownership.\n2. src/routes/api/playlists/[id]/+server.ts PATCH `{ name, description }` and DELETE; src/routes/api/playlist-items/+server.ts DELETE ?id=<item id>.\n3. src/routes/playlist/[playlistId]/+page.svelte, for the owner: a rename form, 'delete playlist' (confirm(), then goto /profile) and a remove button per item, each followed by `invalidateAll()`.\n4. smoke: B renaming A's playlist gets 403; A removes the item, the playlist has 0 items; A deletes it, GET is 404.",
-				"d": 0,
-				"v": "grep -q 'export async function delete_note' src/lib/server/db.ts",
-				"t": "grep -q 'export async function delete_list' src/lib/server/db.ts && grep -q 'export async function delete_item' src/lib/server/db.ts && grep -q 'DELETE' src/routes/api/playlist-items/+server.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts && pnpm test:e2e"
-			},
-			"password_change": {
-				"s": "outcome: signed-in users change or set their password, and their other sessions end.\n1. POST /api/auth/password `{ o, n }` (o = old password, n = new; commented). an account with a password must send the right o (400 'wrong password'); google-only accounts (empty pass) set one without o. n follows src/lib/rules.ts.\n2. on success store the new hash and delete the user's other session rows, keeping the current one.\n3. AuthUser gains `p` (p = has a password, commented) so src/routes/profile/edit/+page.svelte hides the old-password field for google-only accounts; add a 'password' section there.\n4. smoke: sign A in twice (cookies 1 and 2); change the password with cookie 1; cookie 2 gets user null; the new password signs in and the old one fails.",
-				"d": 0,
-				"v": "grep -q 'export async function delete_list' src/lib/server/db.ts",
-				"t": "test -f src/routes/api/auth/password/+server.ts && grep -q 'wrong password' src/routes/api/auth/password/+server.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts && pnpm test:e2e"
-			},
-			"account_delete": {
-				"s": "outcome: users delete their account and everything they made.\n1. DELETE /api/me with json `{ n }` (n = the username typed to confirm; a mismatch gets 400).\n2. db.ts `delete_user(d, id)` collects the r2 keys of their animations' videos and thumbnails and of a /media/ avatar, then deletes the user row; the schema cascades to everything else, sessions included (communities they created go too, by design). the route deletes those r2 keys and the cookie.\n3. src/routes/profile/edit/+page.svelte: a 'delete account' section with a username input and a confirm button, then goto '/'.\n4. smoke: B deletes B; B's cookie gets user null and B's sign-in fails.",
-				"d": 0,
-				"v": "test -f src/routes/api/auth/password/+server.ts",
-				"t": "grep -q 'export async function delete_user' src/lib/server/db.ts && grep -q 'DELETE' src/routes/api/me/+server.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts && pnpm test:e2e"
-			}
-		}
-	},
-	"community_join": {
-		"s": "outcome: people join and leave communities, and member counts are real.\n1. migrations/0003_members.sql:\n-- cm community member: c community, u user, t joined ms\ncreate table cm (c text not null references c (i) on delete cascade, u text not null references u (i) on delete cascade, t integer not null, primary key (c, u)) without rowid;\ncreate index cm_u on cm (u);\ninsert or ignore into cm (c, u, t) select i, u, t from c;\nupdate c set m = (select count(*) from cm where cm.c = c.i);\n2. db.ts: insert_comm also adds the creator to cm; `set_member(d, user_id, comm_id, on)` changes cm and recounts c.m in one batch; comm_by_slug takes the viewer and adds `j` (j = viewer joined, commented).\n3. POST /api/communities/[name]/join `{ o }` (o = on). src/routes/c/[communityName]/+page.svelte shows the member count and a join/leave button.\n4. smoke: B joins A's community, member_count is 2; B leaves, it is 1.",
-		"d": 0,
-		"v": "grep -q 'export async function delete_user' src/lib/server/db.ts",
-		"t": "test -f migrations/0003_members.sql && grep -q 'export async function set_member' src/lib/server/db.ts && test -f 'src/routes/api/communities/[name]/join/+server.ts' && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts && pnpm test:e2e"
-	},
-	"ui": {
-		"s": "mobile, one header, dialogs, uploads, names",
-		"d": 0,
-		"c": {
-			"mobile_nav": {
-				"s": "outcome: discover and communities are reachable on phones, and the account menu behaves.\n1. src/components/Header.svelte: below md the nav shows as compact links (short words or icons with aria-labels) instead of being hidden.\n2. the account menu closes on an outside click and on Escape.\n3. tests/mobile.e2e.ts at 375x667: tap through to /communities from the header.",
-				"d": 0,
-				"v": "test -f migrations/0003_members.sql",
-				"t": "! grep -q '<nav class=\"hidden' src/components/Header.svelte && grep -q 'communities' tests/mobile.e2e.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && pnpm test:e2e"
-			},
-			"one_header": {
-				"s": "outcome: every page has one header and one h1, and svelte-check has no warnings.\n1. src/components/LandingPage.svelte drops its own <header> (the layout has one) and keeps one h1.\n2. src/routes/profile/edit/+page.svelte drops its extra <header>; src/routes/playlist/[playlistId]/+page.svelte keeps one h1 (the playlist name).\n3. src/components/AnimationCard.svelte shows the vote count once (drop the heart stat).\n4. src/routes/+error.svelte uses theme tokens (bg-background, text-muted-foreground, text-primary) instead of gray and blue.\n5. clear the remaining svelte-check warnings (src/components/auth/AuthModal.svelte).",
-				"d": 0,
-				"v": "! grep -q '<nav class=\"hidden' src/components/Header.svelte",
-				"t": "! grep -q '<header' src/components/LandingPage.svelte && ! grep -q '<header' 'src/routes/profile/edit/+page.svelte' && ! grep -q 'Heart' src/components/AnimationCard.svelte && pnpm lint && pnpm exec svelte-check --tsconfig ./tsconfig.json --fail-on-warnings && pnpm build && curl -sf localhost:8080/api/me >/dev/null && pnpm test:e2e"
-			},
-			"combobox_fix": {
-				"s": "outcome: the community picker is quick, correct and keeps its label.\nsrc/components/CommunityCombobox.svelte: fetch only while open; debounce typing by 200 ms; ignore any response older than the latest request (a counter); remember the picked community's display name so the label survives a new search.",
-				"d": 0,
-				"v": "! grep -q '<header' src/components/LandingPage.svelte",
-				"t": "grep -q 'setTimeout' src/components/CommunityCombobox.svelte && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && pnpm test:e2e"
-			},
-			"modal_a11y": {
-				"s": "outcome: every dialog works by keyboard and screen reader.\n1. new src/components/Modal.svelte (props: bindable open, title, children): focuses the first focusable element on open, traps Tab inside, closes on Escape from anywhere (window listener) and on a backdrop click, restores focus on close, locks body scroll, and uses role=dialog, aria-modal and aria-labelledby.\n2. use it in src/components/auth/AuthModal.svelte, src/components/AddAnimationModal.svelte, src/components/AddToPlaylistModal.svelte and the create dialog in src/components/PlaylistsTab.svelte, deleting their hand-rolled overlays.\n3. src/components/Toasts.svelte gets aria-live=\"polite\"; icon-only links and buttons (back, close, menu) get aria-labels.\n4. e2e: open sign-in, press Escape, the dialog is gone; Tab stays inside while it is open.",
-				"d": 0,
-				"v": "grep -q 'setTimeout' src/components/CommunityCombobox.svelte",
-				"t": "test -f src/components/Modal.svelte && ! grep -q 'class=\"overlay\"' src/components/AddAnimationModal.svelte && ! grep -q 'class=\"overlay\"' src/components/auth/AuthModal.svelte && grep -q 'aria-live' src/components/Toasts.svelte && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && pnpm test:e2e"
-			},
-			"upload_ux": {
-				"s": "outcome: uploads never hang and the form tells the truth.\n1. src/lib/upload.ts thumb_from_video rejects after 10 s without a frame.\n2. src/components/AddAnimationModal.svelte names the running part ('uploading video...', 'making thumbnail...', 'saving...'); on failure it keeps the form filled and shows the server's error text.\n3. src/components/FileUploadSection.svelte accepts `video/mp4,video/webm,video/quicktime` and says 'mp4, webm or mov'; no more promise of avi, which browsers cannot play.",
-				"d": 0,
-				"v": "test -f src/components/Modal.svelte",
-				"t": "grep -q 'setTimeout' src/lib/upload.ts && grep -q 'video/webm' src/components/FileUploadSection.svelte && ! grep -qi 'avi' src/components/FileUploadSection.svelte && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && pnpm test:e2e"
-			},
-			"titles_and_name": {
-				"s": "outcome: one name everywhere and a real title on every page.\n1. the app is 'animators hive hub' (lowercase) in src/components/Header.svelte (replacing 'animation'), src/components/LandingPage.svelte and the description in src/app.html.\n2. every page sets `<svelte:head><title>`: '<page> · animators hive hub' for discover, communities, c/<name>, u/<username>, the playlist name, profile and edit profile (animation pages already have one).\n3. the default title in src/routes/+layout.svelte stays only as the fallback.",
-				"d": 0,
-				"v": "grep -q 'video/webm' src/components/FileUploadSection.svelte",
-				"t": "grep -q 'animators hive hub' src/components/Header.svelte && test \"$(grep -rl '<title>' src/routes | wc -l)\" -ge 8 && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && pnpm test:e2e"
-			}
-		}
-	},
-	"dead_code": {
-		"s": "outcome: nothing unused is left.\n1. delete `need_user` (src/lib/server/session.ts), any src/lib/data.ts export without a caller, static/placeholder.svg and the whole supabase/ folder (and its line in .prettierignore).\n2. move the gitignored .env (dead supabase keys) to the trash: ~/.local/share/Trash/files/ plus info/<name>.trashinfo with Path= and DeletionDate=.\n3. vite.config.ts drops `server: { host: true, port: 8080 }`; package.json's dev script already sets both.\n4. README.md in at most 8 lines: run, migrate, smoke, e2e, deploy.",
-		"d": 0,
-		"v": "grep -q 'animators hive hub' src/components/Header.svelte",
-		"t": "test ! -d supabase && test ! -f static/placeholder.svg && test ! -f .env && ! grep -rq 'need_user' src && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts && pnpm test:e2e"
+		"t": "test -f e2e.config.ts && test -f tests/core.e2e.ts && test -f tests/mobile.e2e.ts && test -f tests/fixtures/tiny.mp4 && grep -q '\"test:e2e\"' package.json && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && pnpm test:e2e && grep -q 'communities' tests/mobile.e2e.ts"
 	},
 	"prod_verify": {
 		"s": "outcome: the live app passes the smoke test with nothing left behind, rate limits answer 429, and prod holds only the secrets it uses.\n1. `BASE=https://animators-hive-hub.apexlinks.workers.dev node scripts/smoke.ts`.\n2. delete what it made: `wrangler d1 execute ahh --remote --command \"delete from u where n like 'smk%'\"` (cascades) and every r2 key on its last line (`wrangler r2 object delete ahh/<key> --remote`).\n3. `wrangler secret delete SESSION_SECRET --name animators-hive-hub` (unused since db_sessions).\n4. send 31 wrong-password sign-ins for a random email to prod within a minute: the last answers 429.",
