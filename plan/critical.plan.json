@@ -48,7 +48,7 @@
 			},
 			"db_anims": {
 				"s": "outcome: animations, upvotes and comments live in d1; counts are exact and no write is lost.\n1. src/lib/server/db.ts: `list_anims(d, { sort, community_id, author_id })` (sort 'new' = newest, 'top' = most upvoted then newest; limit 20; joined author and community; same json as today's `hydrate` output), `get_anim`, `insert_anim`, `set_vote(d, user_id, anim_id, on)`, `has_vote`, `list_notes(d, anim_id)`, `insert_note`.\n2. vote and comment writes are one `d.batch`: change the v or n row, then `update a set p|n = (select count(*) ...)`. recompute, never increment.\n3. port src/routes/api/animations/+server.ts, src/routes/api/animations/[id]/+server.ts, src/routes/api/upvotes/+server.ts and src/routes/api/comments/+server.ts.\n4. a vote or comment on a missing animation -> 404 'not found'.\n5. POST /api/animations stores video_url and thumbnail_url as given for now; step media_server validates them.\nfence: src/routes/api/posts stays untouched; drop_vectorize deletes it.",
-				"d": 0,
+				"d": 1,
 				"v": "grep -q 'insert into u' src/lib/server/db.ts",
 				"t": "grep -q 'export async function set_vote' src/lib/server/db.ts && grep -q 'batch' src/lib/server/db.ts && ! grep -qE '\\b(cat_add|cat_ids|many|one|put|parse|hydrate)\\(' src/routes/api/animations/+server.ts 'src/routes/api/animations/[id]/+server.ts' src/routes/api/upvotes/+server.ts src/routes/api/comments/+server.ts && pnpm check && pnpm build"
 			},

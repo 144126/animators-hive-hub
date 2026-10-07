@@ -1,19 +1,14 @@
 import type { RequestHandler } from './$types';
-import { cat_add, cat_ids, db, hydrate, many, parse, put, type AnimRow } from '$lib/server/db';
+import { fails, insert_anim, list_anims, sql } from '$lib/server/db';
 import { j } from '$lib/server/session';
 
 export const GET: RequestHandler = async ({ url, platform }) => {
-	const d = db(platform);
-	const sort = url.searchParams.get('sort') === 'top' ? 'top' : 'new';
-	const community_id = url.searchParams.get('community_id') || '';
-	const author_id = url.searchParams.get('author_id') || '';
-	const ids = await cat_ids(d, 'a');
-	const rows = (await many(d, ids)).map((r) => parse<AnimRow>(r)).filter((x): x is AnimRow => !!x);
-	const filtered = rows.filter((r) => (!community_id || r.community_id === community_id) && (!author_id || r.author_id === author_id));
-	filtered.sort((a, b) =>
-		sort === 'top' ? b.upvote_count - a.upvote_count : Date.parse(b.created_at) - Date.parse(a.created_at)
-	);
-	return j({ items: await Promise.all(filtered.slice(0, 20).map((r) => hydrate(d, r))) });
+	const items = await list_anims(sql(platform), {
+		sort: url.searchParams.get('sort') === 'top' ? 'top' : 'new',
+		community_id: url.searchParams.get('community_id') || undefined,
+		author_id: url.searchParams.get('author_id') || undefined
+	});
+	return j({ items });
 };
 
 export const POST: RequestHandler = async ({ request, locals, platform }) => {
@@ -26,20 +21,18 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 		community_id?: string | null;
 	};
 	if (!body.title?.trim()) return j({ error: 'title is required' }, 400);
-	const d = db(platform);
-	const row: AnimRow = {
-		id: crypto.randomUUID(),
-		title: body.title.trim(),
-		description: body.description?.trim() || null,
-		thumbnail_url: body.thumbnail_url || null,
-		video_url: body.video_url || null,
-		upvote_count: 0,
-		comment_count: 0,
-		created_at: new Date().toISOString(),
-		author_id: locals.user.id,
-		community_id: body.community_id || null
-	};
-	await put(d, row.id, { k: 'a', t: String(Date.parse(row.created_at)), u: row.author_id, c: row.community_id || '', j: JSON.stringify(row) }, platform);
-	await cat_add(d, 'a', row.id, platform);
-	return j({ item: await hydrate(d, row) });
+	try {
+		const item = await insert_anim(sql(platform), {
+			author_id: locals.user.id,
+			community_id: body.community_id || null,
+			title: body.title.trim(),
+			description: body.description?.trim() || null,
+			video_url: body.video_url || null,
+			thumbnail_url: body.thumbnail_url || null
+		});
+		return j({ item });
+	} catch (e) {
+		if (fails(e, 'FOREIGN KEY')) return j({ error: 'not found' }, 404);
+		throw e;
+	}
 };
