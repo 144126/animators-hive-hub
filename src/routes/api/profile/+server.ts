@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { db, one, parse, put, type UserRow } from '$lib/server/db';
+import { save_profile, sql, user_by_id } from '$lib/server/db';
 import { j, public_user } from '$lib/server/session';
 
 export const POST: RequestHandler = async ({ request, locals, platform }) => {
@@ -10,13 +10,14 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 		location?: string;
 		website_url?: string;
 	};
-	const d = db(platform);
-	const u = parse<UserRow>(await one(d, locals.user.id));
+	const d = sql(platform);
+	const u = await user_by_id(d, locals.user.id);
 	if (!u) return j({ error: 'no user' }, 404);
-	u.display_name = (body.display_name || u.display_name).slice(0, 50);
-	u.bio = (body.bio || '').slice(0, 500);
-	u.location = (body.location || '').slice(0, 100);
-	u.website_url = body.website_url || '';
-	await put(d, u.id, { k: 'u', n: u.username, j: JSON.stringify(u) }, platform);
-	return j({ user: public_user(u) });
+	const n = await save_profile(d, u.id, {
+		display_name: (body.display_name || u.display_name).slice(0, 50),
+		bio: (body.bio || '').slice(0, 500),
+		location: (body.location || '').slice(0, 100),
+		website_url: body.website_url || ''
+	});
+	return j({ user: n ? public_user(n) : null });
 };

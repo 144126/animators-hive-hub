@@ -42,7 +42,7 @@
 			},
 			"db_users": {
 				"s": "outcome: accounts live in d1; sign-up is one insert, and a duplicate username (any case) or email is refused.\n1. src/lib/server/db.ts: add `sql(p?: App.Platform): D1Database` (`error(500, 'no d1')` when missing) and `insert_user`, `user_by_id`, `user_by_email`, `save_profile`, returning the existing `UserRow` shape so `public_user` in src/lib/server/session.ts keeps working. leave the vectorize helpers in place.\n2. port src/hooks.server.ts and src/routes/api/auth/signup, auth/signin, me and profile (each +server.ts) to them.\n3. sign-up: username trimmed, email trimmed and lowercased; unique failure on `u.n` -> 400 'username is already taken', on `u.e` -> 400 'email already used'.\nfence: animations, comments, votes, communities and playlists stay on vectorize until their steps.",
-				"d": 0,
+				"d": 1,
 				"v": "grep -q 'D1Database' src/app.d.ts",
 				"t": "grep -q 'export function sql' src/lib/server/db.ts && grep -q 'insert into u' src/lib/server/db.ts && ! grep -qE '\\b(one|put|parse)\\(' src/hooks.server.ts src/routes/api/auth/signup/+server.ts src/routes/api/auth/signin/+server.ts src/routes/api/me/+server.ts src/routes/api/profile/+server.ts && pnpm check && pnpm build"
 			},

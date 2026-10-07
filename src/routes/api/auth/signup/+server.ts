@@ -1,5 +1,5 @@
 import type { RequestHandler } from './$types';
-import { db, one, parse, put, type UserRow } from '$lib/server/db';
+import { fails, insert_user, sql, type UserRow } from '$lib/server/db';
 import { hash, j, public_user, write_session } from '$lib/server/session';
 
 export const POST: RequestHandler = async (e) => {
@@ -8,12 +8,8 @@ export const POST: RequestHandler = async (e) => {
 	const username = body.username?.trim() || '';
 	const password = body.password || '';
 	if (!email || !username || password.length < 6) return j({ error: 'invalid fields' }, 400);
-	const d = db(e.platform);
-	if (parse<UserRow>(await one(d, `name:${username}`))) return j({ error: 'username is already taken' }, 400);
-	if (parse<UserRow>(await one(d, `mail:${email}`))) return j({ error: 'email already used' }, 400);
-	const id = crypto.randomUUID();
 	const u: UserRow = {
-		id,
+		id: crypto.randomUUID(),
 		email,
 		username,
 		display_name: username,
@@ -24,9 +20,13 @@ export const POST: RequestHandler = async (e) => {
 		pass: await hash(password),
 		created_at: new Date().toISOString()
 	};
-	await put(d, id, { k: 'u', n: username, j: JSON.stringify(u) }, e.platform);
-	await put(d, `name:${username}`, { k: 'u', j: JSON.stringify({ id }) }, e.platform);
-	await put(d, `mail:${email}`, { k: 'u', j: JSON.stringify({ id }) }, e.platform);
-	await write_session(e, id);
+	try {
+		await insert_user(sql(e.platform), u);
+	} catch (x) {
+		if (fails(x, 'u.n')) return j({ error: 'username is already taken' }, 400);
+		if (fails(x, 'u.e')) return j({ error: 'email already used' }, 400);
+		throw x;
+	}
+	await write_session(e, u.id);
 	return j({ user: public_user(u) });
 };
