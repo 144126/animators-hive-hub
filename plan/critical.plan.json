@@ -86,7 +86,7 @@
 	},
 	"prod_smoke": {
 		"s": "outcome: the live app passes the smoke test and keeps none of its data.\n1. `BASE=https://animators-hive-hub.apexlinks.workers.dev node scripts/smoke.ts`.\n2. delete what it made: `wrangler d1 execute ahh --remote --command \"delete from u where n like 'smk%'\"` (cascades), and the two r2 keys from its last line with `wrangler r2 object delete ahh/<key> --remote`.\n3. a sign-up failing with error 1102 or 'exceeded resource limits' means pbkdf2 at 80k iterations is over the free plan's 10 ms cpu: block with the output.",
-		"d": 0,
+		"d": 1,
 		"v": "test -f scripts/smoke.ts && test ! -f src/lib/server/embed.ts",
 		"t": "curl -sf https://animators-hive-hub.apexlinks.workers.dev/api/animations | grep -q '\"items\"' && env -u CLOUDFLARE_API_TOKEN pnpm exec wrangler d1 execute ahh --remote --json --command \"select count(*) as c from u where n like 'smk%'\" | grep -q '\"c\": 0'"
 	},
