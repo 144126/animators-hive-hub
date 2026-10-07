@@ -3,7 +3,7 @@
 	import { auth } from '$lib/auth.svelte';
 	import { toast } from '$lib/toast.svelte';
 	import { create_animation, create_community } from '$lib/data';
-	import { file_url, thumb_from_video } from '$lib/upload';
+	import { thumb_from_video, upload } from '$lib/upload';
 	import CommunityCombobox from './CommunityCombobox.svelte';
 	import FileUploadSection from './FileUploadSection.svelte';
 
@@ -38,11 +38,11 @@
 		try {
 			let cid: string | null = community_id === 'none' || !community_id ? null : community_id;
 			if (community_id === 'create-new') cid = await create_community(new_name.trim());
-			const video_url = file_url(video);
-			let thumbnail_url: string | null = thumb ? file_url(thumb) : null;
+			const video_url = await upload(video);
+			let thumbnail_url: string | null = thumb ? await upload(thumb) : null;
 			if (!thumbnail_url) {
 				try {
-					thumbnail_url = await thumb_from_video(video);
+					thumbnail_url = await upload(await thumb_from_video(video));
 				} catch {
 					/* optional */
 				}

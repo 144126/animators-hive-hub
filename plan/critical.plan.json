@@ -66,7 +66,7 @@
 			},
 			"media_client": {
 				"s": "outcome: the upload form sends real files and saves their r2 urls; no blob: or data: url can be stored.\n1. src/lib/upload.ts: `upload(file: Blob): Promise<string>` posts the file to /api/media with its own content-type (through `api()` in src/lib/http.ts, overriding its json header) and returns `u`. `thumb_from_video` returns a jpeg Blob from `canvas.toBlob`, at most 640 px wide, with the video muted and playsInline, and revokes its object url. delete `file_url`.\n2. src/components/AddAnimationModal.svelte: upload the video, then the custom thumbnail or else the generated one (generation failure = no thumbnail), then `create_animation` with the returned urls.\n3. look at it: in agent-browser (`ab-1440fl`) sign up, upload a short mp4 with no thumbnail, reload, and check it plays.",
-				"d": 0,
+				"d": 1,
 				"v": "test -f src/routes/api/media/+server.ts",
 				"t": "grep -q 'function upload' src/lib/upload.ts && grep -q 'toBlob' src/lib/upload.ts && ! grep -qE 'toDataURL|file_url' src/lib/upload.ts src/components/AddAnimationModal.svelte && pnpm check && pnpm build"
 			},

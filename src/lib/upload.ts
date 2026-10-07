@@ -1,24 +1,40 @@
-export function thumb_from_video(file: File): Promise<string> {
+import { api } from './http';
+
+export async function upload(file: Blob) {
+	const { u } = await api<{ u: string }>('/api/media', {
+		method: 'POST',
+		body: file,
+		headers: { 'content-type': file.type || 'application/octet-stream' }
+	});
+	return u;
+}
+
+export function thumb_from_video(file: File): Promise<Blob> {
 	return new Promise((resolve, reject) => {
 		const video = document.createElement('video');
 		const canvas = document.createElement('canvas');
-		const ctx = canvas.getContext('2d');
+		const src = URL.createObjectURL(file);
+		const done = (b: Blob | null, e?: Error) => {
+			URL.revokeObjectURL(src);
+			if (b) resolve(b);
+			else reject(e ?? new Error('no thumbnail'));
+		};
+		video.muted = true;
+		video.playsInline = true;
 		video.onloadedmetadata = () => {
-			canvas.width = video.videoWidth;
-			canvas.height = video.videoHeight;
-			video.currentTime = 1;
+			const w = Math.min(640, video.videoWidth);
+			canvas.width = w;
+			canvas.height = Math.round((video.videoHeight * w) / video.videoWidth);
+			video.currentTime = Math.min(1, video.duration / 2);
 		};
 		video.onseeked = () => {
-			if (!ctx) return reject(new Error('no canvas'));
+			const ctx = canvas.getContext('2d');
+			if (!ctx) return done(null, new Error('no canvas'));
 			ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-			resolve(canvas.toDataURL('image/jpeg', 0.7));
+			canvas.toBlob((b) => done(b), 'image/jpeg', 0.8);
 		};
-		video.onerror = () => reject(new Error('failed to load video'));
-		video.src = URL.createObjectURL(file);
+		video.onerror = () => done(null, new Error('failed to load video'));
+		video.src = src;
 		video.load();
 	});
-}
-
-export function file_url(file: File) {
-	return URL.createObjectURL(file);
 }
