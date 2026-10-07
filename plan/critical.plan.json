@@ -54,7 +54,7 @@
 			},
 			"db_comms_lists": {
 				"s": "outcome: communities, playlists and playlist items live in d1, and only a playlist's owner can add to it.\n1. src/lib/server/db.ts: `list_comms(d, q)`, `comm_by_slug`, `insert_comm`, `list_lists(d, user_id)`, `get_list(d, id)` (the playlist plus its items with animations shaped like list_anims rows: today's GET /api/playlists/[id] json), `insert_list`, `insert_item(d, user_id, list_id, anim_id)`.\n2. port src/routes/api/communities/+server.ts, src/routes/api/communities/[name]/+server.ts, src/routes/api/playlists/+server.ts, src/routes/api/playlists/[id]/+server.ts and src/routes/api/playlist-items/+server.ts.\n3. community slug: today's regex; an empty slug -> 400 'name needs letters or digits'; unique failure on `c.s` -> 400 'community exists'; member_count is column m.\n4. playlist item: playlist not owned by the caller -> 403 'not your playlist'; missing playlist or animation -> 404 'not found'; unique failure -> 400 'duplicate key value' (src/components/AddToPlaylistModal.svelte matches that text).",
-				"d": 0,
+				"d": 1,
 				"v": "grep -q 'export async function set_vote' src/lib/server/db.ts",
 				"t": "grep -q 'export async function insert_item' src/lib/server/db.ts && grep -q 'not your playlist' src/lib/server/db.ts src/routes/api/playlist-items/+server.ts && ! grep -qE '\\b(cat_add|cat_ids|many|one|put|parse|hydrate)\\(' src/routes/api/communities/+server.ts 'src/routes/api/communities/[name]/+server.ts' src/routes/api/playlists/+server.ts 'src/routes/api/playlists/[id]/+server.ts' src/routes/api/playlist-items/+server.ts && pnpm check && pnpm build"
 			},

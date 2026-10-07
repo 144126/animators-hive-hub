@@ -1,15 +1,9 @@
 import type { RequestHandler } from './$types';
-import { cat_add, cat_ids, db, many, one, parse, put, type CommRow } from '$lib/server/db';
+import { fails, insert_comm, list_comms, sql } from '$lib/server/db';
 import { j } from '$lib/server/session';
 
 export const GET: RequestHandler = async ({ url, platform }) => {
-	const q = (url.searchParams.get('q') || '').toLowerCase();
-	const rows = (await many(db(platform), await cat_ids(db(platform), 'c')))
-		.map((r) => parse<CommRow>(r))
-		.filter((x): x is CommRow => !!x)
-		.filter((c) => !q || c.display_name.toLowerCase().includes(q) || c.name.includes(q))
-		.sort((a, b) => a.display_name.localeCompare(b.display_name));
-	return j({ items: rows });
+	return j({ items: await list_comms(sql(platform), (url.searchParams.get('q') || '').toLowerCase()) });
 };
 
 export const POST: RequestHandler = async ({ request, locals, platform }) => {
@@ -18,21 +12,11 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 	const display = body.name?.trim() || '';
 	if (!display) return j({ error: 'name required' }, 400);
 	const slug = display.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-	const d = db(platform);
-	const ptr = parse<{ id: string }>(await one(d, `cname:${slug}`));
-	if (ptr) return j({ error: 'community exists' }, 400);
-	const row: CommRow = {
-		id: crypto.randomUUID(),
-		name: slug,
-		display_name: display,
-		description: null,
-		avatar_url: null,
-		banner_url: null,
-		member_count: 1,
-		creator_id: locals.user.id
-	};
-	await put(d, row.id, { k: 'c', n: slug, j: JSON.stringify(row) }, platform);
-	await put(d, `cname:${slug}`, { k: 'c', j: JSON.stringify({ id: row.id }) }, platform);
-	await cat_add(d, 'c', row.id, platform);
-	return j({ item: row });
+	if (!slug.replace(/-/g, '')) return j({ error: 'name needs letters or digits' }, 400);
+	try {
+		return j({ item: await insert_comm(sql(platform), locals.user.id, slug, display) });
+	} catch (e) {
+		if (fails(e, 'c.s')) return j({ error: 'community exists' }, 400);
+		throw e;
+	}
 };
