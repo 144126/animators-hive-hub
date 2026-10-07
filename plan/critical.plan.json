@@ -36,7 +36,7 @@
 			},
 			"bindings": {
 				"s": "outcome: d1 `ahh` and r2 `ahh` exist and are bound, the local and remote d1 both have the schema, and the app still runs on vectorize.\n1. create them (pre-approved): `wrangler d1 create ahh`, `wrangler r2 bucket create ahh`.\n2. wrangler.jsonc: add `d1_databases` [{ binding DB, database_name ahh, database_id <from create>, migrations_dir migrations }], `r2_buckets` [{ binding M, bucket_name ahh }] and `\"workers_dev\": true`; rename the vectorize binding DB to V (drop_vectorize deletes it).\n3. `pnpm add -D @cloudflare/workers-types`; src/app.d.ts imports `D1Database` and `R2Bucket` as types and sets Platform.env to `{ DB: D1Database; M: R2Bucket; V: VecIndex; SESSION_SECRET?: string; GEMINI_API_KEY?: string }`. `db()` in src/lib/server/db.ts reads env.V.\n4. `wrangler d1 migrations apply ahh --local`, then `--remote` (pre-approved; before the push, which deploys). restart the dev server.",
-				"d": 0,
+				"d": 1,
 				"v": "grep -q '\"vectorize\"' wrangler.jsonc && test -f migrations/0001_init.sql",
 				"t": "grep -Eq '\"binding\": ?\"V\"' wrangler.jsonc && grep -Eq '\"binding\": ?\"M\"' wrangler.jsonc && grep -Eq '\"database_id\": ?\"[0-9a-f-]{36}\"' wrangler.jsonc && env -u CLOUDFLARE_API_TOKEN pnpm exec wrangler d1 execute ahh --local --command 'select count(*) from li' >/dev/null && env -u CLOUDFLARE_API_TOKEN pnpm exec wrangler d1 execute ahh --remote --command 'select count(*) from li' >/dev/null && pnpm check && pnpm build"
 			},

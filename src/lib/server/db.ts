@@ -14,7 +14,7 @@ type VecIndex = {
 };
 
 export function db(p?: App.Platform) {
-	const x = p?.env?.DB;
+	const x = p?.env?.V;
 	if (!x) throw error(500, 'no vectorize');
 	return x;
 }

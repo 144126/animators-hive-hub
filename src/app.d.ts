@@ -1,3 +1,5 @@
+import type { D1Database, R2Bucket } from '@cloudflare/workers-types';
+
 type VecMeta = Record<string, string | number | boolean | string[]>;
 
 type Vec = {
@@ -21,7 +23,7 @@ declare global {
 			user: { id: string; email: string; username: string } | null;
 		}
 		interface Platform {
-			env: { DB: VecIndex; SESSION_SECRET?: string; GEMINI_API_KEY?: string };
+			env: { DB: D1Database; M: R2Bucket; V: VecIndex; SESSION_SECRET?: string; GEMINI_API_KEY?: string };
 			ctx?: { waitUntil(p: Promise<unknown>): void };
 			caches?: CacheStorage;
 		}
