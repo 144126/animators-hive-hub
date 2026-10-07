@@ -139,7 +139,7 @@
 	},
 	"dead_code": {
 		"s": "outcome: nothing unused is left.\n1. delete `need_user` (src/lib/server/session.ts), any src/lib/data.ts export without a caller, static/placeholder.svg and the whole supabase/ folder (and its line in .prettierignore).\n2. move the gitignored .env (dead supabase keys) to the trash: ~/.local/share/Trash/files/ plus info/<name>.trashinfo with Path= and DeletionDate=.\n3. vite.config.ts drops `server: { host: true, port: 8080 }`; package.json's dev script already sets both.\n4. README.md in at most 8 lines: run, migrate, smoke, deploy.",
-		"d": 0,
+		"d": 1,
 		"v": "grep -q 'animators hive hub' src/components/Header.svelte",
 		"t": "test ! -d supabase && test ! -f static/placeholder.svg && test ! -f .env && ! grep -rq 'need_user' src && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
 	},

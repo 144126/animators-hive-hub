@@ -95,16 +95,6 @@ export function public_user(u: UserRow) {
 	};
 }
 
-export function need_user(e: RequestEvent) {
-	if (!e.locals.user) {
-		throw new Response(JSON.stringify({ error: 'sign in required' }), {
-			status: 401,
-			headers: { 'content-type': 'application/json' }
-		});
-	}
-	return e.locals.user;
-}
-
 export function j(data: unknown, status = 200) {
 	return new Response(JSON.stringify(data), {
 		status,
