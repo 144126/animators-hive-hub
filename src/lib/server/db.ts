@@ -58,9 +58,49 @@ function to_user(r: UserDb | null): UserRow | null {
 
 export async function insert_user(d: D1Database, u: UserRow) {
 	await d
-		.prepare('insert into u (i, e, n, d, p, t) values (?, ?, ?, ?, ?, ?)')
-		.bind(u.id, u.email, u.username, u.display_name, u.pass, Date.parse(u.created_at))
+		.prepare('insert into u (i, e, n, d, a, p, t) values (?, ?, ?, ?, ?, ?, ?)')
+		.bind(u.id, u.email, u.username, u.display_name, u.avatar_url, u.pass, Date.parse(u.created_at))
 		.run();
+}
+
+export async function find_or_create_google(d: D1Database, g: { email: string; name: string; picture: string }) {
+	const email = g.email.trim().toLowerCase();
+	const existing = await user_by_email(d, email);
+	if (existing) {
+		if (g.picture && existing.avatar_url !== g.picture) {
+			await d.prepare('update u set a = ? where i = ?').bind(g.picture, existing.id).run();
+			existing.avatar_url = g.picture;
+		}
+		return existing;
+	}
+	const base = (email.split('@')[0] || 'user').replace(/[^a-z0-9_]/gi, '').slice(0, 24) || 'user';
+	for (let i = 0; i < 8; i++) {
+		const username = i === 0 ? base : `${base.slice(0, 20)}${crypto.randomUUID().slice(0, 8)}`;
+		const u: UserRow = {
+			id: crypto.randomUUID(),
+			email,
+			username,
+			display_name: (g.name || username).slice(0, 50),
+			bio: '',
+			avatar_url: g.picture,
+			location: '',
+			website_url: '',
+			pass: '',
+			created_at: new Date().toISOString()
+		};
+		try {
+			await insert_user(d, u);
+			return u;
+		} catch (e) {
+			if (fails(e, 'u.e')) {
+				const again = await user_by_email(d, email);
+				if (again) return again;
+			}
+			if (fails(e, 'u.n')) continue;
+			throw e;
+		}
+	}
+	throw error(500, 'username');
 }
 
 export async function user_by_id(d: D1Database, id: string) {

@@ -70,7 +70,7 @@
 		@apply rounded-lg border bg-card text-card-foreground shadow-sm;
 	}
 	.overlay {
-		@apply fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4;
+		@apply fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4;
 	}
 	.modal {
 		@apply relative w-full rounded-lg border bg-background p-6 shadow-lg;

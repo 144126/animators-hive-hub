@@ -50,8 +50,8 @@
 				</div>
 			{:else}
 				<button class="btn-ghost-sm" type="button" onclick={() => (auth_open = true)}>sign in</button>
-				<AuthModal bind:open={auth_open} />
 			{/if}
 		{/if}
 	</div>
 </header>
+<AuthModal bind:open={auth_open} />

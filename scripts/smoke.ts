@@ -14,6 +14,7 @@ async function call(path: string, o: { method?: string; body?: unknown; cookie?:
 	const r = await fetch(base + path, {
 		method: o.method || (o.body !== undefined || o.raw ? 'POST' : 'GET'),
 		headers,
+		redirect: 'manual',
 		body: o.raw ?? (o.body !== undefined ? JSON.stringify(o.body) : undefined)
 	});
 	return r;
@@ -31,6 +32,13 @@ async function signup(name: string) {
 	if (!cookie) fail('sign up cookie', r.headers);
 	return { id: d.user.id as string, cookie };
 }
+
+const gstart = await call('/login/google');
+if (gstart.status !== 302) fail('google start status', gstart.status);
+const gloc = gstart.headers.get('location') || '';
+if (!gloc.includes('accounts.google.com') || !gloc.includes('redirect_uri=')) fail('google start location', gloc);
+const gcb = await call('/google');
+if (gcb.status !== 400) fail('google callback without code', gcb.status);
 
 const name = () => 'smk' + randomBytes(4).toString('hex');
 const an = name();
