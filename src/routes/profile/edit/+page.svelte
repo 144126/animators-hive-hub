@@ -5,6 +5,7 @@
 	import { auth, display_name } from '$lib/auth.svelte';
 	import { update_profile } from '$lib/data';
 	import { toast } from '$lib/toast.svelte';
+	import { upload } from '$lib/upload';
 	import Avatar from '$components/Avatar.svelte';
 
 	const a = auth();
@@ -12,6 +13,8 @@
 	let bio = $state('');
 	let location = $state('');
 	let website = $state('');
+	let avatar = $state('');
+	let avatar_busy = $state(false);
 	let busy = $state(false);
 	let primed = $state(false);
 
@@ -25,8 +28,24 @@
 		bio = a.user.user_metadata?.bio || '';
 		location = a.user.user_metadata?.location || '';
 		website = a.user.user_metadata?.website_url || '';
+		avatar = a.user.user_metadata?.avatar_url || '';
 		primed = true;
 	});
+
+	async function pick_avatar(e: Event) {
+		const f = (e.target as HTMLInputElement).files?.[0];
+		if (!f) return;
+		if (!f.type.startsWith('image/') || f.size > 5 * 1024 * 1024)
+			return toast('error', 'pick an image under 5mb', 'err');
+		avatar_busy = true;
+		try {
+			avatar = await upload(f);
+		} catch (err) {
+			toast('upload failed', err instanceof Error ? err.message : '', 'err');
+		} finally {
+			avatar_busy = false;
+		}
+	}
 
 	async function submit(e: Event) {
 		e.preventDefault();
@@ -36,7 +55,13 @@
 			return toast('error', 'please enter a valid url', 'err');
 		busy = true;
 		try {
-			await update_profile({ display_name: display, bio, location, website_url: website });
+			await update_profile({
+				display_name: display,
+				bio,
+				location,
+				website_url: website,
+				avatar_url: avatar
+			});
 			await invalidateAll();
 			toast('profile updated!', 'your profile has been successfully updated.');
 			goto(resolve('/profile'));
@@ -71,16 +96,19 @@
 			</p>
 			<form onsubmit={submit} class="space-y-6">
 				<div class="flex items-center space-x-4">
-					<Avatar
-						src={a.user.user_metadata?.avatar_url}
-						name={display_name(a.user)}
-						class="h-20 w-20"
-					/>
+					<Avatar src={avatar} name={display_name(a.user)} class="h-20 w-20" />
 					<div>
 						<p class="text-sm font-medium">profile picture</p>
-						<p class="text-sm text-muted-foreground">
-							avatar is managed through your authentication provider
-						</p>
+						<label class="btn-outline-sm mt-1 cursor-pointer">
+							{avatar_busy ? 'uploading...' : 'change picture'}
+							<input
+								type="file"
+								accept="image/*"
+								class="hidden"
+								onchange={pick_avatar}
+								disabled={avatar_busy}
+							/>
+						</label>
 					</div>
 				</div>
 				<div class="space-y-2">

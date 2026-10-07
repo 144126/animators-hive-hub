@@ -76,6 +76,7 @@ export async function update_profile(values: {
 	bio: string;
 	location: string;
 	website_url: string;
+	avatar_url: string;
 }) {
 	const { user } = await api<{ user: import('./types').AuthUser }>('/api/profile', {
 		method: 'POST',

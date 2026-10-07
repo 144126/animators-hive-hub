@@ -82,6 +82,12 @@ const up = async (type: string) => {
 };
 const video = await up('video/mp4');
 const image = await up('image/jpeg');
+const prof = (av: string) =>
+	call('/api/profile', { cookie: a.cookie, body: { display_name: an, avatar_url: av } });
+const pr = await prof(image);
+if (pr.status !== 200 || (await json(pr)).user?.user_metadata?.avatar_url !== image)
+	fail('avatar set', pr.status);
+if ((await prof('javascript:x')).status !== 400) fail('bad avatar rejected', 'javascript:x');
 const part = await call(video, { headers: { range: 'bytes=0-9' } });
 if (part.status !== 206 || (await part.arrayBuffer()).byteLength !== 10)
 	fail('range 206', part.status);

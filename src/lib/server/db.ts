@@ -131,11 +131,17 @@ export async function user_by_username(d: D1Database, n: string) {
 export async function save_profile(
 	d: D1Database,
 	id: string,
-	v: { display_name: string; bio: string; location: string; website_url: string }
+	v: {
+		display_name: string;
+		bio: string;
+		location: string;
+		website_url: string;
+		avatar_url: string;
+	}
 ) {
 	await d
-		.prepare('update u set d = ?, b = ?, l = ?, w = ? where i = ?')
-		.bind(v.display_name, v.bio, v.location, v.website_url, id)
+		.prepare('update u set d = ?, b = ?, l = ?, w = ?, a = ? where i = ?')
+		.bind(v.display_name, v.bio, v.location, v.website_url, v.avatar_url, id)
 		.run();
 	return user_by_id(d, id);
 }

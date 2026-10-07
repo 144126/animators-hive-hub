@@ -37,7 +37,7 @@
 	},
 	"people": {
 		"s": "public profiles and avatars",
-		"d": 0,
+		"d": 1,
 		"c": {
 			"public_profiles": {
 				"s": "outcome: every user has a public page, and every author name leads to it.\n1. db.ts `user_by_username(d, n)` (case-insensitive through the column collation).\n2. new src/routes/u/[username]/+page.server.ts `{ p, a }` (p = username, display name, avatar, bio, location, website, member since, never the email; a = their first 20 animations) and +page.svelte with load more; unknown name gives 404.\n3. the author avatar and name in src/components/AnimationCard.svelte, src/components/AnimationDetailView.svelte and src/components/CommentsSection.svelte link to it with `resolve('/u/[username]', { username })`.\n4. the website renders as a link with `rel=\"nofollow noopener noreferrer\"`; src/routes/profile/+page.svelte shows location, website and a 'view public profile' link.\n5. smoke: GET /u/<A> is 200 and contains A's username; /u/nobody_here_9 is 404.",
@@ -47,7 +47,7 @@
 			},
 			"avatar_upload": {
 				"s": "outcome: users set their own avatar.\n1. src/routes/profile/edit/+page.svelte: an avatar picker (image only, up to 5 MiB) uploads with `upload()` from src/lib/upload.ts and saves `avatar_url` with the rest of the profile; drop the 'managed through your authentication provider' text.\n2. POST /api/profile accepts an `avatar_url` that matches `^/media/[0-9a-f-]{36}$` or starts with `https://lh3.googleusercontent.com/` (google pictures); anything else gets 400. save_profile writes column a.\n3. smoke: setting A's avatar to its uploaded image works; `javascript:x` gets 400.",
-				"d": 0,
+				"d": 1,
 				"v": "test -f 'src/routes/u/[username]/+page.server.ts'",
 				"t": "grep -q 'avatar_url' src/routes/api/profile/+server.ts && ! grep -q 'authentication provider' 'src/routes/profile/edit/+page.svelte' && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
 			}
