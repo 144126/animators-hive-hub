@@ -186,7 +186,7 @@
 	},
 	"prod_verify": {
 		"s": "outcome: the live app passes the smoke test with nothing left behind, rate limits answer 429, and prod holds only the secrets it uses.\n1. `BASE=https://animators-hive-hub.apexlinks.workers.dev node scripts/smoke.ts`.\n2. delete what it made: `wrangler d1 execute ahh --remote --command \"delete from u where n like 'smk%'\"` (cascades) and every r2 key on its last line (`wrangler r2 object delete ahh/<key> --remote`).\n3. `wrangler secret delete SESSION_SECRET --name animators-hive-hub` (unused since db_sessions).\n4. send 31 wrong-password sign-ins for a random email to prod within a minute: the last answers 429.",
-		"d": 0,
+		"d": 1,
 		"v": "test ! -d supabase",
 		"t": "! env -u CLOUDFLARE_API_TOKEN pnpm exec wrangler secret list --name animators-hive-hub | grep -q SESSION_SECRET && env -u CLOUDFLARE_API_TOKEN pnpm exec wrangler d1 execute ahh --remote --json --command \"select count(*) as c from u where n like 'smk%'\" | grep -q '\"c\": 0' && curl -sf https://animators-hive-hub.apexlinks.workers.dev/ >/dev/null"
 	}
