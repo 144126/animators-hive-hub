@@ -6,7 +6,7 @@
 		"c": {
 			"ssr_auth": {
 				"s": "outcome: the first byte already shows the right signed-in or signed-out page, and no auth state is shared between requests.\n1. new src/routes/+layout.server.ts returns `{ u }` (u = the signed-in AuthUser or null, commented). hooks stores `public_user(row)` (src/lib/server/session.ts) in locals.user; type App.Locals.user and App.PageData.u as AuthUser | null in src/app.d.ts.\n2. src/lib/auth.svelte.ts: `auth()` returns `{ get user() }` reading `page.data.u` from $app/state. delete the module-level user/loading/started state, the /api/me fetch, `session`, `loading` and `set_user`. sign_in, sign_up, sign_out and the profile save call `invalidateAll()` after the api call.\n3. remove every `a.loading` branch (src/routes/+page.svelte, src/routes/profile/+page.svelte, src/routes/profile/edit/+page.svelte, src/components/Header.svelte); src/components/auth/SignInForm.svelte and SignUpForm.svelte keep their own `busy`.\n4. smoke: GET / with A's cookie returns html containing 'discover' and not 'sign up now'.",
-				"d": 0,
+				"d": 1,
 				"t": "test -f src/routes/+layout.server.ts && ! grep -q '/api/me' src/lib/auth.svelte.ts && ! grep -rq 'a\\.loading' src && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
 			},
 			"ssr_feed": {

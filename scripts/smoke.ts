@@ -58,6 +58,9 @@ const an = name();
 const a = await signup(an);
 const me = await json(await call('/api/me', { cookie: a.cookie }));
 if (me.user?.id !== a.id) fail('me right after sign up', me);
+const home = await (await call('/', { cookie: a.cookie })).text();
+if (!home.includes('discover') || home.includes('sign up now'))
+	fail('ssr signed-in home', home.length);
 const dup = await call('/api/auth/signup', {
 	body: { email: `x${an}@example.com`, password: 'smoke-pass-1', username: an.toUpperCase() }
 });

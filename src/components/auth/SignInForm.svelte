@@ -1,17 +1,20 @@
 <script lang="ts">
-	import { sign_in, auth } from '$lib/auth.svelte';
+	import { sign_in } from '$lib/auth.svelte';
 
 	let { on_toggle }: { on_toggle: () => void } = $props();
-	const a = auth();
+	let busy = $state(false);
 	let email = $state('');
 	let password = $state('');
 
 	async function submit(e: Event) {
 		e.preventDefault();
+		busy = true;
 		try {
 			await sign_in(email, password);
 		} catch {
 			/* toast */
+		} finally {
+			busy = false;
 		}
 	}
 </script>
@@ -20,14 +23,7 @@
 	<form onsubmit={submit} class="space-y-4">
 		<div class="space-y-2">
 			<label class="text-sm font-medium" for="email">email</label>
-			<input
-				id="email"
-				class="field"
-				type="email"
-				bind:value={email}
-				required
-				disabled={a.loading}
-			/>
+			<input id="email" class="field" type="email" bind:value={email} required disabled={busy} />
 		</div>
 		<div class="space-y-2">
 			<label class="text-sm font-medium" for="password">password</label>
@@ -37,11 +33,11 @@
 				type="password"
 				bind:value={password}
 				required
-				disabled={a.loading}
+				disabled={busy}
 			/>
 		</div>
-		<button class="btn w-full" type="submit" disabled={a.loading}
-			>{a.loading ? 'signing in...' : 'sign in'}</button
+		<button class="btn w-full" type="submit" disabled={busy}
+			>{busy ? 'signing in...' : 'sign in'}</button
 		>
 	</form>
 	<div class="text-center">
@@ -49,7 +45,7 @@
 			type="button"
 			class="text-sm text-primary hover:underline"
 			onclick={on_toggle}
-			disabled={a.loading}
+			disabled={busy}
 		>
 			don't have an account? sign up
 		</button>

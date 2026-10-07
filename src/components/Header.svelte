@@ -38,48 +38,39 @@
 				>
 			</nav>
 		</div>
-		{#if !a.loading}
-			{#if a.user}
-				<div class="relative">
-					<button
-						class="btn-icon"
-						type="button"
-						onclick={() => (menu = !menu)}
-						aria-label="account"
-					>
-						<Avatar src={a.user.user_metadata?.avatar_url} {name} />
-					</button>
-					{#if menu}
-						<div class="absolute right-0 mt-2 w-56 rounded-md border bg-background py-1 shadow">
-							<a
-								href={resolve('/profile')}
-								class="flex items-center px-3 py-2 text-sm hover:bg-accent"
-								onclick={() => (menu = false)}
-							>
-								<User class="mr-2 h-4 w-4" /> view profile
-							</a>
-							<a
-								href={resolve('/profile/edit')}
-								class="flex items-center px-3 py-2 text-sm hover:bg-accent"
-								onclick={() => (menu = false)}
-							>
-								<Edit class="mr-2 h-4 w-4" /> edit profile
-							</a>
-							<button
-								class="flex w-full items-center px-3 py-2 text-sm hover:bg-accent"
-								type="button"
-								onclick={out}
-							>
-								<LogOut class="mr-2 h-4 w-4" /> sign out
-							</button>
-						</div>
-					{/if}
-				</div>
-			{:else}
-				<button class="btn-ghost-sm" type="button" onclick={() => (auth_open = true)}
-					>sign in</button
-				>
-			{/if}
+		{#if a.user}
+			<div class="relative">
+				<button class="btn-icon" type="button" onclick={() => (menu = !menu)} aria-label="account">
+					<Avatar src={a.user.user_metadata?.avatar_url} {name} />
+				</button>
+				{#if menu}
+					<div class="absolute right-0 mt-2 w-56 rounded-md border bg-background py-1 shadow">
+						<a
+							href={resolve('/profile')}
+							class="flex items-center px-3 py-2 text-sm hover:bg-accent"
+							onclick={() => (menu = false)}
+						>
+							<User class="mr-2 h-4 w-4" /> view profile
+						</a>
+						<a
+							href={resolve('/profile/edit')}
+							class="flex items-center px-3 py-2 text-sm hover:bg-accent"
+							onclick={() => (menu = false)}
+						>
+							<Edit class="mr-2 h-4 w-4" /> edit profile
+						</a>
+						<button
+							class="flex w-full items-center px-3 py-2 text-sm hover:bg-accent"
+							type="button"
+							onclick={out}
+						>
+							<LogOut class="mr-2 h-4 w-4" /> sign out
+						</button>
+					</div>
+				{/if}
+			</div>
+		{:else}
+			<button class="btn-ghost-sm" type="button" onclick={() => (auth_open = true)}>sign in</button>
 		{/if}
 	</div>
 </header>

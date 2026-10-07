@@ -13,11 +13,7 @@
 	const bio = $derived(a.user?.user_metadata?.bio || 'no bio available yet.');
 </script>
 
-{#if a.loading}
-	<div class="flex min-h-screen items-center justify-center">
-		<div class="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
-	</div>
-{:else if !a.user}
+{#if !a.user}
 	<div class="flex min-h-screen items-center justify-center">
 		<div class="text-center">
 			<p class="mb-4 text-muted-foreground">please sign in to view your profile.</p>

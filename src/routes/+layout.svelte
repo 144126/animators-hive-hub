@@ -2,10 +2,8 @@
 	import '../app.css';
 	import Header from '$components/Header.svelte';
 	import Toasts from '$components/Toasts.svelte';
-	import { auth } from '$lib/auth.svelte';
 
 	let { children } = $props();
-	auth();
 </script>
 
 <svelte:head>

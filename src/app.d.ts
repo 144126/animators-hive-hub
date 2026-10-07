@@ -1,9 +1,13 @@
 import type { D1Database, R2Bucket } from '@cloudflare/workers-types';
+import type { AuthUser } from '$lib/types';
 
 declare global {
 	namespace App {
 		interface Locals {
-			user: { id: string; email: string; username: string } | null;
+			user: AuthUser | null;
+		}
+		interface PageData {
+			u: AuthUser | null;
 		}
 		interface Platform {
 			env: {

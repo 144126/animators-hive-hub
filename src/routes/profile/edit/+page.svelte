@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { ArrowLeft, User, Save } from '@lucide/svelte';
-	import { goto } from '$app/navigation';
-	import { auth, display_name, set_user } from '$lib/auth.svelte';
+	import { goto, invalidateAll } from '$app/navigation';
+	import { auth, display_name } from '$lib/auth.svelte';
 	import { update_profile } from '$lib/data';
 	import { toast } from '$lib/toast.svelte';
 	import Avatar from '$components/Avatar.svelte';
@@ -36,9 +36,8 @@
 			return toast('error', 'please enter a valid url', 'err');
 		busy = true;
 		try {
-			set_user(
-				await update_profile({ display_name: display, bio, location, website_url: website })
-			);
+			await update_profile({ display_name: display, bio, location, website_url: website });
+			await invalidateAll();
 			toast('profile updated!', 'your profile has been successfully updated.');
 			goto(resolve('/profile'));
 		} catch (err) {
@@ -49,11 +48,7 @@
 	}
 </script>
 
-{#if a.loading}
-	<div class="flex min-h-screen items-center justify-center">
-		<div class="h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
-	</div>
-{:else if !a.user}
+{#if !a.user}
 	<div class="flex min-h-screen items-center justify-center">
 		<div class="text-center">
 			<p class="mb-4 text-muted-foreground">please sign in to edit your profile.</p>

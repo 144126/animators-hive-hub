@@ -8,14 +8,7 @@
 	let rev = $state(0);
 </script>
 
-{#if a.loading}
-	<div class="flex min-h-screen items-center justify-center bg-background">
-		<div class="text-center">
-			<div class="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
-			<p class="text-muted-foreground">loading...</p>
-		</div>
-	</div>
-{:else if !a.user}
+{#if !a.user}
 	<LandingPage />
 {:else}
 	<div class="min-h-screen bg-background">
