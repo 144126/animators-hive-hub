@@ -84,3 +84,14 @@ export async function update_profile(values: {
 	});
 	return user;
 }
+
+export async function update_animation(id: string, title: string, description: string | null) {
+	await api(`/api/animations/${id}`, {
+		method: 'PATCH',
+		body: JSON.stringify({ title, description })
+	});
+}
+
+export async function delete_animation(id: string) {
+	await api(`/api/animations/${id}`, { method: 'DELETE' });
+}

@@ -2,11 +2,54 @@
 	import { resolve } from '$app/paths';
 	import { ArrowLeft, Play, MessageCircle } from '@lucide/svelte';
 	import type { Animation, Comment } from '$lib/types';
+	import { goto, invalidateAll } from '$app/navigation';
+	import { auth } from '$lib/auth.svelte';
+	import { delete_animation, update_animation } from '$lib/data';
+	import { toast } from '$lib/toast.svelte';
 	import Avatar from './Avatar.svelte';
 	import CommentsSection from './CommentsSection.svelte';
 	import UpvoteButton from './UpvoteButton.svelte';
 
 	let { animation, comments }: { animation: Animation; comments: Comment[] } = $props();
+	const a = auth();
+	const mine = $derived(!!a.user && a.user.id === animation.author_id);
+	let editing = $state(false);
+	let title = $state('');
+	let description = $state('');
+	let busy = $state(false);
+
+	function start_edit() {
+		title = animation.title;
+		description = animation.description || '';
+		editing = true;
+	}
+
+	async function save(e: Event) {
+		e.preventDefault();
+		busy = true;
+		try {
+			await update_animation(animation.id, title.trim(), description.trim() || null);
+			await invalidateAll();
+			editing = false;
+		} catch (err) {
+			toast('error', err instanceof Error ? err.message : 'save failed', 'err');
+		} finally {
+			busy = false;
+		}
+	}
+
+	async function remove() {
+		if (!confirm('delete this animation for good?')) return;
+		busy = true;
+		try {
+			await delete_animation(animation.id);
+			toast('animation deleted');
+			await goto(resolve('/u/[username]', { username: animation.author.username }));
+		} catch (err) {
+			toast('error', err instanceof Error ? err.message : 'delete failed', 'err');
+			busy = false;
+		}
+	}
 </script>
 
 <div class="min-h-screen bg-background">
@@ -42,7 +85,34 @@
 				</div>
 			</div>
 			<div class="space-y-4">
-				<h1 class="text-3xl font-bold">{animation.title}</h1>
+				{#if editing}
+					<form onsubmit={save} class="space-y-3">
+						<input class="field" bind:value={title} required maxlength="100" aria-label="title" />
+						<textarea
+							class="area"
+							rows="3"
+							bind:value={description}
+							maxlength="2000"
+							aria-label="description"
+						></textarea>
+						<div class="flex gap-2">
+							<button class="btn-sm" type="submit" disabled={busy || !title.trim()}>save</button>
+							<button class="btn-outline-sm" type="button" onclick={() => (editing = false)}
+								>cancel</button
+							>
+						</div>
+					</form>
+				{:else}
+					<h1 class="text-3xl font-bold">{animation.title}</h1>
+				{/if}
+				{#if mine && !editing}
+					<div class="flex gap-2">
+						<button class="btn-outline-sm" type="button" onclick={start_edit}>edit</button>
+						<button class="btn-outline-sm" type="button" onclick={remove} disabled={busy}
+							>delete</button
+						>
+					</div>
+				{/if}
 				<div class="flex items-center justify-between">
 					<a
 						href={resolve('/u/[username]', { username: animation.author.username })}

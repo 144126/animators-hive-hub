@@ -150,6 +150,27 @@ if (
 )
 	fail('community listed', cn);
 
+const vid2 = await up('video/mp4');
+const del = (
+	await json(
+		await call('/api/animations', {
+			cookie: a.cookie,
+			body: { title: 'to delete', video_url: vid2 }
+		})
+	)
+).item.id as string;
+const patch = (cookie: string, title: string) =>
+	call(`/api/animations/${del}`, { method: 'PATCH', cookie, body: { title } });
+if ((await patch(b.cookie, 'x')).status !== 403) fail('other user edit 403', del);
+if ((await call(`/api/animations/${del}`, { method: 'DELETE', cookie: b.cookie })).status !== 403)
+	fail('other user delete 403', del);
+if ((await patch(a.cookie, 'renamed')).status !== 200) fail('owner edit', del);
+if ((await json(await call(`/api/animations/${del}`))).item?.title !== 'renamed')
+	fail('edit shows', del);
+if ((await call(`/api/animations/${del}`, { method: 'DELETE', cookie: a.cookie })).status !== 200)
+	fail('owner delete', del);
+if ((await call(`/api/animations/${del}`)).status !== 404) fail('deleted is 404', del);
+if ((await call(vid2)).status !== 404) fail('deleted media gone', vid2);
 const msg = `${a.id}.99999999999999`;
 const mac = createHmac('sha256', 'ahh-session-9f3c2e1a7b84d056').update(msg).digest('base64');
 const forged = await json(

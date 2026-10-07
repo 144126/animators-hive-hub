@@ -412,3 +412,94 @@ export async function insert_item(
 	}
 	return 'ok';
 }
+
+export type Own = 'ok' | 'not found' | 'forbidden';
+
+const media_key = (p: string | null) => (p?.startsWith('/media/') ? p.slice(7) : null);
+
+async function owner_of(d: D1Database, table: 'a' | 'n' | 'l', id: string, user_id: string) {
+	const r = await d.prepare(`select u from ${table} where i = ?`).bind(id).first<{ u: string }>();
+	return (!r ? 'not found' : r.u === user_id ? 'ok' : 'forbidden') as Own;
+}
+
+export async function update_anim(
+	d: D1Database,
+	user_id: string,
+	id: string,
+	v: { title: string; description: string | null }
+) {
+	const r = await owner_of(d, 'a', id, user_id);
+	if (r === 'ok')
+		await d
+			.prepare('update a set ti = ?, d = ? where i = ?')
+			.bind(v.title, v.description, id)
+			.run();
+	return r;
+}
+
+export async function delete_anim(d: D1Database, user_id: string, id: string) {
+	const r = await owner_of(d, 'a', id, user_id);
+	if (r !== 'ok') return { r, keys: [] as string[] };
+	const m = await d
+		.prepare('select v, im from a where i = ?')
+		.bind(id)
+		.first<{ v: string | null; im: string | null }>();
+	await d.prepare('delete from a where i = ?').bind(id).run();
+	return {
+		r,
+		keys: [media_key(m?.v ?? null), media_key(m?.im ?? null)].filter((k): k is string => !!k)
+	};
+}
+
+export async function delete_note(d: D1Database, user_id: string, id: string) {
+	const r = await owner_of(d, 'n', id, user_id);
+	if (r !== 'ok') return r;
+	const n = await d.prepare('select a from n where i = ?').bind(id).first<{ a: string }>();
+	await d.batch([
+		d.prepare('delete from n where i = ?').bind(id),
+		d.prepare('update a set n = (select count(*) from n where n.a = ?1) where i = ?1').bind(n!.a)
+	]);
+	return r;
+}
+
+export async function update_list(
+	d: D1Database,
+	user_id: string,
+	id: string,
+	v: { name: string; description: string | null }
+) {
+	const r = await owner_of(d, 'l', id, user_id);
+	if (r === 'ok')
+		await d.prepare('update l set n = ?, d = ? where i = ?').bind(v.name, v.description, id).run();
+	return r;
+}
+
+export async function delete_list(d: D1Database, user_id: string, id: string) {
+	const r = await owner_of(d, 'l', id, user_id);
+	if (r === 'ok') await d.prepare('delete from l where i = ?').bind(id).run();
+	return r;
+}
+
+export async function delete_item(d: D1Database, user_id: string, item_id: string) {
+	const it = await d.prepare('select l from li where i = ?').bind(item_id).first<{ l: string }>();
+	if (!it) return 'not found' as Own;
+	const r = await owner_of(d, 'l', it.l, user_id);
+	if (r === 'ok') await d.prepare('delete from li where i = ?').bind(item_id).run();
+	return r;
+}
+
+export async function set_pass(d: D1Database, id: string, pass: string) {
+	await d.prepare('update u set p = ? where i = ?').bind(pass, id).run();
+}
+
+export async function delete_user(d: D1Database, id: string) {
+	const { results } = await d
+		.prepare('select v, im from a where u = ?')
+		.bind(id)
+		.all<{ v: string | null; im: string | null }>();
+	const u = await user_by_id(d, id);
+	await d.prepare('delete from u where i = ?').bind(id).run();
+	return [...results.flatMap((m) => [m.v, m.im]), u?.avatar_url ?? null]
+		.map(media_key)
+		.filter((k): k is string => !!k);
+}

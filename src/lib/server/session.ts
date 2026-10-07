@@ -101,3 +101,7 @@ export function j(data: unknown, status = 200) {
 		headers: { 'content-type': 'application/json' }
 	});
 }
+
+export function owned(r: 'ok' | 'not found' | 'forbidden') {
+	return r === 'ok' ? j({ ok: true }) : j({ error: r }, r === 'forbidden' ? 403 : 404);
+}

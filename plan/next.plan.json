@@ -59,7 +59,7 @@
 		"c": {
 			"anim_edit_delete": {
 				"s": "outcome: authors edit and delete their own animations, and deleted files leave r2.\n1. db.ts `update_anim(d, user_id, id, { title, description, community_id })` and `delete_anim(d, user_id, id)`; delete also returns the media paths of the row it removed.\n2. src/routes/api/animations/[id]/+server.ts PATCH and DELETE (401 signed out, 403 forbidden, 404 missing); DELETE removes both r2 keys with `M.delete`.\n3. src/components/AnimationDetailView.svelte, for the author: an inline 'edit' form (title, description) and 'delete' (confirm()), then goto the author's /u page.\n4. smoke, on a separate animation so earlier checks keep theirs: B's PATCH and DELETE get 403; A's title edit shows in GET; after A deletes, GET is 404 and its /media/ video is 404.",
-				"d": 0,
+				"d": 1,
 				"v": "grep -q 'avatar_url' src/routes/api/profile/+server.ts",
 				"t": "grep -q 'export async function delete_anim' src/lib/server/db.ts && grep -q 'DELETE' 'src/routes/api/animations/[id]/+server.ts' && grep -q 'PATCH' 'src/routes/api/animations/[id]/+server.ts' && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
 			},
