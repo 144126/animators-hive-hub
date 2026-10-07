@@ -8,6 +8,7 @@
 	import CommunityCombobox from './CommunityCombobox.svelte';
 	import FileUploadSection from './FileUploadSection.svelte';
 	import Modal from './Modal.svelte';
+	import { comm_name_max, desc_max, title_max } from '$lib/rules';
 
 	const a = auth();
 	let open = $state(false);
@@ -97,6 +98,7 @@
 					bind:value={title}
 					placeholder="enter animation title"
 					required
+					maxlength={title_max}
 					disabled={busy}
 				/>
 			</div>
@@ -108,6 +110,7 @@
 					rows="3"
 					bind:value={description}
 					placeholder="describe your animation..."
+					maxlength={desc_max}
 					disabled={busy}
 				></textarea>
 			</div>
@@ -124,6 +127,7 @@
 						class="field"
 						bind:value={new_name}
 						placeholder="enter community name"
+						maxlength={comm_name_max}
 						disabled={busy}
 					/>
 				</div>

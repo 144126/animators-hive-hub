@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { sign_in } from '$lib/auth.svelte';
+	import { email_max, pass_max, pass_min } from '$lib/rules';
 
 	let { on_toggle }: { on_toggle: () => void } = $props();
 	let busy = $state(false);
@@ -23,7 +24,15 @@
 	<form onsubmit={submit} class="space-y-4">
 		<div class="space-y-2">
 			<label class="text-sm font-medium" for="email">email</label>
-			<input id="email" class="field" type="email" bind:value={email} required disabled={busy} />
+			<input
+				id="email"
+				class="field"
+				type="email"
+				bind:value={email}
+				required
+				disabled={busy}
+				maxlength={email_max}
+			/>
 		</div>
 		<div class="space-y-2">
 			<label class="text-sm font-medium" for="password">password</label>
@@ -34,6 +43,8 @@
 				bind:value={password}
 				required
 				disabled={busy}
+				minlength={pass_min}
+				maxlength={pass_max}
 			/>
 		</div>
 		<button class="btn w-full" type="submit" disabled={busy}

@@ -1,6 +1,7 @@
 import type { RequestHandler } from './$types';
 import { fails, insert_comm, list_comms, sql } from '$lib/server/db';
 import { j } from '$lib/server/session';
+import { ok_comm_name } from '$lib/rules';
 
 export const GET: RequestHandler = async ({ url, platform }) => {
 	return j({
@@ -12,7 +13,7 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 	if (!locals.user) return j({ error: 'sign in required' }, 401);
 	const body = (await request.json()) as { name?: string };
 	const display = body.name?.trim() || '';
-	if (!display) return j({ error: 'name required' }, 400);
+	if (!ok_comm_name(display)) return j({ error: 'name invalid' }, 400);
 	const slug = display
 		.toLowerCase()
 		.replace(/\s+/g, '-')

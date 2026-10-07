@@ -167,7 +167,7 @@
 			},
 			"input_rules": {
 				"s": "outcome: the server enforces every input rule, and the forms use the same numbers.\n1. new src/lib/rules.ts (used by client and server): username `/^[a-z0-9_]{3,30}$/i`; email `/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/` up to 254 chars; password 6-200; title 1-100; description up to 2000; comment 1-1000; playlist name 1-100, description up to 500; community name 1-50; display name 1-50; bio up to 500; location up to 100; website empty or an http(s) url up to 200 that `new URL()` parses.\n2. enforce them in the api routes for sign-up, password, profile, animations, comments, playlists and communities: 400 `{ error: '<field> ...' }`, never silent truncation.\n3. find_or_create_google pads usernames shorter than 3 chars with random hex.\n4. forms take maxlength/minlength/pattern from src/lib/rules.ts.\n5. smoke: a username with a space gets 400; a profile website `javascript:alert(1)` gets 400.",
-				"d": 0,
+				"d": 1,
 				"v": "grep -q 'RL_AUTH' src/hooks.server.ts",
 				"t": "test -f src/lib/rules.ts && grep -q 'rules' src/routes/api/auth/signup/+server.ts && grep -q 'rules' src/routes/api/profile/+server.ts && grep -q 'rules' src/routes/api/animations/+server.ts && grep -q 'rules' src/routes/api/comments/+server.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
 			},

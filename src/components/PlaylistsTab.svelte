@@ -7,6 +7,7 @@
 	import { create_playlist } from '$lib/data';
 	import type { Playlist } from '$lib/types';
 	import Modal from './Modal.svelte';
+	import { list_desc_max, list_name_max } from '$lib/rules';
 
 	const a = auth();
 	let { playlists }: { playlists: Playlist[] } = $props();
@@ -85,12 +86,13 @@
 				bind:value={name}
 				placeholder="e.g., epic fights"
 				required
-				maxlength="100"
+				maxlength={list_name_max}
 			/>
 		</div>
 		<div class="space-y-2">
 			<label class="text-sm font-medium" for="pdesc">description (optional)</label>
-			<textarea id="pdesc" class="area" bind:value={description} maxlength="500"></textarea>
+			<textarea id="pdesc" class="area" bind:value={description} maxlength={list_desc_max}
+			></textarea>
 		</div>
 		<div class="flex justify-end gap-2">
 			<button class="btn-ghost" type="button" onclick={() => (open = false)}>cancel</button>

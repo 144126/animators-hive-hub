@@ -1,6 +1,7 @@
 import type { RequestHandler } from './$types';
 import { fails, insert_anim, list_anims, sql } from '$lib/server/db';
 import { j } from '$lib/server/session';
+import { ok_desc, ok_title } from '$lib/rules';
 
 export const GET: RequestHandler = async ({ url, locals, platform }) => {
 	const items = await list_anims(sql(platform), {
@@ -22,7 +23,10 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 		thumbnail_url?: string | null;
 		community_id?: string | null;
 	};
-	if (!body.title?.trim()) return j({ error: 'title is required' }, 400);
+	const title = body.title?.trim() || '';
+	const description = body.description?.trim() || '';
+	if (!ok_title(title)) return j({ error: 'title invalid' }, 400);
+	if (!ok_desc(description)) return j({ error: 'description invalid' }, 400);
 	const media = /^\/media\/[0-9a-f-]{36}$/;
 	if (!media.test(body.video_url || '') || (body.thumbnail_url && !media.test(body.thumbnail_url)))
 		return j({ error: 'upload the video first' }, 400);
@@ -30,8 +34,8 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 		const item = await insert_anim(sql(platform), {
 			author_id: locals.user.id,
 			community_id: body.community_id || null,
-			title: body.title.trim(),
-			description: body.description?.trim() || null,
+			title,
+			description: description || null,
 			video_url: body.video_url || null,
 			thumbnail_url: body.thumbnail_url || null
 		});

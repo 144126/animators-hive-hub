@@ -9,6 +9,7 @@
 	import Avatar from './Avatar.svelte';
 	import CommentsSection from './CommentsSection.svelte';
 	import UpvoteButton from './UpvoteButton.svelte';
+	import { desc_max, title_max } from '$lib/rules';
 
 	let { animation, comments }: { animation: Animation; comments: Comment[] } = $props();
 	const a = auth();
@@ -87,12 +88,18 @@
 			<div class="space-y-4">
 				{#if editing}
 					<form onsubmit={save} class="space-y-3">
-						<input class="field" bind:value={title} required maxlength="100" aria-label="title" />
+						<input
+							class="field"
+							bind:value={title}
+							required
+							maxlength={title_max}
+							aria-label="title"
+						/>
 						<textarea
 							class="area"
 							rows="3"
 							bind:value={description}
-							maxlength="2000"
+							maxlength={desc_max}
 							aria-label="description"
 						></textarea>
 						<div class="flex gap-2">

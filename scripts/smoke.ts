@@ -88,6 +88,14 @@ const new_in = await call('/api/auth/signin', {
 	body: { email: `${an}@example.com`, password: 'smoke-pass-2' }
 });
 if (new_in.status !== 200) fail('new password signs in', new_in.status);
+if (
+	(
+		await call('/api/auth/signup', {
+			body: { email: `bad@example.com`, password: 'smoke-pass-1', username: 'has space' }
+		})
+	).status !== 400
+)
+	fail('username with space', 'has space');
 const b = await signup(name());
 const pub = await call(`/u/${an}`);
 if (pub.status !== 200 || !(await pub.text()).includes(an)) fail('public profile', pub.status);
@@ -111,6 +119,15 @@ const pr = await prof(image);
 if (pr.status !== 200 || (await json(pr)).user?.user_metadata?.avatar_url !== image)
 	fail('avatar set', pr.status);
 if ((await prof('javascript:x')).status !== 400) fail('bad avatar rejected', 'javascript:x');
+if (
+	(
+		await call('/api/profile', {
+			cookie: a.cookie,
+			body: { display_name: an, avatar_url: image, website_url: 'javascript:alert(1)' }
+		})
+	).status !== 400
+)
+	fail('bad website rejected', 'javascript:alert(1)');
 const part = await call(video, { headers: { range: 'bytes=0-9' } });
 if (part.status !== 206 || (await part.arrayBuffer()).byteLength !== 10)
 	fail('range 206', part.status);

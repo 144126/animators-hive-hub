@@ -1,13 +1,16 @@
 import type { RequestHandler } from './$types';
 import { fails, insert_user, sql, type UserRow } from '$lib/server/db';
 import { hash, j, public_user, write_session } from '$lib/server/session';
+import { ok_email, ok_pass, ok_username } from '$lib/rules';
 
 export const POST: RequestHandler = async (e) => {
 	const body = (await e.request.json()) as { email?: string; password?: string; username?: string };
 	const email = body.email?.trim().toLowerCase() || '';
 	const username = body.username?.trim() || '';
 	const password = body.password || '';
-	if (!email || !username || password.length < 6) return j({ error: 'invalid fields' }, 400);
+	if (!ok_email(email)) return j({ error: 'email invalid' }, 400);
+	if (!ok_username(username)) return j({ error: 'username invalid' }, 400);
+	if (!ok_pass(password)) return j({ error: 'password invalid' }, 400);
 	const u: UserRow = {
 		id: crypto.randomUUID(),
 		email,

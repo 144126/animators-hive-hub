@@ -7,6 +7,7 @@
 	import { toast } from '$lib/toast.svelte';
 	import { upload } from '$lib/upload';
 	import Avatar from '$components/Avatar.svelte';
+	import { bio_max, display_max, loc_max, pass_max, pass_min, web_max } from '$lib/rules';
 
 	const a = auth();
 	let display = $state('');
@@ -152,15 +153,16 @@
 				</div>
 				<div class="space-y-2">
 					<label class="text-sm font-medium" for="dn">display name</label>
-					<input id="dn" class="field" bind:value={display} maxlength="50" required />
+					<input id="dn" class="field" bind:value={display} maxlength={display_max} required />
 				</div>
 				<div class="space-y-2">
 					<label class="text-sm font-medium" for="bio">bio</label>
-					<textarea id="bio" class="area min-h-[100px]" bind:value={bio} maxlength="500"></textarea>
+					<textarea id="bio" class="area min-h-[100px]" bind:value={bio} maxlength={bio_max}
+					></textarea>
 				</div>
 				<div class="space-y-2">
 					<label class="text-sm font-medium" for="loc">location</label>
-					<input id="loc" class="field" bind:value={location} maxlength="100" />
+					<input id="loc" class="field" bind:value={location} maxlength={loc_max} />
 				</div>
 				<div class="space-y-2">
 					<label class="text-sm font-medium" for="web">website</label>
@@ -169,6 +171,7 @@
 						class="field"
 						bind:value={website}
 						placeholder="https://yourwebsite.com"
+						maxlength={web_max}
 					/>
 				</div>
 				<div class="flex space-x-4">
@@ -201,8 +204,8 @@
 						class="field"
 						type="password"
 						bind:value={new_pass}
-						minlength="6"
-						maxlength="200"
+						minlength={pass_min}
+						maxlength={pass_max}
 						required
 					/>
 				</div>

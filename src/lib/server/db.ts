@@ -87,7 +87,15 @@ export async function find_or_create_google(
 		}
 		return existing;
 	}
-	const base = (email.split('@')[0] || 'user').replace(/[^a-z0-9_]/gi, '').slice(0, 24) || 'user';
+	const raw = (email.split('@')[0] || 'user').replace(/[^a-z0-9_]/gi, '').slice(0, 24) || 'user';
+	const base =
+		raw.length < 3
+			? raw +
+				crypto
+					.randomUUID()
+					.replace(/-/g, '')
+					.slice(0, 3 - raw.length)
+			: raw;
 	for (let i = 0; i < 8; i++) {
 		const username = i === 0 ? base : `${base.slice(0, 20)}${crypto.randomUUID().slice(0, 8)}`;
 		const u: UserRow = {

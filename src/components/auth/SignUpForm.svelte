@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { sign_up } from '$lib/auth.svelte';
 	import { toast } from '$lib/toast.svelte';
+	import { email_max, pass_max, pass_min, username as username_re } from '$lib/rules';
 
 	let { on_toggle }: { on_toggle: () => void } = $props();
 	let busy = $state(false);
@@ -42,12 +43,21 @@
 				required
 				disabled={busy}
 				minlength="3"
-				maxlength="50"
+				maxlength="30"
+				pattern={username_re.source}
 			/>
 		</div>
 		<div class="space-y-2">
 			<label class="text-sm font-medium" for="email">email</label>
-			<input id="email" class="field" type="email" bind:value={email} required disabled={busy} />
+			<input
+				id="email"
+				class="field"
+				type="email"
+				bind:value={email}
+				required
+				disabled={busy}
+				maxlength={email_max}
+			/>
 		</div>
 		<div class="space-y-2">
 			<label class="text-sm font-medium" for="password">password</label>
@@ -58,7 +68,8 @@
 				bind:value={password}
 				required
 				disabled={busy}
-				minlength="6"
+				minlength={pass_min}
+				maxlength={pass_max}
 			/>
 		</div>
 		<div class="space-y-2">
@@ -70,7 +81,8 @@
 				bind:value={confirm}
 				required
 				disabled={busy}
-				minlength="6"
+				minlength={pass_min}
+				maxlength={pass_max}
 			/>
 		</div>
 		<button class="btn w-full" type="submit" disabled={busy}

@@ -6,6 +6,7 @@
 	import { delete_playlist, delete_playlist_item, update_playlist } from '$lib/data';
 	import { toast } from '$lib/toast.svelte';
 	import AnimationCard from '$components/AnimationCard.svelte';
+	import { list_desc_max, list_name_max } from '$lib/rules';
 
 	let { data } = $props();
 	const a = auth();
@@ -76,12 +77,18 @@
 	<div class="mb-8">
 		{#if editing}
 			<form onsubmit={save} class="space-y-3">
-				<input class="field" bind:value={name} required maxlength="100" aria-label="name" />
+				<input
+					class="field"
+					bind:value={name}
+					required
+					maxlength={list_name_max}
+					aria-label="name"
+				/>
 				<textarea
 					class="area"
 					rows="3"
 					bind:value={description}
-					maxlength="500"
+					maxlength={list_desc_max}
 					aria-label="description"
 				></textarea>
 				<div class="flex gap-2">

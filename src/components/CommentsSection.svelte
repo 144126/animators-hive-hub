@@ -6,6 +6,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { delete_comment, post_comment } from '$lib/data';
 	import type { Comment } from '$lib/types';
+	import { comment_max } from '$lib/rules';
 	import Avatar from './Avatar.svelte';
 
 	let { post_id, comments }: { post_id: string; comments: Comment[] } = $props();
@@ -47,7 +48,11 @@
 	<div class="space-y-6 p-6">
 		{#if a.user}
 			<form onsubmit={submit} class="space-y-4">
-				<textarea class="area min-h-[100px]" placeholder="write a comment..." bind:value={text}
+				<textarea
+					class="area min-h-[100px]"
+					placeholder="write a comment..."
+					bind:value={text}
+					maxlength={comment_max}
 				></textarea>
 				<div class="flex justify-end">
 					<button class="btn-sm" type="submit" disabled={!text.trim() || busy}>
