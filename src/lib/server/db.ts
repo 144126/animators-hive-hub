@@ -23,6 +23,7 @@ export type CommRow = {
 	banner_url: string | null;
 	member_count: number;
 	creator_id: string;
+	j?: boolean; // j: viewer joined
 };
 
 export type ListRow = {
@@ -331,17 +332,41 @@ export async function list_comms(d: D1Database, q: string) {
 	return (await s.all<CommRow>()).results;
 }
 
-export async function comm_by_slug(d: D1Database, slug: string) {
-	return d.prepare(`${comm_sel} where s = ?`).bind(slug).first<CommRow>();
+export async function comm_by_slug(d: D1Database, slug: string, viewer = '') {
+	const r = await d.prepare(`${comm_sel} where s = ?`).bind(slug).first<CommRow>();
+	if (!r) return null;
+	const j = viewer
+		? !!(await d.prepare('select 1 from cm where c = ? and u = ?').bind(r.id, viewer).first())
+		: false;
+	return { ...r, j };
 }
 
 export async function insert_comm(d: D1Database, user_id: string, slug: string, name: string) {
 	const id = crypto.randomUUID();
-	await d
-		.prepare('insert into c (i, s, n, u, t) values (?, ?, ?, ?, ?)')
-		.bind(id, slug, name, user_id, Date.now())
-		.run();
-	return comm_by_slug(d, slug);
+	const t = Date.now();
+	await d.batch([
+		d
+			.prepare('insert into c (i, s, n, u, t, m) values (?, ?, ?, ?, ?, 1)')
+			.bind(id, slug, name, user_id, t),
+		d.prepare('insert into cm (c, u, t) values (?, ?, ?)').bind(id, user_id, t)
+	]);
+	return comm_by_slug(d, slug, user_id);
+}
+
+export async function set_member(d: D1Database, user_id: string, comm_id: string, on: boolean) {
+	const exists = await d.prepare('select i from c where i = ?').bind(comm_id).first();
+	if (!exists) return 'not found';
+	await d.batch([
+		on
+			? d
+					.prepare('insert or ignore into cm (c, u, t) values (?, ?, ?)')
+					.bind(comm_id, user_id, Date.now())
+			: d.prepare('delete from cm where c = ? and u = ?').bind(comm_id, user_id),
+		d
+			.prepare('update c set m = (select count(*) from cm where cm.c = ?1) where i = ?1')
+			.bind(comm_id)
+	]);
+	return 'ok';
 }
 
 type ListDb = Omit<ListRow, 'created_at'> & { t: number };

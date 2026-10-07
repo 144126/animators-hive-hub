@@ -91,7 +91,7 @@
 	},
 	"community_join": {
 		"s": "outcome: people join and leave communities, and member counts are real.\n1. migrations/0003_members.sql:\n-- cm community member: c community, u user, t joined ms\ncreate table cm (c text not null references c (i) on delete cascade, u text not null references u (i) on delete cascade, t integer not null, primary key (c, u)) without rowid;\ncreate index cm_u on cm (u);\ninsert or ignore into cm (c, u, t) select i, u, t from c;\nupdate c set m = (select count(*) from cm where cm.c = c.i);\n2. db.ts: insert_comm also adds the creator to cm; `set_member(d, user_id, comm_id, on)` changes cm and recounts c.m in one batch; comm_by_slug takes the viewer and adds `j` (j = viewer joined, commented).\n3. POST /api/communities/[name]/join `{ o }` (o = on). src/routes/c/[communityName]/+page.svelte shows the member count and a join/leave button.\n4. smoke: B joins A's community, member_count is 2; B leaves, it is 1.",
-		"d": 0,
+		"d": 1,
 		"v": "grep -q 'export async function delete_user' src/lib/server/db.ts",
 		"t": "test -f migrations/0003_members.sql && grep -q 'export async function set_member' src/lib/server/db.ts && test -f 'src/routes/api/communities/[name]/join/+server.ts' && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
 	},

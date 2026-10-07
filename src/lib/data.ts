@@ -122,3 +122,7 @@ export async function change_password(o: string, n: string) {
 export async function delete_account(n: string) {
 	await api('/api/me', { method: 'DELETE', body: JSON.stringify({ n }) });
 }
+
+export async function set_joined(name: string, o: boolean) {
+	await api(`/api/communities/${name}/join`, { method: 'POST', body: JSON.stringify({ o }) });
+}

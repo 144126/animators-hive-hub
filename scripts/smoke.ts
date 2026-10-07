@@ -193,6 +193,14 @@ if (
 	!(await json(await call('/api/communities'))).items.some((x: { name: string }) => x.name === cn)
 )
 	fail('community listed', cn);
+const join = (cookie: string, o: boolean) =>
+	call(`/api/communities/${cn}/join`, { cookie, body: { o } });
+if ((await join(b.cookie, true)).status !== 200) fail('join community', cn);
+if ((await json(await call(`/api/communities/${cn}`))).item.member_count !== 2)
+	fail('member count after join', cn);
+if ((await join(b.cookie, false)).status !== 200) fail('leave community', cn);
+if ((await json(await call(`/api/communities/${cn}`))).item.member_count !== 1)
+	fail('member count after leave', cn);
 
 const vid2 = await up('video/mp4');
 const del = (

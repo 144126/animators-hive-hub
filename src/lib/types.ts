@@ -50,6 +50,7 @@ export type Community = {
 	banner_url?: string | null;
 	member_count: number;
 	creator_id?: string;
+	j?: boolean; // j: viewer joined
 };
 
 export type AuthUser = {
