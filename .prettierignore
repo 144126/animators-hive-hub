@@ -9,5 +9,4 @@ bun.lockb
 /static/
 plan/
 wip-plans/
-tmp/
 supabase/

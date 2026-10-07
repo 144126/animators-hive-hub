@@ -2,10 +2,11 @@
 	"_": "repo ~/i/edahogan/animators-hive-hub: sveltekit 2 (runes only) + tailwind v4 on cloudflare workers (@sveltejs/adapter-cloudflare). aliases $lib = src/lib, $components = src/components. bindings: d1 `DB` (database ahh), r2 `M` (bucket ahh). push to remote `mine` (public fork 144126/animators-hive-hub, branch main); never push `origin` (403).\n\ngoal: the level after plan `critical` (wip-plans/critical.plan.json): fix the app's remaining high, medium and low flaws from ~/search/animators-hive-hub-flaws.md. the project report is out of scope. settled with ed on 2026-10-07: all four tiers (security, product gaps, ux + a11y, tests + cleanup); no email sending, so no password reset or email verification; tmp/ leaves the fork in a normal commit, no history rewrite; new d1 migrations may be applied with --remote without asking.\n\ndeploy: every push to mine/main builds and deploys worker animators-hive-hub (tag ea40543f1ecf4508a33eb2fa9787c098) to https://animators-hive-hub.apexlinks.workers.dev. after each push confirm the build with `cf builds list --external-script-id ea40543f1ecf4508a33eb2fa9787c098`; a failed build belongs to the step that pushed it. apply a step's new migration with --remote before pushing it.\n\ncode rules (ed): snake_case; no comments except a non-obvious why; all ui text lowercase; tailwind utilities and the tokens in src/app.css, no inline style. new db columns, new request/response json keys and page-load return keys are single letters, each commented where defined; existing api json shapes in src/lib/types.ts stay. all sql lives in src/lib/server/db.ts (lowercase); each function takes the D1Database from `sql(platform)` first; routes and pages stay thin. a new table gets `migrations/000N_<name>.sql` with a key comment above it, applied with `wrangler d1 migrations apply ahh --local` and `--remote`. internal links and goto use `resolve()` from $app/paths (lint rule svelte/no-navigation-without-resolve); the rule rejects every query-only href, so ?query navigation uses a GET <form>. errors: map `UNIQUE constraint failed: <t>.<c>` and `FOREIGN KEY constraint failed` to 400/404 json via `j()` from src/lib/server/session.ts, never a 500. ownership checks return 'ok' | 'not found' | 'forbidden' from db.ts and become 200/404/403 in the route.\n\nchecks: every gate runs `pnpm lint && pnpm check && pnpm build`. steps that touch the api also run `node scripts/smoke.ts` against the dev server; extend it with each new api behaviour, use fresh `smk` + 8 hex users, and keep its last line `smoke ok <username> <every r2 key it left behind>`. from step e2e_setup on, steps that touch pages also run `pnpm test:e2e`. after step rate_limits, quick reruns can hit 429: wait a minute. pnpm output is filtered by rtk; prefix `rtk proxy` for raw output.\n\ndev server: `pnpm dev` serves :8080, logs to .log, and reads wrangler.jsonc and .dev.vars only at start. restart it after changing either: kill the pid from `ss -ltnp 'sport = :8080'` (never pkill -f), then `setsid pnpm dev > .log 2>&1 < /dev/null &`. wrangler: always `env -u CLOUDFLARE_API_TOKEN pnpm exec wrangler ...`.\n\ncommits: after each mark commit that step's files plus plan/ as a conventional commit `<type>(<scope>): <imperative, <=50 chars, lowercase>` with body bullets and the trailer `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`, then `git push mine main`.",
 	"security": {
 		"s": "close the remaining security holes",
+		"d": 0,
 		"c": {
 			"drop_tmp_docs": {
 				"s": "outcome: tmp/ (the copyrighted ncc lecturer guide and the student's report with name and id) is gone from the fork's tree.\n1. `git rm -r tmp`.\n2. remove the now-dead `tmp/**` entry from eslint.config.js and `tmp/` from .prettierignore.\nold commits and edahogan's repo keep the files; ed chose no history rewrite. ~/search/animators-hive-hub-flaws.md already lists what the report needs.",
-				"d": 0,
+				"d": 1,
 				"v": "test -d tmp",
 				"t": "test ! -e tmp && ! git ls-files --error-unmatch tmp >/dev/null 2>&1 && pnpm lint && pnpm check && pnpm build"
 			},
@@ -42,6 +43,7 @@
 	},
 	"ssr": {
 		"s": "render pages on the server instead of fetching in $effect",
+		"d": 0,
 		"c": {
 			"ssr_auth": {
 				"s": "outcome: the first byte already shows the right signed-in or signed-out page, and no auth state is shared between requests.\n1. new src/routes/+layout.server.ts returns `{ u }` (u = the signed-in AuthUser or null, commented). hooks stores `public_user(row)` (src/lib/server/session.ts) in locals.user; type App.Locals.user and App.PageData.u as AuthUser | null in src/app.d.ts.\n2. src/lib/auth.svelte.ts: `auth()` returns `{ get user() }` reading `page.data.u` from $app/state. delete the module-level user/loading/started state, the /api/me fetch, `session`, `loading` and `set_user`. sign_in, sign_up, sign_out and the profile save call `invalidateAll()` after the api call.\n3. remove every `a.loading` branch (src/routes/+page.svelte, src/routes/profile/+page.svelte, src/routes/profile/edit/+page.svelte, src/components/Header.svelte); src/components/auth/SignInForm.svelte and SignUpForm.svelte keep their own `busy`.\n4. smoke: GET / with A's cookie returns html containing 'discover' and not 'sign up now'.",
@@ -77,6 +79,7 @@
 	},
 	"people": {
 		"s": "public profiles and avatars",
+		"d": 0,
 		"c": {
 			"public_profiles": {
 				"s": "outcome: every user has a public page, and every author name leads to it.\n1. db.ts `user_by_username(d, n)` (case-insensitive through the column collation).\n2. new src/routes/u/[username]/+page.server.ts `{ p, a }` (p = username, display name, avatar, bio, location, website, member since, never the email; a = their first 20 animations) and +page.svelte with load more; unknown name gives 404.\n3. the author avatar and name in src/components/AnimationCard.svelte, src/components/AnimationDetailView.svelte and src/components/CommentsSection.svelte link to it with `resolve('/u/[username]', { username })`.\n4. the website renders as a link with `rel=\"nofollow noopener noreferrer\"`; src/routes/profile/+page.svelte shows location, website and a 'view public profile' link.\n5. smoke: GET /u/<A> is 200 and contains A's username; /u/nobody_here_9 is 404.",
@@ -94,6 +97,7 @@
 	},
 	"ownership": {
 		"s": "edit and delete what you own",
+		"d": 0,
 		"c": {
 			"anim_edit_delete": {
 				"s": "outcome: authors edit and delete their own animations, and deleted files leave r2.\n1. db.ts `update_anim(d, user_id, id, { title, description, community_id })` and `delete_anim(d, user_id, id)`; delete also returns the media paths of the row it removed.\n2. src/routes/api/animations/[id]/+server.ts PATCH and DELETE (401 signed out, 403 forbidden, 404 missing); DELETE removes both r2 keys with `M.delete`.\n3. src/components/AnimationDetailView.svelte, for the author: an inline 'edit' form (title, description) and 'delete' (confirm()), then goto the author's /u page.\n4. smoke, on a separate animation so earlier checks keep theirs: B's PATCH and DELETE get 403; A's title edit shows in GET; after A deletes, GET is 404 and its /media/ video is 404.",
@@ -135,6 +139,7 @@
 	},
 	"ui": {
 		"s": "mobile, one header, dialogs, uploads, names",
+		"d": 0,
 		"c": {
 			"mobile_nav": {
 				"s": "outcome: discover and communities are reachable on phones, and the account menu behaves.\n1. src/components/Header.svelte: below md the nav shows as compact links (short words or icons with aria-labels) instead of being hidden.\n2. the account menu closes on an outside click and on Escape.\n3. tests/mobile.e2e.ts at 375x667: tap through to /communities from the header.",
