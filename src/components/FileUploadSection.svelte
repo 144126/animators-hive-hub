@@ -41,12 +41,12 @@
 		bind:this={video_el}
 		id="video-file"
 		type="file"
-		accept="video/*"
+		accept="video/mp4,video/webm,video/quicktime"
 		class="hidden"
 		onchange={pick_video}
 		{disabled}
 	/>
-	<p class="text-xs text-muted-foreground">supported formats: mp4, mov, avi, etc. max size: 50mb</p>
+	<p class="text-xs text-muted-foreground">mp4, webm or mov. max size: 50mb</p>
 </div>
 <div class="space-y-2">
 	<label class="text-sm font-medium" for="thumb-file">custom thumbnail (optional)</label>

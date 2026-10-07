@@ -14,7 +14,9 @@ export function thumb_from_video(file: File): Promise<Blob> {
 		const video = document.createElement('video');
 		const canvas = document.createElement('canvas');
 		const src = URL.createObjectURL(file);
+		const wait = setTimeout(() => done(null, new Error('no thumbnail')), 10_000);
 		const done = (b: Blob | null, e?: Error) => {
+			clearTimeout(wait);
 			URL.revokeObjectURL(src);
 			if (b) resolve(b);
 			else reject(e ?? new Error('no thumbnail'));

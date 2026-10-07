@@ -125,7 +125,7 @@
 			},
 			"upload_ux": {
 				"s": "outcome: uploads never hang and the form tells the truth.\n1. src/lib/upload.ts thumb_from_video rejects after 10 s without a frame.\n2. src/components/AddAnimationModal.svelte names the running part ('uploading video...', 'making thumbnail...', 'saving...'); on failure it keeps the form filled and shows the server's error text.\n3. src/components/FileUploadSection.svelte accepts `video/mp4,video/webm,video/quicktime` and says 'mp4, webm or mov'; no more promise of avi, which browsers cannot play.",
-				"d": 0,
+				"d": 1,
 				"v": "test -f src/components/Modal.svelte",
 				"t": "grep -q 'setTimeout' src/lib/upload.ts && grep -q 'video/webm' src/components/FileUploadSection.svelte && ! grep -qi 'avi' src/components/FileUploadSection.svelte && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null"
 			},

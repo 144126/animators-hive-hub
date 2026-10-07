@@ -18,6 +18,7 @@
 	let community_id = $state('');
 	let new_name = $state('');
 	let busy = $state(false);
+	let step = $state('');
 
 	function reset() {
 		title = '';
@@ -42,16 +43,25 @@
 		busy = true;
 		try {
 			let cid: string | null = community_id === 'none' || !community_id ? null : community_id;
-			if (community_id === 'create-new') cid = await create_community(new_name.trim());
+			if (community_id === 'create-new') {
+				step = 'saving...';
+				cid = await create_community(new_name.trim());
+			}
+			step = 'uploading video...';
 			const video_url = await upload(video);
-			let thumbnail_url: string | null = thumb ? await upload(thumb) : null;
-			if (!thumbnail_url) {
+			let thumbnail_url: string | null = null;
+			if (thumb) {
+				step = 'uploading video...';
+				thumbnail_url = await upload(thumb);
+			} else {
 				try {
+					step = 'making thumbnail...';
 					thumbnail_url = await upload(await thumb_from_video(video));
 				} catch {
 					/* optional */
 				}
 			}
+			step = 'saving...';
 			await create_animation({
 				title: title.trim(),
 				description: description.trim() || null,
@@ -63,10 +73,11 @@
 			open = false;
 			reset();
 			await invalidateAll();
-		} catch {
-			toast('error', 'failed to upload animation', 'err');
+		} catch (err) {
+			toast('error', err instanceof Error ? err.message : 'failed to upload animation', 'err');
 		} finally {
 			busy = false;
+			step = '';
 		}
 	}
 </script>
@@ -123,7 +134,7 @@
 				>
 				<button class="btn" type="submit" disabled={busy}>
 					<Upload class="mr-2 h-4 w-4" />
-					{busy ? 'uploading...' : 'upload animation'}
+					{busy ? step || 'saving...' : 'upload animation'}
 				</button>
 			</div>
 		</form>
