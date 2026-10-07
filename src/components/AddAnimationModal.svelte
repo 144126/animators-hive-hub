@@ -7,6 +7,7 @@
 	import CommunityCombobox from './CommunityCombobox.svelte';
 	import FileUploadSection from './FileUploadSection.svelte';
 
+	let { onuploaded }: { onuploaded?: () => void } = $props();
 	const a = auth();
 	let open = $state(false);
 	let title = $state('');
@@ -57,6 +58,7 @@
 			toast('animation uploaded successfully!');
 			open = false;
 			reset();
+			onuploaded?.();
 		} catch {
 			toast('error', 'failed to upload animation', 'err');
 		} finally {
@@ -67,7 +69,7 @@
 
 {#if a.user}
 	<button class="btn" type="button" onclick={() => (open = true)}>
-		<Plus class="mr-2 h-4 w-4" /> add animation
+		<Plus class="mr-2 h-4 w-4" /> add video
 	</button>
 	{#if open}
 		<div class="overlay" onclick={() => !busy && (open = false)} onkeydown={(e) => e.key === 'Escape' && !busy && (open = false)} role="presentation">

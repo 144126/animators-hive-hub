@@ -4,7 +4,7 @@
 	import type { Animation } from '$lib/types';
 	import AnimationCard from './AnimationCard.svelte';
 
-	let { community_id = undefined as string | undefined } = $props();
+	let { community_id = undefined as string | undefined, rev = 0 } = $props();
 	let sort = $state<'new' | 'top'>('new');
 	let animations = $state<Animation[]>([]);
 	let loading = $state(true);
@@ -25,6 +25,7 @@
 	$effect(() => {
 		void sort;
 		void community_id;
+		void rev;
 		load();
 	});
 </script>
