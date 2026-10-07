@@ -7,7 +7,7 @@
 		open = $bindable(false),
 		initial = 'signin' as 'signin' | 'signup'
 	}: { open?: boolean; initial?: 'signin' | 'signup' } = $props();
-	let mode = $state(initial);
+	let mode = $state<'signin' | 'signup'>('signin');
 
 	$effect(() => {
 		if (open) mode = initial;

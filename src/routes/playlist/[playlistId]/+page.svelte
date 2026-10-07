@@ -64,9 +64,10 @@
 
 <main class="container mx-auto px-4 py-8">
 	<div class="mb-8 flex items-center space-x-4">
-		<a class="btn-icon" href={resolve('/profile')}><ArrowLeft class="h-5 w-5" /></a>
+		<a class="btn-icon" href={resolve('/profile')} aria-label="back"
+			><ArrowLeft class="h-5 w-5" /></a
+		>
 		<ListMusic class="h-8 w-8 text-primary" />
-		<h1 class="text-2xl font-bold">playlist</h1>
 	</div>
 	<div class="mb-8">
 		{#if editing}

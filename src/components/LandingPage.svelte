@@ -1,18 +1,9 @@
 <script lang="ts">
-	import { Video } from '@lucide/svelte';
 	import AuthModal from './auth/AuthModal.svelte';
 	let open = $state(false);
 </script>
 
 <div class="min-h-screen bg-background">
-	<header class="border-b">
-		<div class="container mx-auto flex items-center justify-between px-4 py-4">
-			<div class="flex items-center space-x-2">
-				<Video class="h-8 w-8 text-primary" />
-				<h1 class="text-2xl font-bold">the home for animators</h1>
-			</div>
-		</div>
-	</header>
 	<main class="container mx-auto px-4 py-24">
 		<div class="mx-auto max-w-4xl text-center">
 			<h1

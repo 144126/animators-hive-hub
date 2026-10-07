@@ -116,14 +116,14 @@
 		</div>
 	</div>
 {:else}
-	<header class="border-b">
-		<div class="container mx-auto flex items-center space-x-4 px-4 py-4">
-			<a class="btn-icon" href={resolve('/profile')}><ArrowLeft class="h-5 w-5" /></a>
+	<main class="container mx-auto max-w-2xl px-4 py-8">
+		<div class="mb-6 flex items-center space-x-4">
+			<a class="btn-icon" href={resolve('/profile')} aria-label="back"
+				><ArrowLeft class="h-5 w-5" /></a
+			>
 			<User class="h-8 w-8 text-primary" />
 			<h1 class="text-2xl font-bold">edit profile</h1>
 		</div>
-	</header>
-	<main class="container mx-auto max-w-2xl px-4 py-8">
 		<div class="card p-6">
 			<h2 class="text-lg font-semibold">edit your profile</h2>
 			<p class="mb-6 text-sm text-muted-foreground">

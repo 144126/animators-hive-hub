@@ -107,7 +107,7 @@
 			},
 			"one_header": {
 				"s": "outcome: every page has one header and one h1, and svelte-check has no warnings.\n1. src/components/LandingPage.svelte drops its own <header> (the layout has one) and keeps one h1.\n2. src/routes/profile/edit/+page.svelte drops its extra <header>; src/routes/playlist/[playlistId]/+page.svelte keeps one h1 (the playlist name).\n3. src/components/AnimationCard.svelte shows the vote count once (drop the heart stat).\n4. src/routes/+error.svelte uses theme tokens (bg-background, text-muted-foreground, text-primary) instead of gray and blue.\n5. clear the remaining svelte-check warnings (src/components/auth/AuthModal.svelte).",
-				"d": 0,
+				"d": 1,
 				"v": "! grep -q '<nav class=\"hidden' src/components/Header.svelte",
 				"t": "! grep -q '<header' src/components/LandingPage.svelte && ! grep -q '<header' 'src/routes/profile/edit/+page.svelte' && ! grep -q 'Heart' src/components/AnimationCard.svelte && pnpm lint && pnpm exec svelte-check --tsconfig ./tsconfig.json --fail-on-warnings && pnpm build && curl -sf localhost:8080/api/me >/dev/null"
 			},

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { Video, MessageCircle, Heart } from '@lucide/svelte';
+	import { Video, MessageCircle } from '@lucide/svelte';
 	import type { Animation } from '$lib/types';
 	import Avatar from './Avatar.svelte';
 	import UpvoteButton from './UpvoteButton.svelte';
@@ -52,13 +52,8 @@
 			{/if}
 		</div>
 		<div class="flex items-center justify-between">
-			<div class="flex items-center space-x-4 text-sm text-muted-foreground">
-				<div class="flex items-center space-x-1">
-					<Heart class="h-4 w-4" /><span>{animation.upvote_count}</span>
-				</div>
-				<div class="flex items-center space-x-1">
-					<MessageCircle class="h-4 w-4" /><span>{animation.comment_count}</span>
-				</div>
+			<div class="flex items-center space-x-1 text-sm text-muted-foreground">
+				<MessageCircle class="h-4 w-4" /><span>{animation.comment_count}</span>
 			</div>
 			<div class="flex items-center space-x-2">
 				<UpvoteButton

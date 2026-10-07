@@ -12,7 +12,7 @@
 	let auth_open = $state(false);
 	const name = $derived(display_name(a.user));
 	const path = $derived(page.url.pathname);
-	let wrap: HTMLDivElement | undefined;
+	let wrap = $state<HTMLDivElement | undefined>();
 
 	async function out() {
 		menu = false;
