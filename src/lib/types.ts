@@ -22,6 +22,7 @@ export type Animation = {
 	community_id?: string | null;
 	author: Person;
 	community?: CommunityRef | null;
+	voted?: boolean;
 };
 
 export type Playlist = {

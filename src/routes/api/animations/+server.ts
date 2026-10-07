@@ -2,11 +2,12 @@ import type { RequestHandler } from './$types';
 import { fails, insert_anim, list_anims, sql } from '$lib/server/db';
 import { j } from '$lib/server/session';
 
-export const GET: RequestHandler = async ({ url, platform }) => {
+export const GET: RequestHandler = async ({ url, locals, platform }) => {
 	const items = await list_anims(sql(platform), {
 		sort: url.searchParams.get('sort') === 'top' ? 'top' : 'new',
 		community_id: url.searchParams.get('community_id') || undefined,
-		author_id: url.searchParams.get('author_id') || undefined
+		author_id: url.searchParams.get('author_id') || undefined,
+		viewer: locals.user?.id
 	});
 	return j({ items });
 };

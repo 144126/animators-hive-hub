@@ -4,8 +4,8 @@
 	import DiscoverFeed from '$components/DiscoverFeed.svelte';
 	import AddAnimationModal from '$components/AddAnimationModal.svelte';
 
+	let { data } = $props();
 	const a = auth();
-	let rev = $state(0);
 </script>
 
 {#if !a.user}
@@ -18,9 +18,9 @@
 					<h2 class="mb-2 text-3xl font-bold">discover</h2>
 					<p class="text-muted-foreground">explore amazing animations from our community</p>
 				</div>
-				<AddAnimationModal onuploaded={() => rev++} />
+				<AddAnimationModal />
 			</div>
-			<DiscoverFeed {rev} />
+			<DiscoverFeed items={data.a} sort={data.s} />
 		</div>
 	</div>
 {/if}

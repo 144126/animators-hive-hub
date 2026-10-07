@@ -152,11 +152,13 @@ type AnimDb = {
 	author_display: string;
 	community_name: string | null;
 	community_display: string | null;
+	voted: number;
 };
 
 const anim_sel = `select a.i as id, a.ti as title, a.d as description, a.im as thumbnail_url, a.v as video_url,
 	a.p as upvote_count, a.n as comment_count, a.t, a.u as author_id, a.c as community_id,
-	u.n as author_username, u.a as author_avatar, u.d as author_display, c.s as community_name, c.n as community_display
+	u.n as author_username, u.a as author_avatar, u.d as author_display, c.s as community_name, c.n as community_display,
+	exists(select 1 from v where v.a = a.i and v.u = ?) as voted
 	from a join u on u.i = a.u left join c on c.i = a.c`;
 
 function to_anim(r: AnimDb) {
@@ -178,16 +180,17 @@ function to_anim(r: AnimDb) {
 		},
 		community: r.community_name
 			? { name: r.community_name, display_name: r.community_display || r.community_name }
-			: null
+			: null,
+		voted: !!r.voted
 	};
 }
 
 export async function list_anims(
 	d: D1Database,
-	o: { sort: 'new' | 'top'; community_id?: string; author_id?: string }
+	o: { sort: 'new' | 'top'; community_id?: string; author_id?: string; viewer?: string }
 ) {
 	const w: string[] = [];
-	const b: string[] = [];
+	const b: string[] = [o.viewer || ''];
 	if (o.community_id) {
 		w.push('a.c = ?');
 		b.push(o.community_id);
@@ -204,8 +207,8 @@ export async function list_anims(
 	return results.map(to_anim);
 }
 
-export async function get_anim(d: D1Database, id: string) {
-	const r = await d.prepare(`${anim_sel} where a.i = ?`).bind(id).first<AnimDb>();
+export async function get_anim(d: D1Database, id: string, viewer = '') {
+	const r = await d.prepare(`${anim_sel} where a.i = ?`).bind(viewer, id).first<AnimDb>();
 	return r ? to_anim(r) : null;
 }
 
@@ -234,7 +237,7 @@ export async function insert_anim(
 			Date.now()
 		)
 		.run();
-	return get_anim(d, id);
+	return get_anim(d, id, x.author_id);
 }
 
 export async function set_vote(d: D1Database, user_id: string, anim_id: string, on: boolean) {
@@ -337,14 +340,14 @@ export async function list_lists(d: D1Database, user_id: string) {
 	return results.map(to_list);
 }
 
-export async function get_list(d: D1Database, id: string) {
+export async function get_list(d: D1Database, id: string, viewer = '') {
 	const r = await d.prepare(`${list_sel} where i = ?`).bind(id).first<ListDb>();
 	if (!r) return null;
 	const { results } = await d
 		.prepare(
 			`select li.i as item_id, s.* from li join (${anim_sel}) s on s.id = li.a where li.l = ? order by li.t`
 		)
-		.bind(id)
+		.bind(viewer, id)
 		.all<AnimDb & { item_id: string }>();
 	return {
 		item: to_list(r),

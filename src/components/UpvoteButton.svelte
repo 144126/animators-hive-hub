@@ -2,28 +2,25 @@
 	import { ArrowUp } from '@lucide/svelte';
 	import { auth } from '$lib/auth.svelte';
 	import { toast } from '$lib/toast.svelte';
-	import { has_upvote, set_upvote } from '$lib/data';
+	import { set_upvote } from '$lib/data';
 	import { cn } from '$lib/utils';
 
 	let {
 		post_id,
 		count,
+		voted: initial = false,
 		variant = 'default'
-	}: { post_id: string; count: number; variant?: 'default' | 'minimal' } = $props();
+	}: {
+		post_id: string;
+		count: number;
+		voted?: boolean;
+		variant?: 'default' | 'minimal';
+	} = $props();
 
 	const a = auth();
-	let voted = $state(false);
+	let voted = $derived(initial);
 	let busy = $state(false);
 	let n = $derived(count);
-
-	$effect(() => {
-		const uid = a.user?.id;
-		if (!uid) {
-			voted = false;
-			return;
-		}
-		has_upvote(uid, post_id).then((v) => (voted = v));
-	});
 
 	async function toggle(e: MouseEvent) {
 		e.stopPropagation();

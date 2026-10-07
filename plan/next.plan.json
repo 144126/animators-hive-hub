@@ -11,7 +11,7 @@
 			},
 			"ssr_feed": {
 				"s": "outcome: discover and community pages arrive with their first 20 animations, and cards know the viewer's votes.\n1. list_anims and get_anim take an optional viewer id and add `voted` (left join v) to each row; add `voted?: boolean` to Animation in src/lib/types.ts. src/components/UpvoteButton.svelte takes `voted` as a prop and stops fetching /api/upvotes per card.\n2. src/routes/+page.server.ts: signed in, `{ a, s }` (a = animations, s = sort 'new' or 'top' from ?sort); signed out, `{ a: [], s: 'new' }`. src/routes/c/[communityName]/+page.server.ts: `{ c, a, s }` (c = comm_by_slug, `error(404)` when missing).\n3. src/components/DiscoverFeed.svelte is presentational (props items, sort); the new/top toggle is a GET <form> with two `name=\"sort\"` buttons.\n4. src/components/AddAnimationModal.svelte calls `invalidateAll()` after a successful create; drop the `onuploaded` and `rev` plumbing.",
-				"d": 0,
+				"d": 1,
 				"v": "test -f src/routes/+layout.server.ts",
 				"t": "test -f src/routes/+page.server.ts && test -f 'src/routes/c/[communityName]/+page.server.ts' && ! grep -q 'list_animations' src/components/DiscoverFeed.svelte && ! grep -q 'has_upvote' src/components/UpvoteButton.svelte && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
 			},

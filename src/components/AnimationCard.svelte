@@ -58,7 +58,11 @@
 				</div>
 			</div>
 			<div class="flex items-center space-x-2">
-				<UpvoteButton post_id={animation.id} count={animation.upvote_count} />
+				<UpvoteButton
+					post_id={animation.id}
+					count={animation.upvote_count}
+					voted={animation.voted}
+				/>
 				<AddToPlaylistModal animation_id={animation.id} title={animation.title} />
 			</div>
 		</div>

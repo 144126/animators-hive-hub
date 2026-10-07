@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import { Plus, Upload } from '@lucide/svelte';
 	import { auth } from '$lib/auth.svelte';
 	import { toast } from '$lib/toast.svelte';
@@ -7,7 +8,6 @@
 	import CommunityCombobox from './CommunityCombobox.svelte';
 	import FileUploadSection from './FileUploadSection.svelte';
 
-	let { onuploaded }: { onuploaded?: () => void } = $props();
 	const a = auth();
 	let open = $state(false);
 	let title = $state('');
@@ -61,7 +61,7 @@
 			toast('animation uploaded successfully!');
 			open = false;
 			reset();
-			onuploaded?.();
+			await invalidateAll();
 		} catch {
 			toast('error', 'failed to upload animation', 'err');
 		} finally {
