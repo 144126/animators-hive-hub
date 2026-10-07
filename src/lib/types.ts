@@ -24,7 +24,6 @@ export type Animation = {
 	community?: CommunityRef | null;
 };
 
-
 export type Playlist = {
 	id: string;
 	name: string;

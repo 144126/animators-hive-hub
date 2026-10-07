@@ -28,10 +28,20 @@
 			{video ? video.name : 'select video file'}
 		</button>
 		{#if video}
-			<button type="button" class="btn-icon" onclick={() => (video = null)} {disabled}><X class="h-4 w-4" /></button>
+			<button type="button" class="btn-icon" onclick={() => (video = null)} {disabled}
+				><X class="h-4 w-4" /></button
+			>
 		{/if}
 	</div>
-	<input bind:this={video_el} id="video-file" type="file" accept="video/*" class="hidden" onchange={pick_video} {disabled} />
+	<input
+		bind:this={video_el}
+		id="video-file"
+		type="file"
+		accept="video/*"
+		class="hidden"
+		onchange={pick_video}
+		{disabled}
+	/>
 	<p class="text-xs text-muted-foreground">supported formats: mp4, mov, avi, etc. max size: 50mb</p>
 </div>
 <div class="space-y-2">
@@ -42,9 +52,21 @@
 			{thumb ? thumb.name : 'select thumbnail image'}
 		</button>
 		{#if thumb}
-			<button type="button" class="btn-icon" onclick={() => (thumb = null)} {disabled}><X class="h-4 w-4" /></button>
+			<button type="button" class="btn-icon" onclick={() => (thumb = null)} {disabled}
+				><X class="h-4 w-4" /></button
+			>
 		{/if}
 	</div>
-	<input bind:this={thumb_el} id="thumb-file" type="file" accept="image/*" class="hidden" onchange={pick_thumb} {disabled} />
-	<p class="text-xs text-muted-foreground">if not provided, a thumbnail will be auto-generated from the video. max size: 5mb</p>
+	<input
+		bind:this={thumb_el}
+		id="thumb-file"
+		type="file"
+		accept="image/*"
+		class="hidden"
+		onchange={pick_thumb}
+		{disabled}
+	/>
+	<p class="text-xs text-muted-foreground">
+		if not provided, a thumbnail will be auto-generated from the video. max size: 5mb
+	</p>
 </div>

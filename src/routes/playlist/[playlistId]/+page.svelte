@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { ArrowLeft, ListMusic } from '@lucide/svelte';
 	import { auth } from '$lib/auth.svelte';
@@ -36,24 +37,30 @@
 	<div class="flex min-h-screen items-center justify-center">
 		<div class="text-center">
 			<p class="mb-4 text-muted-foreground">playlist not found.</p>
-			<a class="btn" href="/profile">back to profile</a>
+			<a class="btn" href={resolve('/profile')}>back to profile</a>
 		</div>
 	</div>
 {:else}
 	<main class="container mx-auto px-4 py-8">
 		<div class="mb-8 flex items-center space-x-4">
-			<a class="btn-icon" href="/profile"><ArrowLeft class="h-5 w-5" /></a>
+			<a class="btn-icon" href={resolve('/profile')}><ArrowLeft class="h-5 w-5" /></a>
 			<ListMusic class="h-8 w-8 text-primary" />
 			<h1 class="text-2xl font-bold">playlist</h1>
 		</div>
 		<div class="mb-8">
 			<h1 class="mb-4 text-4xl font-bold">{playlist.name}</h1>
-			{#if playlist.description}<p class="mb-4 text-lg text-muted-foreground">{playlist.description}</p>{/if}
-			<p class="text-sm text-muted-foreground">created {new Date(playlist.created_at).toLocaleDateString()} · {items.length} animations</p>
+			{#if playlist.description}<p class="mb-4 text-lg text-muted-foreground">
+					{playlist.description}
+				</p>{/if}
+			<p class="text-sm text-muted-foreground">
+				created {new Date(playlist.created_at).toLocaleDateString()} · {items.length} animations
+			</p>
 		</div>
 		<div class="card p-6">
 			<h2 class="text-lg font-semibold">animations</h2>
-			<p class="mb-4 text-sm text-muted-foreground">{owner ? 'your saved animations' : 'animations in this playlist'}</p>
+			<p class="mb-4 text-sm text-muted-foreground">
+				{owner ? 'your saved animations' : 'animations in this playlist'}
+			</p>
 			{#if items.filter((i) => i.animations).length}
 				<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 					{#each items as item (item.id)}

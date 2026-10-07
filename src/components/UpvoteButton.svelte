@@ -14,11 +14,7 @@
 	const a = auth();
 	let voted = $state(false);
 	let busy = $state(false);
-	let n = $state(count);
-
-	$effect(() => {
-		n = count;
-	});
+	let n = $derived(count);
 
 	$effect(() => {
 		const uid = a.user?.id;
@@ -63,7 +59,9 @@
 	class={cn(
 		variant === 'minimal' ? 'btn-ghost-sm space-x-1' : 'btn-outline-sm space-x-2',
 		voted && variant === 'minimal' && 'text-orange-500',
-		voted && variant !== 'minimal' && 'border-orange-500 bg-orange-500 text-white hover:bg-orange-600'
+		voted &&
+			variant !== 'minimal' &&
+			'border-orange-500 bg-orange-500 text-white hover:bg-orange-600'
 	)}
 >
 	<ArrowUp class={cn('h-4 w-4', voted && 'fill-current')} />

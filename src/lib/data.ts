@@ -8,12 +8,10 @@ export async function list_animations(sort: 'new' | 'top', community_id?: string
 	return items;
 }
 
-
 export async function get_animation(id: string) {
 	const { item } = await api<{ item: Animation }>(`/api/animations/${id}`);
 	return item;
 }
-
 
 export async function list_communities() {
 	const { items } = await api<{ items: Community[] }>('/api/communities');
@@ -21,7 +19,9 @@ export async function list_communities() {
 }
 
 export async function search_communities(term: string) {
-	const { items } = await api<{ items: Community[] }>(`/api/communities?q=${encodeURIComponent(term)}`);
+	const { items } = await api<{ items: Community[] }>(
+		`/api/communities?q=${encodeURIComponent(term)}`
+	);
 	return items.map((c) => ({ id: c.id, name: c.name, display_name: c.display_name }));
 }
 
@@ -45,12 +45,16 @@ export async function user_playlists(user_id: string) {
 }
 
 export async function get_playlist(id: string) {
-	const { item } = await api<{ item: Playlist & { user_id: string; created_at: string } }>(`/api/playlists/${id}`);
+	const { item } = await api<{ item: Playlist & { user_id: string; created_at: string } }>(
+		`/api/playlists/${id}`
+	);
 	return item;
 }
 
 export async function playlist_items(playlist_id: string) {
-	const { items } = await api<{ items: { id: string; animations: Animation | null }[] }>(`/api/playlists/${playlist_id}`);
+	const { items } = await api<{ items: { id: string; animations: Animation | null }[] }>(
+		`/api/playlists/${playlist_id}`
+	);
 	return items;
 }
 
@@ -83,7 +87,10 @@ export async function create_animation(body: {
 	thumbnail_url: string | null;
 	community_id: string | null;
 }) {
-	const { item } = await api<{ item: Animation }>('/api/animations', { method: 'POST', body: JSON.stringify(body) });
+	const { item } = await api<{ item: Animation }>('/api/animations', {
+		method: 'POST',
+		body: JSON.stringify(body)
+	});
 	return item;
 }
 
@@ -96,7 +103,10 @@ export async function create_playlist(name: string, description: string | null) 
 }
 
 export async function add_to_playlist(playlist_id: string, animation_id: string) {
-	await api('/api/playlist-items', { method: 'POST', body: JSON.stringify({ playlist_id, animation_id }) });
+	await api('/api/playlist-items', {
+		method: 'POST',
+		body: JSON.stringify({ playlist_id, animation_id })
+	});
 }
 
 export async function post_comment(post_id: string, content: string) {

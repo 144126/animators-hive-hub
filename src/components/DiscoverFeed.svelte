@@ -32,8 +32,16 @@
 
 <div class="space-y-6">
 	<div class="flex space-x-2">
-		<button class={sort === 'new' ? 'btn-sm' : 'btn-outline-sm'} type="button" onclick={() => (sort = 'new')}>new</button>
-		<button class={sort === 'top' ? 'btn-sm' : 'btn-outline-sm'} type="button" onclick={() => (sort = 'top')}>top</button>
+		<button
+			class={sort === 'new' ? 'btn-sm' : 'btn-outline-sm'}
+			type="button"
+			onclick={() => (sort = 'new')}>new</button
+		>
+		<button
+			class={sort === 'top' ? 'btn-sm' : 'btn-outline-sm'}
+			type="button"
+			onclick={() => (sort = 'top')}>top</button
+		>
 	</div>
 	{#if err && !animations.length}
 		<div class="py-12 text-center">

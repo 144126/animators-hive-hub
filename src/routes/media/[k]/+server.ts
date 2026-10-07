@@ -14,10 +14,14 @@ export const GET: RequestHandler = async ({ params, request, platform }) => {
 			start = Number(m[1]);
 			if (m[2]) end = Math.min(Number(m[2]), size - 1);
 		} else start = Math.max(0, size - Number(m[2]));
-		if (start > end) return new Response(null, { status: 416, headers: { 'content-range': `bytes */${size}` } });
+		if (start > end)
+			return new Response(null, { status: 416, headers: { 'content-range': `bytes */${size}` } });
 	}
 	const partial = !!m && (start > 0 || end < size - 1 || !!range);
-	const o = await platform!.env.M.get(params.k!, partial ? { range: { offset: start, length: end - start + 1 } } : {});
+	const o = await platform!.env.M.get(
+		params.k!,
+		partial ? { range: { offset: start, length: end - start + 1 } } : {}
+	);
 	if (!o) error(404, 'not found');
 	const headers: Record<string, string> = {
 		'content-type': head.httpMetadata?.contentType || 'application/octet-stream',
@@ -27,5 +31,8 @@ export const GET: RequestHandler = async ({ params, request, platform }) => {
 		'content-length': String(end - start + 1)
 	};
 	if (partial) headers['content-range'] = `bytes ${start}-${end}/${size}`;
-	return new Response(o.body as unknown as ReadableStream, { status: partial ? 206 : 200, headers });
+	return new Response(o.body as unknown as ReadableStream, {
+		status: partial ? 206 : 200,
+		headers
+	});
 };

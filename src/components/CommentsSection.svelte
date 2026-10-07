@@ -52,7 +52,8 @@
 	<div class="space-y-6 p-6">
 		{#if a.user}
 			<form onsubmit={submit} class="space-y-4">
-				<textarea class="area min-h-[100px]" placeholder="write a comment..." bind:value={text}></textarea>
+				<textarea class="area min-h-[100px]" placeholder="write a comment..." bind:value={text}
+				></textarea>
 				<div class="flex justify-end">
 					<button class="btn-sm" type="submit" disabled={!text.trim() || busy}>
 						<Send class="mr-2 h-4 w-4" />
@@ -72,13 +73,17 @@
 						<div class="flex items-center space-x-2">
 							<Avatar src={c.author.avatar_url} name={c.author.username} class="h-6 w-6" />
 							<span class="text-sm font-medium">{c.author.display_name || c.author.username}</span>
-							<span class="text-xs text-muted-foreground">{new Date(c.created_at).toLocaleDateString()}</span>
+							<span class="text-xs text-muted-foreground"
+								>{new Date(c.created_at).toLocaleDateString()}</span
+							>
 						</div>
 						<p class="pl-8 text-sm">{c.content}</p>
 					</div>
 				{/each}
 			{:else}
-				<div class="py-6 text-center text-muted-foreground">no comments yet. be the first to comment!</div>
+				<div class="py-6 text-center text-muted-foreground">
+					no comments yet. be the first to comment!
+				</div>
 			{/if}
 		</div>
 	</div>

@@ -11,7 +11,9 @@ function secret(e: RequestEvent) {
 
 export async function hash(pass: string, salt?: string) {
 	const s = salt ?? crypto.randomUUID();
-	const key = await crypto.subtle.importKey('raw', te.encode(pass), 'PBKDF2', false, ['deriveBits']);
+	const key = await crypto.subtle.importKey('raw', te.encode(pass), 'PBKDF2', false, [
+		'deriveBits'
+	]);
 	const bits = await crypto.subtle.deriveBits(
 		{ name: 'PBKDF2', salt: te.encode(s), iterations: 80_000, hash: 'SHA-256' },
 		key,
@@ -26,7 +28,13 @@ export async function check(pass: string, stored: string) {
 }
 
 async function sign(msg: string, key: string) {
-	const k = await crypto.subtle.importKey('raw', te.encode(key), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+	const k = await crypto.subtle.importKey(
+		'raw',
+		te.encode(key),
+		{ name: 'HMAC', hash: 'SHA-256' },
+		false,
+		['sign']
+	);
 	const mac = await crypto.subtle.sign('HMAC', k, te.encode(msg));
 	return btoa(String.fromCharCode(...new Uint8Array(mac)));
 }
@@ -88,6 +96,8 @@ export function need_user(e: RequestEvent) {
 }
 
 export function j(data: unknown, status = 200) {
-	return new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json' } });
+	return new Response(JSON.stringify(data), {
+		status,
+		headers: { 'content-type': 'application/json' }
+	});
 }
-

@@ -24,7 +24,9 @@
 		<div class="h-8 w-8 animate-spin rounded-full border-b-2 border-primary"></div>
 	</div>
 {:else if err || !animation}
-	<div class="flex min-h-screen items-center justify-center text-muted-foreground">animation not found</div>
+	<div class="flex min-h-screen items-center justify-center text-muted-foreground">
+		animation not found
+	</div>
 {:else}
 	<AnimationDetailView {animation} />
 {/if}

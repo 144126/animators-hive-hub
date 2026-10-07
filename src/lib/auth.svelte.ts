@@ -82,7 +82,9 @@ export async function sign_out() {
 
 export function display_name(u: AuthUser | null) {
 	if (!u) return 'user';
-	return u.user_metadata?.display_name || u.user_metadata?.username || u.email?.split('@')[0] || 'user';
+	return (
+		u.user_metadata?.display_name || u.user_metadata?.username || u.email?.split('@')[0] || 'user'
+	);
 }
 
 export function set_user(u: AuthUser | null) {

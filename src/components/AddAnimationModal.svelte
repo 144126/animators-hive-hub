@@ -32,9 +32,12 @@
 		if (!a.user) return toast('error', 'you must be logged in to upload animations', 'err');
 		if (!title.trim()) return toast('error', 'title is required', 'err');
 		if (!video) return toast('error', 'please select a video file', 'err');
-		if (video.size > 50 * 1024 * 1024) return toast('error', 'video file size must be less than 50mb', 'err');
-		if (thumb && thumb.size > 5 * 1024 * 1024) return toast('error', 'image file size must be less than 5mb', 'err');
-		if (community_id === 'create-new' && !new_name.trim()) return toast('error', 'please enter a community name', 'err');
+		if (video.size > 50 * 1024 * 1024)
+			return toast('error', 'video file size must be less than 50mb', 'err');
+		if (thumb && thumb.size > 5 * 1024 * 1024)
+			return toast('error', 'image file size must be less than 5mb', 'err');
+		if (community_id === 'create-new' && !new_name.trim())
+			return toast('error', 'please enter a community name', 'err');
 		busy = true;
 		try {
 			let cid: string | null = community_id === 'none' || !community_id ? null : community_id;
@@ -72,18 +75,44 @@
 		<Plus class="mr-2 h-4 w-4" /> add video
 	</button>
 	{#if open}
-		<div class="overlay" onclick={() => !busy && (open = false)} onkeydown={(e) => e.key === 'Escape' && !busy && (open = false)} role="presentation">
-			<div class="modal max-h-[90vh] max-w-[600px] overflow-y-auto" tabindex="-1" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+		<div
+			class="overlay"
+			onclick={() => !busy && (open = false)}
+			onkeydown={(e) => e.key === 'Escape' && !busy && (open = false)}
+			role="presentation"
+		>
+			<div
+				class="modal max-h-[90vh] max-w-[600px] overflow-y-auto"
+				tabindex="-1"
+				onclick={(e) => e.stopPropagation()}
+				onkeydown={(e) => e.stopPropagation()}
+				role="dialog"
+				aria-modal="true"
+			>
 				<h2 class="text-lg font-semibold">upload new animation</h2>
 				<p class="mb-4 text-sm text-muted-foreground">share your animation with the community</p>
 				<form onsubmit={submit} class="space-y-6">
 					<div class="space-y-2">
 						<label class="text-sm font-medium" for="title">title *</label>
-						<input id="title" class="field" bind:value={title} placeholder="enter animation title" required disabled={busy} />
+						<input
+							id="title"
+							class="field"
+							bind:value={title}
+							placeholder="enter animation title"
+							required
+							disabled={busy}
+						/>
 					</div>
 					<div class="space-y-2">
 						<label class="text-sm font-medium" for="desc">description</label>
-						<textarea id="desc" class="area" rows="3" bind:value={description} placeholder="describe your animation..." disabled={busy}></textarea>
+						<textarea
+							id="desc"
+							class="area"
+							rows="3"
+							bind:value={description}
+							placeholder="describe your animation..."
+							disabled={busy}
+						></textarea>
 					</div>
 					<FileUploadSection bind:video bind:thumb disabled={busy} />
 					<div class="space-y-2">
@@ -93,11 +122,19 @@
 					{#if community_id === 'create-new'}
 						<div class="space-y-2">
 							<label class="text-sm font-medium" for="newc">new community name *</label>
-							<input id="newc" class="field" bind:value={new_name} placeholder="enter community name" disabled={busy} />
+							<input
+								id="newc"
+								class="field"
+								bind:value={new_name}
+								placeholder="enter community name"
+								disabled={busy}
+							/>
 						</div>
 					{/if}
 					<div class="flex justify-end space-x-3">
-						<button class="btn-outline" type="button" onclick={() => (open = false)} disabled={busy}>cancel</button>
+						<button class="btn-outline" type="button" onclick={() => (open = false)} disabled={busy}
+							>cancel</button
+						>
 						<button class="btn" type="submit" disabled={busy}>
 							<Upload class="mr-2 h-4 w-4" />
 							{busy ? 'uploading...' : 'upload animation'}

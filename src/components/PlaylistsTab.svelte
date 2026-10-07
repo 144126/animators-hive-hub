@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { Loader2, Plus, ListMusic } from '@lucide/svelte';
 	import { auth } from '$lib/auth.svelte';
 	import { toast } from '$lib/toast.svelte';
@@ -57,7 +58,9 @@
 				<h2 class="text-lg font-semibold">your playlists</h2>
 				<p class="text-sm text-muted-foreground">collections of animations you've saved</p>
 			</div>
-			<button class="btn" type="button" onclick={() => (open = true)}><Plus class="mr-2 h-4 w-4" /> create playlist</button>
+			<button class="btn" type="button" onclick={() => (open = true)}
+				><Plus class="mr-2 h-4 w-4" /> create playlist</button
+			>
 		</div>
 		<div class="p-6 pt-0">
 			{#if playlists.length}
@@ -65,8 +68,13 @@
 					{#each playlists as p (p.id)}
 						<div class="card flex flex-col p-4">
 							<h3 class="line-clamp-2 font-semibold">{p.name}</h3>
-							<p class="mb-4 line-clamp-3 min-h-[60px] text-sm text-muted-foreground">{p.description || 'no description.'}</p>
-							<a class="btn-outline w-full" href="/playlist/{p.id}">view playlist</a>
+							<p class="mb-4 line-clamp-3 min-h-[60px] text-sm text-muted-foreground">
+								{p.description || 'no description.'}
+							</p>
+							<a
+								class="btn-outline w-full"
+								href={resolve('/playlist/[playlistId]', { playlistId: p.id })}>view playlist</a
+							>
 						</div>
 					{/each}
 				</div>
@@ -74,7 +82,9 @@
 				<div class="py-12 text-center">
 					<ListMusic class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
 					<p class="text-muted-foreground">no playlists yet</p>
-					<p class="mt-2 text-sm text-muted-foreground">create playlists to organize your favorite animations!</p>
+					<p class="mt-2 text-sm text-muted-foreground">
+						create playlists to organize your favorite animations!
+					</p>
 				</div>
 			{/if}
 		</div>
@@ -82,14 +92,35 @@
 {/if}
 
 {#if open}
-	<div class="overlay" onclick={() => (open = false)} onkeydown={(e) => e.key === 'Escape' && (open = false)} role="presentation">
-		<div class="modal max-w-md" tabindex="-1" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+	<div
+		class="overlay"
+		onclick={() => (open = false)}
+		onkeydown={(e) => e.key === 'Escape' && (open = false)}
+		role="presentation"
+	>
+		<div
+			class="modal max-w-md"
+			tabindex="-1"
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+		>
 			<h2 class="text-lg font-semibold">create a new playlist</h2>
-			<p class="mb-4 text-sm text-muted-foreground">give your playlist a name and an optional description.</p>
+			<p class="mb-4 text-sm text-muted-foreground">
+				give your playlist a name and an optional description.
+			</p>
 			<form onsubmit={create} class="space-y-4">
 				<div class="space-y-2">
 					<label class="text-sm font-medium" for="pname">name</label>
-					<input id="pname" class="field" bind:value={name} placeholder="e.g., epic fights" required maxlength="100" />
+					<input
+						id="pname"
+						class="field"
+						bind:value={name}
+						placeholder="e.g., epic fights"
+						required
+						maxlength="100"
+					/>
 				</div>
 				<div class="space-y-2">
 					<label class="text-sm font-medium" for="pdesc">description (optional)</label>
@@ -97,7 +128,9 @@
 				</div>
 				<div class="flex justify-end gap-2">
 					<button class="btn-ghost" type="button" onclick={() => (open = false)}>cancel</button>
-					<button class="btn" type="submit" disabled={busy}>{busy ? 'creating...' : 'create'}</button>
+					<button class="btn" type="submit" disabled={busy}
+						>{busy ? 'creating...' : 'create'}</button
+					>
 				</div>
 			</form>
 		</div>

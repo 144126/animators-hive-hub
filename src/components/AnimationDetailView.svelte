@@ -54,13 +54,24 @@
 			<div class="card overflow-hidden">
 				<div class="relative aspect-video bg-black">
 					{#if animation.video_url}
-						<video src={animation.video_url} poster={animation.thumbnail_url || undefined} controls class="h-full w-full">
+						<video
+							src={animation.video_url}
+							poster={animation.thumbnail_url || undefined}
+							controls
+							class="h-full w-full"
+						>
 							<track kind="captions" />
 						</video>
 					{:else if animation.thumbnail_url}
-						<img src={animation.thumbnail_url} alt={animation.title} class="h-full w-full object-cover" />
+						<img
+							src={animation.thumbnail_url}
+							alt={animation.title}
+							class="h-full w-full object-cover"
+						/>
 					{:else}
-						<div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/20 to-primary/10">
+						<div
+							class="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/20 to-primary/10"
+						>
 							<Play class="h-16 w-16 text-primary/50" />
 						</div>
 					{/if}
@@ -70,19 +81,30 @@
 				<h1 class="text-3xl font-bold">{animation.title}</h1>
 				<div class="flex items-center justify-between">
 					<div class="flex items-center space-x-3">
-						<Avatar src={animation.author.avatar_url} name={animation.author.username} class="h-10 w-10" />
+						<Avatar
+							src={animation.author.avatar_url}
+							name={animation.author.username}
+							class="h-10 w-10"
+						/>
 						<div>
-							<p class="font-medium">{animation.author.display_name || animation.author.username}</p>
+							<p class="font-medium">
+								{animation.author.display_name || animation.author.username}
+							</p>
 							<p class="text-sm text-muted-foreground">@{animation.author.username}</p>
 						</div>
 					</div>
 					{#if animation.community}
-						<span class="rounded-full bg-secondary px-2 py-0.5 text-sm">{animation.community.display_name}</span>
+						<span class="rounded-full bg-secondary px-2 py-0.5 text-sm"
+							>{animation.community.display_name}</span
+						>
 					{/if}
 				</div>
 				<div class="flex items-center space-x-6">
 					<button
-						class={cn('btn-outline-sm space-x-2', voted && 'border-orange-500 bg-orange-500 text-white hover:bg-orange-600')}
+						class={cn(
+							'btn-outline-sm space-x-2',
+							voted && 'border-orange-500 bg-orange-500 text-white hover:bg-orange-600'
+						)}
 						type="button"
 						onclick={toggle}
 						disabled={busy}
@@ -93,7 +115,9 @@
 						<MessageCircle class="h-4 w-4" />
 						<span>{animation.comment_count} comments</span>
 					</div>
-					<span class="text-sm text-muted-foreground">{new Date(animation.created_at).toLocaleDateString()}</span>
+					<span class="text-sm text-muted-foreground"
+						>{new Date(animation.created_at).toLocaleDateString()}</span
+					>
 				</div>
 				{#if animation.description}
 					<div class="card p-6">

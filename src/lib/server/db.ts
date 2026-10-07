@@ -25,9 +25,19 @@ export type CommRow = {
 	creator_id: string;
 };
 
-export type ListRow = { id: string; name: string; description: string | null; user_id: string; created_at: string };
+export type ListRow = {
+	id: string;
+	name: string;
+	description: string | null;
+	user_id: string;
+	created_at: string;
+};
 
-export function person(u: UserRow | null): { username: string; avatar_url: string | null; display_name: string | null } {
+export function person(u: UserRow | null): {
+	username: string;
+	avatar_url: string | null;
+	display_name: string | null;
+} {
 	return {
 		username: u?.username || 'user',
 		avatar_url: u?.avatar_url || null,
@@ -63,7 +73,10 @@ export async function insert_user(d: D1Database, u: UserRow) {
 		.run();
 }
 
-export async function find_or_create_google(d: D1Database, g: { email: string; name: string; picture: string }) {
+export async function find_or_create_google(
+	d: D1Database,
+	g: { email: string; name: string; picture: string }
+) {
 	const email = g.email.trim().toLowerCase();
 	const existing = await user_by_email(d, email);
 	if (existing) {
@@ -163,11 +176,16 @@ function to_anim(r: AnimDb) {
 			avatar_url: r.author_avatar || null,
 			display_name: r.author_display || r.author_username
 		},
-		community: r.community_name ? { name: r.community_name, display_name: r.community_display || r.community_name } : null
+		community: r.community_name
+			? { name: r.community_name, display_name: r.community_display || r.community_name }
+			: null
 	};
 }
 
-export async function list_anims(d: D1Database, o: { sort: 'new' | 'top'; community_id?: string; author_id?: string }) {
+export async function list_anims(
+	d: D1Database,
+	o: { sort: 'new' | 'top'; community_id?: string; author_id?: string }
+) {
 	const w: string[] = [];
 	const b: string[] = [];
 	if (o.community_id) {
@@ -179,7 +197,10 @@ export async function list_anims(d: D1Database, o: { sort: 'new' | 'top'; commun
 		b.push(o.author_id);
 	}
 	const q = `${anim_sel}${w.length ? ` where ${w.join(' and ')}` : ''} order by ${o.sort === 'top' ? 'a.p desc, ' : ''}a.t desc limit 20`;
-	const { results } = await d.prepare(q).bind(...b).all<AnimDb>();
+	const { results } = await d
+		.prepare(q)
+		.bind(...b)
+		.all<AnimDb>();
 	return results.map(to_anim);
 }
 
@@ -202,7 +223,16 @@ export async function insert_anim(
 	const id = crypto.randomUUID();
 	await d
 		.prepare('insert into a (i, u, c, ti, d, v, im, t) values (?, ?, ?, ?, ?, ?, ?, ?)')
-		.bind(id, x.author_id, x.community_id, x.title, x.description, x.video_url, x.thumbnail_url, Date.now())
+		.bind(
+			id,
+			x.author_id,
+			x.community_id,
+			x.title,
+			x.description,
+			x.video_url,
+			x.thumbnail_url,
+			Date.now()
+		)
 		.run();
 	return get_anim(d, id);
 }
@@ -210,17 +240,29 @@ export async function insert_anim(
 export async function set_vote(d: D1Database, user_id: string, anim_id: string, on: boolean) {
 	await d.batch([
 		on
-			? d.prepare('insert or ignore into v (u, a, t) values (?, ?, ?)').bind(user_id, anim_id, Date.now())
+			? d
+					.prepare('insert or ignore into v (u, a, t) values (?, ?, ?)')
+					.bind(user_id, anim_id, Date.now())
 			: d.prepare('delete from v where u = ? and a = ?').bind(user_id, anim_id),
 		d.prepare('update a set p = (select count(*) from v where v.a = ?1) where i = ?1').bind(anim_id)
 	]);
 }
 
 export async function has_vote(d: D1Database, user_id: string, anim_id: string) {
-	return !!(await d.prepare('select 1 from v where u = ? and a = ?').bind(user_id, anim_id).first());
+	return !!(await d
+		.prepare('select 1 from v where u = ? and a = ?')
+		.bind(user_id, anim_id)
+		.first());
 }
 
-type NoteDb = { id: string; content: string; t: number; username: string; avatar: string; display: string };
+type NoteDb = {
+	id: string;
+	content: string;
+	t: number;
+	username: string;
+	avatar: string;
+	display: string;
+};
 
 export async function list_notes(d: D1Database, anim_id: string) {
 	const { results } = await d
@@ -233,15 +275,26 @@ export async function list_notes(d: D1Database, anim_id: string) {
 		id: r.id,
 		content: r.content,
 		created_at: iso(r.t),
-		author: { username: r.username, avatar_url: r.avatar || null, display_name: r.display || r.username }
+		author: {
+			username: r.username,
+			avatar_url: r.avatar || null,
+			display_name: r.display || r.username
+		}
 	}));
 }
 
-export async function insert_note(d: D1Database, user_id: string, anim_id: string, content: string) {
+export async function insert_note(
+	d: D1Database,
+	user_id: string,
+	anim_id: string,
+	content: string
+) {
 	const id = crypto.randomUUID();
 	const t = Date.now();
 	await d.batch([
-		d.prepare('insert into n (i, a, u, x, t) values (?, ?, ?, ?, ?)').bind(id, anim_id, user_id, content, t),
+		d
+			.prepare('insert into n (i, a, u, x, t) values (?, ?, ?, ?, ?)')
+			.bind(id, anim_id, user_id, content, t),
 		d.prepare('update a set n = (select count(*) from n where n.a = ?1) where i = ?1').bind(anim_id)
 	]);
 	return { id, content, created_at: iso(t), author_id: user_id, post_id: anim_id };
@@ -263,7 +316,10 @@ export async function comm_by_slug(d: D1Database, slug: string) {
 
 export async function insert_comm(d: D1Database, user_id: string, slug: string, name: string) {
 	const id = crypto.randomUUID();
-	await d.prepare('insert into c (i, s, n, u, t) values (?, ?, ?, ?, ?)').bind(id, slug, name, user_id, Date.now()).run();
+	await d
+		.prepare('insert into c (i, s, n, u, t) values (?, ?, ?, ?, ?)')
+		.bind(id, slug, name, user_id, Date.now())
+		.run();
 	return comm_by_slug(d, slug);
 }
 
@@ -274,7 +330,10 @@ const list_sel = 'select i as id, n as name, d as description, u as user_id, t f
 const to_list = ({ t, ...x }: ListDb): ListRow => ({ ...x, created_at: iso(t) });
 
 export async function list_lists(d: D1Database, user_id: string) {
-	const { results } = await d.prepare(`${list_sel} where u = ? order by t desc`).bind(user_id).all<ListDb>();
+	const { results } = await d
+		.prepare(`${list_sel} where u = ? order by t desc`)
+		.bind(user_id)
+		.all<ListDb>();
 	return results.map(to_list);
 }
 
@@ -282,14 +341,30 @@ export async function get_list(d: D1Database, id: string) {
 	const r = await d.prepare(`${list_sel} where i = ?`).bind(id).first<ListDb>();
 	if (!r) return null;
 	const { results } = await d
-		.prepare(`select li.i as item_id, s.* from li join (${anim_sel}) s on s.id = li.a where li.l = ? order by li.t`)
+		.prepare(
+			`select li.i as item_id, s.* from li join (${anim_sel}) s on s.id = li.a where li.l = ? order by li.t`
+		)
 		.bind(id)
 		.all<AnimDb & { item_id: string }>();
-	return { item: to_list(r), items: results.map((x) => ({ id: x.item_id, animations: to_anim(x) })) };
+	return {
+		item: to_list(r),
+		items: results.map((x) => ({ id: x.item_id, animations: to_anim(x) }))
+	};
 }
 
-export async function insert_list(d: D1Database, user_id: string, name: string, description: string | null) {
-	const row: ListRow = { id: crypto.randomUUID(), name, description, user_id, created_at: iso(Date.now()) };
+export async function insert_list(
+	d: D1Database,
+	user_id: string,
+	name: string,
+	description: string | null
+) {
+	const row: ListRow = {
+		id: crypto.randomUUID(),
+		name,
+		description,
+		user_id,
+		created_at: iso(Date.now())
+	};
 	await d
 		.prepare('insert into l (i, u, n, d, t) values (?, ?, ?, ?, ?)')
 		.bind(row.id, user_id, name, description, Date.parse(row.created_at))
@@ -297,7 +372,12 @@ export async function insert_list(d: D1Database, user_id: string, name: string, 
 	return row;
 }
 
-export async function insert_item(d: D1Database, user_id: string, list_id: string, anim_id: string) {
+export async function insert_item(
+	d: D1Database,
+	user_id: string,
+	list_id: string,
+	anim_id: string
+) {
 	const owner = await d.prepare('select u from l where i = ?').bind(list_id).first<{ u: string }>();
 	if (!owner) return 'not found';
 	if (owner.u !== user_id) return 'not your playlist';

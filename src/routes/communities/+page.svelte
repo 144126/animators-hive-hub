@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { Loader2 } from '@lucide/svelte';
 	import { list_communities } from '$lib/data';
 	import Avatar from '$components/Avatar.svelte';
@@ -22,7 +23,10 @@
 		<h1 class="mb-6 text-3xl font-bold">communities</h1>
 		<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 			{#each communities as c (c.name)}
-				<a href="/c/{c.name}" class="card block h-full p-4 hover:shadow-lg">
+				<a
+					href={resolve('/c/[communityName]', { communityName: c.name })}
+					class="card block h-full p-4 hover:shadow-lg"
+				>
 					<div class="mb-2 flex items-center space-x-4">
 						<Avatar src={c.avatar_url} name={c.display_name} class="h-12 w-12" />
 						<div>

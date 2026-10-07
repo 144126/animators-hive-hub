@@ -38,7 +38,8 @@
 			open = false;
 		} catch (e) {
 			const msg = e instanceof Error ? e.message : '';
-			if (msg.includes('duplicate key value')) toast('already in playlist', 'this animation is already in that playlist', 'err');
+			if (msg.includes('duplicate key value'))
+				toast('already in playlist', 'this animation is already in that playlist', 'err');
 			else toast('failed to add to playlist', msg, 'err');
 		} finally {
 			busy = false;
@@ -51,8 +52,20 @@
 		<Plus class="mr-2 h-4 w-4" /> add to playlist
 	</button>
 	{#if open}
-		<div class="overlay" onclick={() => (open = false)} onkeydown={(e) => e.key === 'Escape' && (open = false)} role="presentation">
-			<div class="modal max-w-md" tabindex="-1" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+		<div
+			class="overlay"
+			onclick={() => (open = false)}
+			onkeydown={(e) => e.key === 'Escape' && (open = false)}
+			role="presentation"
+		>
+			<div
+				class="modal max-w-md"
+				tabindex="-1"
+				onclick={(e) => e.stopPropagation()}
+				onkeydown={(e) => e.stopPropagation()}
+				role="dialog"
+				aria-modal="true"
+			>
 				<h2 class="text-lg font-semibold">add to playlist</h2>
 				<p class="mb-4 text-sm text-muted-foreground">choose a playlist to add "{title}" to</p>
 				{#if loading}
@@ -60,10 +73,17 @@
 				{:else if playlists.length}
 					<div class="max-h-60 space-y-2 overflow-y-auto">
 						{#each playlists as p (p.id)}
-							<button class="btn-ghost h-auto w-full justify-start p-4" type="button" disabled={busy} onclick={() => add(p.id)}>
+							<button
+								class="btn-ghost h-auto w-full justify-start p-4"
+								type="button"
+								disabled={busy}
+								onclick={() => add(p.id)}
+							>
 								<div class="text-left">
 									<div class="font-medium">{p.name}</div>
-									{#if p.description}<div class="line-clamp-2 text-sm text-muted-foreground">{p.description}</div>{/if}
+									{#if p.description}<div class="line-clamp-2 text-sm text-muted-foreground">
+											{p.description}
+										</div>{/if}
 								</div>
 							</button>
 						{/each}
