@@ -145,7 +145,7 @@
 	},
 	"security": {
 		"s": "close the remaining security holes",
-		"d": 0,
+		"d": 1,
 		"c": {
 			"drop_tmp_docs": {
 				"s": "outcome: tmp/ (the copyrighted ncc lecturer guide and the student's report with name and id) is gone from the fork's tree.\n1. `git rm -r tmp`.\n2. remove the now-dead `tmp/**` entry from eslint.config.js and `tmp/` from .prettierignore.\nold commits and edahogan's repo keep the files; ed chose no history rewrite. ~/search/animators-hive-hub-flaws.md already lists what the report needs.",
@@ -173,7 +173,7 @@
 			},
 			"google_verified": {
 				"s": "outcome: google sign-in only links or creates an account for an email google has verified.\nin src/routes/google/+server.ts read `email_verified` from the userinfo json; unless it is `true`, respond 400 with the text 'google email not verified' and create nothing.\nwhy: find_or_create_google in src/lib/server/db.ts signs into any existing account with the same email, so an unverified address could take one over.",
-				"d": 0,
+				"d": 1,
 				"t": "grep -q 'email_verified' src/routes/google/+server.ts && pnpm lint && pnpm check && pnpm build"
 			}
 		}

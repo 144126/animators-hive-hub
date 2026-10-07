@@ -21,8 +21,14 @@ export const GET: RequestHandler = async (e) => {
 		headers: { authorization: `Bearer ${tokens.accessToken()}` }
 	});
 	if (!res.ok) return new Response(null, { status: 400 });
-	const g = (await res.json()) as { email?: string; name?: string; picture?: string };
+	const g = (await res.json()) as {
+		email?: string;
+		name?: string;
+		picture?: string;
+		email_verified?: boolean;
+	};
 	if (!g.email) return new Response(null, { status: 400 });
+	if (g.email_verified !== true) return new Response('google email not verified', { status: 400 });
 	const u = await find_or_create_google(sql(e.platform), {
 		email: g.email,
 		name: g.name || '',
