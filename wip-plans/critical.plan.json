@@ -92,7 +92,7 @@
 	},
 	"drop_index": {
 		"s": "outcome: vectorize index `ahh` is gone; it holds only review and smoke test records, and ed pre-approved deleting it. run `wrangler vectorize delete ahh --force`. if the classifier refuses, block with its message so ed runs it himself.",
-		"d": 0,
+		"d": 1,
 		"t": "env -u CLOUDFLARE_API_TOKEN pnpm exec wrangler vectorize list --json | node -e \"process.exit(JSON.parse(require('node:fs').readFileSync(0, 'utf8')).some((i) => i.name === 'ahh') ? 1 : 0)\""
 	}
 }
