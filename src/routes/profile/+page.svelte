@@ -7,6 +7,7 @@
 	import UserAnimationsGrid from '$components/UserAnimationsGrid.svelte';
 	import PlaylistsTab from '$components/PlaylistsTab.svelte';
 
+	let { data } = $props();
 	const a = auth();
 	let tab = $state<'animations' | 'playlists'>('animations');
 	const name = $derived(display_name(a.user));
@@ -63,10 +64,10 @@
 						</div>
 						<AddAnimationModal />
 					</div>
-					<div class="p-6 pt-0"><UserAnimationsGrid /></div>
+					<div class="p-6 pt-0"><UserAnimationsGrid items={data.a} /></div>
 				</div>
 			{:else}
-				<PlaylistsTab />
+				<PlaylistsTab playlists={data.l} />
 			{/if}
 		</div>
 	</div>

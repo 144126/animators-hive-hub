@@ -1,22 +1,5 @@
 import { api } from './http';
-import type { Animation, Comment, Community, Playlist } from './types';
-
-export async function list_animations(sort: 'new' | 'top', community_id?: string) {
-	const q = new URLSearchParams({ sort });
-	if (community_id) q.set('community_id', community_id);
-	const { items } = await api<{ items: Animation[] }>(`/api/animations?${q}`);
-	return items;
-}
-
-export async function get_animation(id: string) {
-	const { item } = await api<{ item: Animation }>(`/api/animations/${id}`);
-	return item;
-}
-
-export async function list_communities() {
-	const { items } = await api<{ items: Community[] }>('/api/communities');
-	return items;
-}
+import type { Animation, Community, Playlist } from './types';
 
 export async function search_communities(term: string) {
 	const { items } = await api<{ items: Community[] }>(
@@ -25,51 +8,9 @@ export async function search_communities(term: string) {
 	return items.map((c) => ({ id: c.id, name: c.name, display_name: c.display_name }));
 }
 
-export async function get_community(name: string) {
-	try {
-		const { item } = await api<{ item: Community }>(`/api/communities/${encodeURIComponent(name)}`);
-		return item;
-	} catch {
-		return null;
-	}
-}
-
-export async function user_animations(user_id: string) {
-	const { items } = await api<{ items: Animation[] }>(`/api/animations?author_id=${user_id}`);
-	return items;
-}
-
 export async function user_playlists(user_id: string) {
 	const { items } = await api<{ items: Playlist[] }>(`/api/playlists?user_id=${user_id}`);
 	return items;
-}
-
-export async function get_playlist(id: string) {
-	const { item } = await api<{ item: Playlist & { user_id: string; created_at: string } }>(
-		`/api/playlists/${id}`
-	);
-	return item;
-}
-
-export async function playlist_items(playlist_id: string) {
-	const { items } = await api<{ items: { id: string; animations: Animation | null }[] }>(
-		`/api/playlists/${playlist_id}`
-	);
-	return items;
-}
-
-export async function list_comments(post_id: string) {
-	const { items } = await api<{ items: Comment[] }>(`/api/comments?post_id=${post_id}`);
-	return items;
-}
-
-export async function has_upvote(_user_id: string, post_id: string) {
-	const { voted } = await api<{ voted: boolean }>(`/api/upvotes?target=${post_id}`);
-	return voted;
-}
-
-export async function has_animation_upvote(user_id: string, animation_id: string) {
-	return has_upvote(user_id, animation_id);
 }
 
 export async function create_community(name: string) {

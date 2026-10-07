@@ -23,7 +23,7 @@
 			},
 			"ssr_lists": {
 				"s": "outcome: communities, playlist and profile pages arrive server-rendered.\n1. src/routes/communities/+page.server.ts `{ c }` (c = list_comms).\n2. src/routes/playlist/[playlistId]/+page.server.ts `{ l, i }` (l = playlist, i = items) from one get_list call, which ends the double fetch of /api/playlists/[id]; 404 when missing.\n3. src/routes/profile/+page.server.ts: signed out, redirect 303 to /; else `{ a, l }` (a = my animations via list_anims author_id, l = my playlists). src/components/UserAnimationsGrid.svelte and src/components/PlaylistsTab.svelte take them as props and `invalidateAll()` after creating.\n4. delete every src/lib/data.ts function that no longer has a caller.",
-				"d": 0,
+				"d": 1,
 				"v": "test -f 'src/routes/animation/[animationId]/+page.server.ts'",
 				"t": "test -f src/routes/communities/+page.server.ts && test -f 'src/routes/playlist/[playlistId]/+page.server.ts' && test -f src/routes/profile/+page.server.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
 			},

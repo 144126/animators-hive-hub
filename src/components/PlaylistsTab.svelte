@@ -1,34 +1,18 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { Loader2, Plus, ListMusic } from '@lucide/svelte';
+	import { invalidateAll } from '$app/navigation';
+	import { Plus, ListMusic } from '@lucide/svelte';
 	import { auth } from '$lib/auth.svelte';
 	import { toast } from '$lib/toast.svelte';
-	import { create_playlist, user_playlists } from '$lib/data';
+	import { create_playlist } from '$lib/data';
 	import type { Playlist } from '$lib/types';
 
 	const a = auth();
-	let playlists = $state<Playlist[]>([]);
-	let loading = $state(true);
+	let { playlists }: { playlists: Playlist[] } = $props();
 	let open = $state(false);
 	let name = $state('');
 	let description = $state('');
 	let busy = $state(false);
-
-	async function load() {
-		if (!a.user) return;
-		loading = true;
-		try {
-			playlists = await user_playlists(a.user.id);
-		} catch (e) {
-			toast('error fetching playlists', e instanceof Error ? e.message : '', 'err');
-		} finally {
-			loading = false;
-		}
-	}
-
-	$effect(() => {
-		if (a.user) load();
-	});
 
 	async function create(e: Event) {
 		e.preventDefault();
@@ -40,7 +24,7 @@
 			open = false;
 			name = '';
 			description = '';
-			await load();
+			await invalidateAll();
 		} catch (e) {
 			toast('failed to create playlist', e instanceof Error ? e.message : '', 'err');
 		} finally {
@@ -49,47 +33,43 @@
 	}
 </script>
 
-{#if loading}
-	<div class="flex justify-center py-12"><Loader2 class="h-8 w-8 animate-spin" /></div>
-{:else}
-	<div class="card">
-		<div class="flex items-center justify-between p-6">
-			<div>
-				<h2 class="text-lg font-semibold">your playlists</h2>
-				<p class="text-sm text-muted-foreground">collections of animations you've saved</p>
-			</div>
-			<button class="btn" type="button" onclick={() => (open = true)}
-				><Plus class="mr-2 h-4 w-4" /> create playlist</button
-			>
+<div class="card">
+	<div class="flex items-center justify-between p-6">
+		<div>
+			<h2 class="text-lg font-semibold">your playlists</h2>
+			<p class="text-sm text-muted-foreground">collections of animations you've saved</p>
 		</div>
-		<div class="p-6 pt-0">
-			{#if playlists.length}
-				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-					{#each playlists as p (p.id)}
-						<div class="card flex flex-col p-4">
-							<h3 class="line-clamp-2 font-semibold">{p.name}</h3>
-							<p class="mb-4 line-clamp-3 min-h-[60px] text-sm text-muted-foreground">
-								{p.description || 'no description.'}
-							</p>
-							<a
-								class="btn-outline w-full"
-								href={resolve('/playlist/[playlistId]', { playlistId: p.id })}>view playlist</a
-							>
-						</div>
-					{/each}
-				</div>
-			{:else}
-				<div class="py-12 text-center">
-					<ListMusic class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-					<p class="text-muted-foreground">no playlists yet</p>
-					<p class="mt-2 text-sm text-muted-foreground">
-						create playlists to organize your favorite animations!
-					</p>
-				</div>
-			{/if}
-		</div>
+		<button class="btn" type="button" onclick={() => (open = true)}
+			><Plus class="mr-2 h-4 w-4" /> create playlist</button
+		>
 	</div>
-{/if}
+	<div class="p-6 pt-0">
+		{#if playlists.length}
+			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+				{#each playlists as p (p.id)}
+					<div class="card flex flex-col p-4">
+						<h3 class="line-clamp-2 font-semibold">{p.name}</h3>
+						<p class="mb-4 line-clamp-3 min-h-[60px] text-sm text-muted-foreground">
+							{p.description || 'no description.'}
+						</p>
+						<a
+							class="btn-outline w-full"
+							href={resolve('/playlist/[playlistId]', { playlistId: p.id })}>view playlist</a
+						>
+					</div>
+				{/each}
+			</div>
+		{:else}
+			<div class="py-12 text-center">
+				<ListMusic class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+				<p class="text-muted-foreground">no playlists yet</p>
+				<p class="mt-2 text-sm text-muted-foreground">
+					create playlists to organize your favorite animations!
+				</p>
+			</div>
+		{/if}
+	</div>
+</div>
 
 {#if open}
 	<div
