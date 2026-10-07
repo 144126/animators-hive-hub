@@ -276,6 +276,7 @@ export async function has_vote(d: D1Database, user_id: string, anim_id: string) 
 
 type NoteDb = {
 	id: string;
+	author_id: string;
 	content: string;
 	t: number;
 	username: string;
@@ -286,7 +287,7 @@ type NoteDb = {
 export async function list_notes(d: D1Database, anim_id: string) {
 	const { results } = await d
 		.prepare(
-			'select n.i as id, n.x as content, n.t, u.n as username, u.a as avatar, u.d as display from n join u on u.i = n.u where n.a = ? order by n.t desc'
+			'select n.i as id, n.x as content, n.t, n.u as author_id, u.n as username, u.a as avatar, u.d as display from n join u on u.i = n.u where n.a = ? order by n.t desc'
 		)
 		.bind(anim_id)
 		.all<NoteDb>();
@@ -294,6 +295,7 @@ export async function list_notes(d: D1Database, anim_id: string) {
 		id: r.id,
 		content: r.content,
 		created_at: iso(r.t),
+		author_id: r.author_id,
 		author: {
 			username: r.username,
 			avatar_url: r.avatar || null,

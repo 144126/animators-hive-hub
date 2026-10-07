@@ -1,6 +1,14 @@
 import type { RequestHandler } from './$types';
-import { fails, insert_note, list_notes, sql, user_by_id, person } from '$lib/server/db';
-import { j } from '$lib/server/session';
+import {
+	delete_note,
+	fails,
+	insert_note,
+	list_notes,
+	sql,
+	user_by_id,
+	person
+} from '$lib/server/db';
+import { j, owned } from '$lib/server/session';
 
 export const GET: RequestHandler = async ({ url, platform }) => {
 	return j({ items: await list_notes(sql(platform), url.searchParams.get('post_id') || '') });
@@ -18,4 +26,9 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 		if (fails(e, 'FOREIGN KEY')) return j({ error: 'not found' }, 404);
 		throw e;
 	}
+};
+
+export const DELETE: RequestHandler = async ({ url, locals, platform }) => {
+	if (!locals.user) return j({ error: 'sign in required' }, 401);
+	return owned(await delete_note(sql(platform), locals.user.id, url.searchParams.get('id') || ''));
 };

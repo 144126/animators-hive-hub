@@ -35,6 +35,7 @@ export type Playlist = {
 
 export type Comment = {
 	id: string;
+	author_id?: string;
 	content: string;
 	created_at: string;
 	author: Person;

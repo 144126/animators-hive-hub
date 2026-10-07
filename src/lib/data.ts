@@ -95,3 +95,7 @@ export async function update_animation(id: string, title: string, description: s
 export async function delete_animation(id: string) {
 	await api(`/api/animations/${id}`, { method: 'DELETE' });
 }
+
+export async function delete_comment(id: string) {
+	await api(`/api/comments?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+}

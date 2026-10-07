@@ -124,9 +124,15 @@ if (!(await json(await call(`/api/upvotes?target=${anim}`, { cookie: a.cookie })
 if ((await vote(false)) !== 0) fail('vote off count', 0);
 
 const c = await call('/api/comments', { cookie: a.cookie, body: { post_id: anim, content: 'hi' } });
-if (c.status !== 200) fail('comment', await json(c));
+const cid = (await json(c)).item?.id as string;
+if (c.status !== 200 || !cid) fail('comment', cid);
 if (!(await json(await call(`/api/comments?post_id=${anim}`))).items.length)
 	fail('comment listed at once', anim);
+const cdel = (cookie: string) => call(`/api/comments?id=${cid}`, { method: 'DELETE', cookie });
+if ((await cdel(b.cookie)).status !== 403) fail('other user deletes comment 403', cid);
+if ((await cdel(a.cookie)).status !== 200) fail('author deletes comment', cid);
+if ((await json(await call(`/api/animations/${anim}`))).item.comment_count !== 0)
+	fail('comment count after delete', anim);
 const orphan = await call('/api/comments', {
 	cookie: a.cookie,
 	body: { post_id: randomUUID(), content: 'x' }

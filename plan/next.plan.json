@@ -65,7 +65,7 @@
 			},
 			"comment_delete": {
 				"s": "outcome: authors delete their own comments and counts stay exact.\n1. db.ts `delete_note(d, user_id, id)` deletes and recounts a.n in one batch; list_notes rows gain `author_id`.\n2. DELETE /api/comments?id=<id> (401/403/404).\n3. src/components/CommentsSection.svelte: a delete button (aria-label 'delete comment') on your own comments, then `invalidateAll()`.\n4. smoke: B deleting A's comment gets 403; after A deletes it, comment_count is 0.",
-				"d": 0,
+				"d": 1,
 				"v": "grep -q 'export async function delete_anim' src/lib/server/db.ts",
 				"t": "grep -q 'export async function delete_note' src/lib/server/db.ts && grep -q 'DELETE' src/routes/api/comments/+server.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
 			},

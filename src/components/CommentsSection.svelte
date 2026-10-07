@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { MessageCircle, Send } from '@lucide/svelte';
+	import { MessageCircle, Send, Trash2 } from '@lucide/svelte';
 	import { auth } from '$lib/auth.svelte';
 	import { toast } from '$lib/toast.svelte';
 	import { invalidateAll } from '$app/navigation';
-	import { post_comment } from '$lib/data';
+	import { delete_comment, post_comment } from '$lib/data';
 	import type { Comment } from '$lib/types';
 	import Avatar from './Avatar.svelte';
 
@@ -12,6 +12,15 @@
 	const a = auth();
 	let text = $state('');
 	let busy = $state(false);
+
+	async function remove(id: string) {
+		try {
+			await delete_comment(id);
+			await invalidateAll();
+		} catch {
+			toast('error', 'failed to delete comment', 'err');
+		}
+	}
 
 	async function submit(e: Event) {
 		e.preventDefault();
@@ -66,6 +75,14 @@
 							<span class="text-xs text-muted-foreground"
 								>{new Date(c.created_at).toLocaleDateString()}</span
 							>
+							{#if a.user && a.user.id === c.author_id}
+								<button
+									class="btn-icon ml-auto h-6 w-6"
+									type="button"
+									aria-label="delete comment"
+									onclick={() => remove(c.id)}><Trash2 class="h-4 w-4" /></button
+								>
+							{/if}
 						</div>
 						<p class="pl-8 text-sm">{c.content}</p>
 					</div>
