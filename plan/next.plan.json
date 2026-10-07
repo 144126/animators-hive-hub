@@ -101,7 +101,7 @@
 		"c": {
 			"mobile_nav": {
 				"s": "outcome: discover and communities are reachable on phones, and the account menu behaves.\n1. src/components/Header.svelte: below md the nav shows as compact links (short words or icons with aria-labels) instead of being hidden.\n2. the account menu closes on an outside click and on Escape.",
-				"d": 0,
+				"d": 1,
 				"v": "test -f migrations/0003_members.sql",
 				"t": "! grep -q '<nav class=\"hidden' src/components/Header.svelte && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null"
 			},

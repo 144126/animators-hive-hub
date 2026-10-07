@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { auth, display_name, sign_out } from '$lib/auth.svelte';
-	import { User, LogOut, Edit } from '@lucide/svelte';
+	import { Compass, Users, User, LogOut, Edit } from '@lucide/svelte';
 	import AuthModal from './auth/AuthModal.svelte';
 	import Avatar from './Avatar.svelte';
 
@@ -12,34 +12,54 @@
 	let auth_open = $state(false);
 	const name = $derived(display_name(a.user));
 	const path = $derived(page.url.pathname);
+	let wrap: HTMLDivElement | undefined;
 
 	async function out() {
 		menu = false;
 		await sign_out();
 		goto(resolve('/'));
 	}
+
+	function on_doc(e: MouseEvent) {
+		if (wrap && !wrap.contains(e.target as Node)) menu = false;
+	}
+
+	function on_key(e: KeyboardEvent) {
+		if (e.key === 'Escape') menu = false;
+	}
 </script>
+
+<svelte:window onclick={on_doc} onkeydown={on_key} />
 
 <header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
 	<div class="container mx-auto flex h-14 items-center px-4">
 		<div class="mr-auto flex items-center">
 			<a href={resolve('/')} class="mr-6 font-bold">animation</a>
-			<nav class="hidden items-center space-x-6 text-sm font-medium md:flex">
+			<nav class="flex items-center space-x-4 text-sm font-medium md:space-x-6">
 				<a
 					href={resolve('/')}
-					class={path === '/' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}
-					>discover</a
+					class="flex items-center {path === '/'
+						? 'text-foreground'
+						: 'text-muted-foreground hover:text-foreground'}"
+					aria-label="discover"
 				>
+					<Compass class="h-5 w-5 md:hidden" />
+					<span class="hidden md:inline">discover</span>
+				</a>
 				<a
 					href={resolve('/communities')}
-					class={path.startsWith('/communities')
+					class="flex items-center {path.startsWith('/communities')
 						? 'text-foreground'
-						: 'text-muted-foreground hover:text-foreground'}>communities</a
+						: 'text-muted-foreground hover:text-foreground'}"
+					aria-label="communities"
 				>
+					<Users class="h-5 w-5 md:hidden" />
+					<span class="hidden md:inline">communities</span>
+				</a>
 			</nav>
 		</div>
 		{#if a.user}
-			<div class="relative">
+			<div class="relative" bind:this={wrap}>
 				<button class="btn-icon" type="button" onclick={() => (menu = !menu)} aria-label="account">
 					<Avatar src={a.user.user_metadata?.avatar_url} {name} />
 				</button>
