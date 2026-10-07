@@ -113,7 +113,7 @@
 			},
 			"combobox_fix": {
 				"s": "outcome: the community picker is quick, correct and keeps its label.\nsrc/components/CommunityCombobox.svelte: fetch only while open; debounce typing by 200 ms; ignore any response older than the latest request (a counter); remember the picked community's display name so the label survives a new search.",
-				"d": 0,
+				"d": 1,
 				"v": "! grep -q '<header' src/components/LandingPage.svelte",
 				"t": "grep -q 'setTimeout' src/components/CommunityCombobox.svelte && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null"
 			},

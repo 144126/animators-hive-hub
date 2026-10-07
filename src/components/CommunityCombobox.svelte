@@ -8,9 +8,21 @@
 	let open = $state(false);
 	let term = $state('');
 	let communities = $state<{ id: string; name: string; display_name: string }[]>([]);
+	let picked = $state('');
+	let n = 0;
+	let wait: ReturnType<typeof setTimeout> | undefined;
 
 	$effect(() => {
-		search_communities(term).then((d) => (communities = d));
+		if (!open) return;
+		const q = term;
+		clearTimeout(wait);
+		wait = setTimeout(() => {
+			const id = ++n;
+			search_communities(q).then((d) => {
+				if (id === n) communities = d;
+			});
+		}, 200);
+		return () => clearTimeout(wait);
 	});
 
 	const selected = $derived(communities.find((c) => c.id === value));
@@ -19,11 +31,12 @@
 			? 'no community'
 			: value === 'create-new'
 				? 'create new community'
-				: selected?.display_name || 'select a community'
+				: selected?.display_name || picked || 'select a community'
 	);
 
-	function pick(v: string) {
+	function pick(v: string, name = '') {
 		value = v;
+		picked = name;
 		open = false;
 	}
 </script>
@@ -65,7 +78,7 @@
 					<button
 						type="button"
 						class="flex w-full items-center px-3 py-2 text-sm hover:bg-accent"
-						onclick={() => pick(c.id)}
+						onclick={() => pick(c.id, c.display_name)}
 					>
 						<Check class={cn('mr-2 h-4 w-4', value === c.id ? 'opacity-100' : 'opacity-0')} />
 						{c.display_name}
