@@ -60,7 +60,7 @@
 			},
 			"media_server": {
 				"s": "outcome: the server keeps uploads in r2, serves them with range support, and accepts only its own media urls.\n1. new src/routes/api/media/+server.ts POST: signed-in only (401). the body is the raw file, its type the content-type: `video/*` up to 50 MiB, `image/*` up to 5 MiB, anything else 415; check content-length first, then the real byte length -> 413. key `crypto.randomUUID()`; `M.put(key, bytes, { httpMetadata: { contentType } })`; reply `{ u: '/media/<key>' }` (u = url, commented).\n2. new src/routes/media/[k]/+server.ts GET: k not a uuid -> 404; `M.get(k, { range: request.headers, onlyIf: request.headers })` (if the dev platform proxy rejects Headers, parse `bytes=a-b` yourself); send content-type, etag, `accept-ranges: bytes`, `cache-control: public, max-age=31536000, immutable`; a Range request gets 206 + content-range (o.range may be {suffix} or lack length); no body -> 304. safari only plays video over 206.\n3. POST /api/animations: video_url required, thumbnail_url optional, both must match `^/media/[0-9a-f-]{36}$`, else 400 'upload the video first'.",
-				"d": 0,
+				"d": 1,
 				"v": "grep -Eq '\"binding\": ?\"M\"' wrangler.jsonc",
 				"t": "test -f src/routes/api/media/+server.ts && grep -q 'accept-ranges' 'src/routes/media/[k]/+server.ts' && grep -q '206' 'src/routes/media/[k]/+server.ts' && grep -q 'upload the video first' src/routes/api/animations/+server.ts && pnpm check && pnpm build"
 			},

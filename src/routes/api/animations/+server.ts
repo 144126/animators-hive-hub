@@ -21,6 +21,9 @@ export const POST: RequestHandler = async ({ request, locals, platform }) => {
 		community_id?: string | null;
 	};
 	if (!body.title?.trim()) return j({ error: 'title is required' }, 400);
+	const media = /^\/media\/[0-9a-f-]{36}$/;
+	if (!media.test(body.video_url || '') || (body.thumbnail_url && !media.test(body.thumbnail_url)))
+		return j({ error: 'upload the video first' }, 400);
 	try {
 		const item = await insert_anim(sql(platform), {
 			author_id: locals.user.id,
