@@ -18,12 +18,5 @@
 			"migrations_dir": "migrations"
 		}
 	],
-	"r2_buckets": [{ "binding": "M", "bucket_name": "ahh" }],
-	"vectorize": [
-		{
-			"binding": "V",
-			"index_name": "ahh",
-			"remote": true
-		}
-	]
+	"r2_buckets": [{ "binding": "M", "bucket_name": "ahh" }]
 }

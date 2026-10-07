@@ -1,12 +1,5 @@
 # animators hive hub
 
-sveltekit + cloudflare. all records live in vectorize index `ahh` (768d cosine).
-embeddings from gemini-embedding-2 (hosted EmbeddingGemma 2 / the youtube model).
-
-```sh
-pnpm i
-pnpm dev               # :8080 (vectorize remote)
-pnpm build
-```
-
-email+password only. video files stay as local blob urls (vectorize cannot hold files).
+sveltekit + cloudflare workers. records in d1 `ahh`, videos and thumbnails in r2 `ahh`.
+dev: `pnpm exec wrangler d1 migrations apply ahh --local`, then `pnpm dev` (:8080). `.dev.vars` needs `SESSION_SECRET`.
+deploys on push to main via workers builds → https://animators-hive-hub.apexlinks.workers.dev

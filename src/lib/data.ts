@@ -1,5 +1,5 @@
 import { api } from './http';
-import type { Animation, Comment, Community, Playlist, Post } from './types';
+import type { Animation, Comment, Community, Playlist } from './types';
 
 export async function list_animations(sort: 'new' | 'top', community_id?: string) {
 	const q = new URLSearchParams({ sort });
@@ -8,22 +8,12 @@ export async function list_animations(sort: 'new' | 'top', community_id?: string
 	return items;
 }
 
-export async function list_posts(sort: 'new' | 'top', community_id?: string) {
-	const q = new URLSearchParams({ sort });
-	if (community_id) q.set('community_id', community_id);
-	const { items } = await api<{ items: Post[] }>(`/api/posts?${q}`);
-	return items;
-}
 
 export async function get_animation(id: string) {
 	const { item } = await api<{ item: Animation }>(`/api/animations/${id}`);
 	return item;
 }
 
-export async function get_post(id: string) {
-	const { item } = await api<{ item: Post }>(`/api/posts/${id}`);
-	return item;
-}
 
 export async function list_communities() {
 	const { items } = await api<{ items: Community[] }>('/api/communities');

@@ -72,7 +72,7 @@
 			},
 			"drop_vectorize": {
 				"s": "outcome: no vectorize, gemini or dead posts code is left, and prod no longer holds the gemini key.\n1. delete src/lib/server/embed.ts; the vectorize helpers and types in src/lib/server/db.ts (db, put, one, many, parse, cat_add, cat_ids, hydrate, VecIndex; keep what the d1 code uses); VecIndex, V and GEMINI_API_KEY in src/app.d.ts; the `parse` import and re-export in src/lib/server/session.ts.\n2. wrangler.jsonc: delete the vectorize block.\n3. delete the posts feature: src/routes/api/posts/, src/routes/post/, src/components/PostCard.svelte, src/components/PostDetailView.svelte, `list_posts` and `get_post` in src/lib/data.ts, the posts fallback in src/components/DiscoverFeed.svelte, and `Post` in src/lib/types.ts.\n4. remove GEMINI_API_KEY from .env.example and .dev.vars; `wrangler secret delete GEMINI_API_KEY --name animators-hive-hub`. README.md in four lines: d1 + r2 `ahh`; run `wrangler d1 migrations apply ahh --local` before `pnpm dev`; .dev.vars needs SESSION_SECRET.\n5. restart the dev server.",
-				"d": 0,
+				"d": 1,
 				"v": "grep -q 'export async function insert_item' src/lib/server/db.ts",
 				"t": "test ! -f src/lib/server/embed.ts && test ! -d src/routes/api/posts && test ! -d src/routes/post && test ! -f src/components/PostCard.svelte && ! grep -rqiE 'vectorize|gemini|VecIndex' src wrangler.jsonc README.md .env.example .dev.vars && ! env -u CLOUDFLARE_API_TOKEN pnpm exec wrangler secret list --name animators-hive-hub | grep -q GEMINI_API_KEY && pnpm check && pnpm build"
 			},

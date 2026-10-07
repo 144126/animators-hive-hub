@@ -1,5 +1,5 @@
 import { error, type RequestEvent } from '@sveltejs/kit';
-import { parse, type UserRow } from './db';
+import type { UserRow } from './db';
 
 const te = new TextEncoder();
 
@@ -91,4 +91,3 @@ export function j(data: unknown, status = 200) {
 	return new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json' } });
 }
 
-export { parse };

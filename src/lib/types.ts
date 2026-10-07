@@ -24,20 +24,6 @@ export type Animation = {
 	community?: CommunityRef | null;
 };
 
-export type Post = {
-	id: string;
-	title: string;
-	content?: string | null;
-	thumbnail_url?: string | null;
-	video_url?: string | null;
-	upvote_count: number;
-	comment_count?: number;
-	created_at: string;
-	author_id?: string;
-	community_id?: string | null;
-	author: Person;
-	community?: CommunityRef | null;
-};
 
 export type Playlist = {
 	id: string;
