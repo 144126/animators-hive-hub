@@ -15,5 +15,5 @@
 			{/if}
 		</div>
 	</div>
-	<DiscoverFeed items={data.a} sort={data.s} />
+	<DiscoverFeed items={data.a} sort={data.s} community_id={data.c.id} />
 </div>

@@ -64,7 +64,9 @@
 						</div>
 						<AddAnimationModal />
 					</div>
-					<div class="p-6 pt-0"><UserAnimationsGrid items={data.a} /></div>
+					<div class="p-6 pt-0">
+						<UserAnimationsGrid items={data.a} author_id={a.user?.id ?? ''} />
+					</div>
 				</div>
 			{:else}
 				<PlaylistsTab playlists={data.l} />

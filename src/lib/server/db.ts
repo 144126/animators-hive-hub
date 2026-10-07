@@ -187,7 +187,13 @@ function to_anim(r: AnimDb) {
 
 export async function list_anims(
 	d: D1Database,
-	o: { sort: 'new' | 'top'; community_id?: string; author_id?: string; viewer?: string }
+	o: {
+		sort: 'new' | 'top';
+		community_id?: string;
+		author_id?: string;
+		viewer?: string;
+		offset?: number;
+	}
 ) {
 	const w: string[] = [];
 	const b: string[] = [o.viewer || ''];
@@ -199,7 +205,7 @@ export async function list_anims(
 		w.push('a.u = ?');
 		b.push(o.author_id);
 	}
-	const q = `${anim_sel}${w.length ? ` where ${w.join(' and ')}` : ''} order by ${o.sort === 'top' ? 'a.p desc, ' : ''}a.t desc limit 20`;
+	const q = `${anim_sel}${w.length ? ` where ${w.join(' and ')}` : ''} order by ${o.sort === 'top' ? 'a.p desc, ' : ''}a.t desc limit 20 offset ${Math.min(Math.max(0, Math.floor(o.offset || 0)), 2000)}`;
 	const { results } = await d
 		.prepare(q)
 		.bind(...b)

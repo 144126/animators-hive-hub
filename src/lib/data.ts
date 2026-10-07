@@ -1,4 +1,17 @@
 import { api } from './http';
+
+export async function list_animations(q: {
+	sort: 'new' | 'top';
+	community_id?: string;
+	author_id?: string;
+	offset: number;
+}) {
+	const p = new URLSearchParams({ sort: q.sort, offset: String(q.offset) });
+	if (q.community_id) p.set('community_id', q.community_id);
+	if (q.author_id) p.set('author_id', q.author_id);
+	const { items } = await api<{ items: Animation[] }>(`/api/animations?${p}`);
+	return items;
+}
 import type { Animation, Community, Playlist } from './types';
 
 export async function search_communities(term: string) {

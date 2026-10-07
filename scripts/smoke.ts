@@ -101,6 +101,8 @@ const mine = async () =>
 if (!(await mine()).some((x) => x.id === anim)) fail('animation listed at once', anim);
 await Promise.all([create(), create(), create(), create(), create()]);
 if ((await mine()).length !== 6) fail('parallel creates all listed', (await mine()).length);
+const paged = (await json(await call(`/api/animations?author_id=${a.id}&offset=5`))).items;
+if (paged.length !== 1) fail('offset paging', paged.length);
 
 const vote = async (on: boolean) => {
 	const r = await call('/api/upvotes', { cookie: a.cookie, body: { target: anim, on } });
