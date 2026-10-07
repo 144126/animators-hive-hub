@@ -8,4 +8,6 @@ migrate: `pnpm exec wrangler d1 migrations apply ahh --local`
 
 smoke: `node scripts/smoke.ts`
 
+e2e: `pnpm test:e2e`
+
 deploy: push to `mine/main` → https://animators-hive-hub.apexlinks.workers.dev

@@ -180,7 +180,7 @@
 	},
 	"e2e_setup": {
 		"s": "outcome: browser tests run with `pnpm test:e2e` against the dev server, set up like ~/i/e4.\n1. `pnpm add -D e2e @e2e-dev/web`; e2e.config.ts in the shape of ~/i/e4/e2e.config.ts (target http://localhost:8080, workers 1); package.json script `\"test:e2e\": \"e2e run\"`; docs live in node_modules/e2e/docs.\n2. tests/fixtures/tiny.mp4 from `ffmpeg -f lavfi -i color=c=black:s=320x180:d=1 -pix_fmt yuv420p tests/fixtures/tiny.mp4`.\n3. tests/core.e2e.ts: a guest sees the landing page; signing up (random smk name) lands on discover; uploading tiny.mp4 with a title puts it in the feed with a thumbnail; its page has a video whose src starts with /media/; upvote shows 1; a posted comment appears.\n4. tests/mobile.e2e.ts at 375x667: discover renders without horizontal scroll, and the header reaches /communities.\n5. tests/core.e2e.ts also: open sign-in, press Escape, the dialog is gone; Tab stays inside while it is open.\n6. add `pnpm test:e2e` to README.md.",
-		"d": 0,
+		"d": 1,
 		"v": "test -f src/lib/rules.ts",
 		"t": "test -f e2e.config.ts && test -f tests/core.e2e.ts && test -f tests/mobile.e2e.ts && test -f tests/fixtures/tiny.mp4 && grep -q '\"test:e2e\"' package.json && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && pnpm test:e2e && grep -q 'communities' tests/mobile.e2e.ts"
 	},

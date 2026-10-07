@@ -7,8 +7,9 @@
 		children
 	}: { open?: boolean; title: string; children: Snippet } = $props();
 
-	let box: HTMLDivElement | undefined;
+	let box = $state<HTMLDivElement | undefined>();
 	let last: HTMLElement | null = null;
+	let armed = $state(false);
 	const hid = $derived(`m-${title.replace(/\s+/g, '-')}`);
 
 	function nodes() {
@@ -41,12 +42,19 @@
 	}
 
 	$effect(() => {
-		if (!open) return;
+		if (!open) {
+			armed = false;
+			return;
+		}
 		last = document.activeElement as HTMLElement | null;
 		const prev = document.body.style.overflow;
 		document.body.style.overflow = 'hidden';
-		queueMicrotask(() => nodes()[0]?.focus());
+		const t = setTimeout(() => {
+			armed = true;
+			nodes()[0]?.focus();
+		}, 0);
 		return () => {
+			clearTimeout(t);
 			document.body.style.overflow = prev;
 			last?.focus();
 		};
@@ -56,7 +64,12 @@
 <svelte:window onkeydown={trap} />
 
 {#if open}
-	<div class="overlay" onclick={() => (open = false)} role="presentation">
+	<div
+		class="overlay"
+		onclick={() => armed && (open = false)}
+		onkeydown={(e) => e.key === 'Escape' && armed && (open = false)}
+		role="presentation"
+	>
 		<div
 			bind:this={box}
 			class="modal max-h-[90vh] overflow-y-auto"
