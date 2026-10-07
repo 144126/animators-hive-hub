@@ -26,7 +26,7 @@
 	},
 	"store_switch": {
 		"s": "move every record from vectorize to d1 and every file to r2",
-		"d": 0,
+		"d": 1,
 		"t": "curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts && pnpm check && pnpm build",
 		"c": {
 			"schema_sql": {
@@ -78,7 +78,7 @@
 			},
 			"smoke_test": {
 				"s": "outcome: scripts/smoke.ts proves the store fixes against a running server, and passes.\n1. plain node script (node 24 strips types; global fetch; no deps). BASE env, default http://localhost:8080. on failure print the check's name and exit 1; last line `smoke ok <username> <video key> <image key>`.\n2. checks in order: sign up A and B (`smk` + 8 random hex each) -> /api/me returns A at once; A's username upper-cased -> 400; upload 1 KB as video/mp4 and as image/jpeg; GET the video with `Range: bytes=0-9` -> 206 and 10 bytes; create an animation -> GET /api/animations?author_id=A lists it at once; 5 parallel creates -> that list has 6; vote on -> upvote_count 1 and voted true, off -> 0; comment -> listed at once; comment on a random uuid -> 404; playlist + item -> 200, same item -> 400, B adding to A's playlist -> 403; a community -> listed; a cookie for A forged with the old secret `ahh-session-9f3c2e1a7b84d056` -> /api/me user null.\n3. apply local migrations, restart the dev server, run it, and fix the app (never the checks) until it passes.",
-				"d": 0,
+				"d": 1,
 				"v": "test ! -f src/lib/server/embed.ts",
 				"t": "curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts && pnpm check && pnpm build"
 			}
