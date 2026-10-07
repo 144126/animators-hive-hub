@@ -147,6 +147,21 @@ const item = (cookie: string) =>
 if ((await item(a.cookie)).status !== 200) fail('playlist item', list);
 if ((await item(a.cookie)).status !== 400) fail('duplicate playlist item', list);
 if ((await item(b.cookie)).status !== 403) fail('other user adds to playlist', list);
+const lpatch = (cookie: string, name: string) =>
+	call(`/api/playlists/${list}`, { method: 'PATCH', cookie, body: { name } });
+if ((await lpatch(b.cookie, 'x')).status !== 403) fail('other user rename playlist 403', list);
+const iid = (await json(await call(`/api/playlists/${list}`))).items?.[0]?.id as string;
+if (!iid) fail('playlist item id', list);
+if (
+	(await call(`/api/playlist-items?id=${iid}`, { method: 'DELETE', cookie: a.cookie })).status !==
+	200
+)
+	fail('owner removes item', iid);
+if ((await json(await call(`/api/playlists/${list}`))).items?.length !== 0)
+	fail('playlist empty after remove', list);
+if ((await call(`/api/playlists/${list}`, { method: 'DELETE', cookie: a.cookie })).status !== 200)
+	fail('owner deletes playlist', list);
+if ((await call(`/api/playlists/${list}`)).status !== 404) fail('deleted playlist is 404', list);
 
 const cn = name();
 const cr = await call('/api/communities', { cookie: a.cookie, body: { name: cn } });

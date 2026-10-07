@@ -71,7 +71,7 @@
 			},
 			"playlist_manage": {
 				"s": "outcome: owners rename, delete and prune their playlists.\n1. db.ts `update_list`, `delete_list` and `delete_item(d, user_id, item_id)`, each checking ownership.\n2. src/routes/api/playlists/[id]/+server.ts PATCH `{ name, description }` and DELETE; src/routes/api/playlist-items/+server.ts DELETE ?id=<item id>.\n3. src/routes/playlist/[playlistId]/+page.svelte, for the owner: a rename form, 'delete playlist' (confirm(), then goto /profile) and a remove button per item, each followed by `invalidateAll()`.\n4. smoke: B renaming A's playlist gets 403; A removes the item, the playlist has 0 items; A deletes it, GET is 404.",
-				"d": 0,
+				"d": 1,
 				"v": "grep -q 'export async function delete_note' src/lib/server/db.ts",
 				"t": "grep -q 'export async function delete_list' src/lib/server/db.ts && grep -q 'export async function delete_item' src/lib/server/db.ts && grep -q 'DELETE' src/routes/api/playlist-items/+server.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
 			},

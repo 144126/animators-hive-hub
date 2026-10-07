@@ -99,3 +99,18 @@ export async function delete_animation(id: string) {
 export async function delete_comment(id: string) {
 	await api(`/api/comments?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
 }
+
+export async function update_playlist(id: string, name: string, description: string | null) {
+	await api(`/api/playlists/${id}`, {
+		method: 'PATCH',
+		body: JSON.stringify({ name, description })
+	});
+}
+
+export async function delete_playlist(id: string) {
+	await api(`/api/playlists/${id}`, { method: 'DELETE' });
+}
+
+export async function delete_playlist_item(id: string) {
+	await api(`/api/playlist-items?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+}

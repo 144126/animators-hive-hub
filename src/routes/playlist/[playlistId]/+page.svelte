@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { ArrowLeft, ListMusic } from '@lucide/svelte';
 	import { auth } from '$lib/auth.svelte';
+	import { delete_playlist, delete_playlist_item, update_playlist } from '$lib/data';
+	import { toast } from '$lib/toast.svelte';
 	import AnimationCard from '$components/AnimationCard.svelte';
 
 	let { data } = $props();
@@ -9,6 +12,54 @@
 	const playlist = $derived(data.l);
 	const items = $derived(data.i);
 	const owner = $derived(!!a.user && a.user.id === playlist.user_id);
+	let editing = $state(false);
+	let name = $state('');
+	let description = $state('');
+	let busy = $state(false);
+
+	function start_edit() {
+		name = playlist.name;
+		description = playlist.description || '';
+		editing = true;
+	}
+
+	async function save(e: Event) {
+		e.preventDefault();
+		busy = true;
+		try {
+			await update_playlist(playlist.id, name.trim(), description.trim() || null);
+			await invalidateAll();
+			editing = false;
+		} catch (err) {
+			toast('error', err instanceof Error ? err.message : 'save failed', 'err');
+		} finally {
+			busy = false;
+		}
+	}
+
+	async function remove_list() {
+		if (!confirm('delete this playlist?')) return;
+		busy = true;
+		try {
+			await delete_playlist(playlist.id);
+			await goto(resolve('/profile'));
+		} catch (err) {
+			toast('error', err instanceof Error ? err.message : 'delete failed', 'err');
+			busy = false;
+		}
+	}
+
+	async function remove_item(id: string) {
+		busy = true;
+		try {
+			await delete_playlist_item(id);
+			await invalidateAll();
+		} catch (err) {
+			toast('error', err instanceof Error ? err.message : 'remove failed', 'err');
+		} finally {
+			busy = false;
+		}
+	}
 </script>
 
 <main class="container mx-auto px-4 py-8">
@@ -18,13 +69,40 @@
 		<h1 class="text-2xl font-bold">playlist</h1>
 	</div>
 	<div class="mb-8">
-		<h1 class="mb-4 text-4xl font-bold">{playlist.name}</h1>
-		{#if playlist.description}<p class="mb-4 text-lg text-muted-foreground">
-				{playlist.description}
-			</p>{/if}
+		{#if editing}
+			<form onsubmit={save} class="space-y-3">
+				<input class="field" bind:value={name} required maxlength="100" aria-label="name" />
+				<textarea
+					class="area"
+					rows="3"
+					bind:value={description}
+					maxlength="500"
+					aria-label="description"
+				></textarea>
+				<div class="flex gap-2">
+					<button class="btn-sm" type="submit" disabled={busy || !name.trim()}>save</button>
+					<button class="btn-outline-sm" type="button" onclick={() => (editing = false)}
+						>cancel</button
+					>
+				</div>
+			</form>
+		{:else}
+			<h1 class="mb-4 text-4xl font-bold">{playlist.name}</h1>
+			{#if playlist.description}<p class="mb-4 text-lg text-muted-foreground">
+					{playlist.description}
+				</p>{/if}
+		{/if}
 		<p class="text-sm text-muted-foreground">
 			created {new Date(playlist.created_at).toLocaleDateString()} · {items.length} animations
 		</p>
+		{#if owner && !editing}
+			<div class="mt-4 flex gap-2">
+				<button class="btn-outline-sm" type="button" onclick={start_edit}>rename</button>
+				<button class="btn-outline-sm" type="button" onclick={remove_list} disabled={busy}
+					>delete playlist</button
+				>
+			</div>
+		{/if}
 	</div>
 	<div class="card p-6">
 		<h2 class="text-lg font-semibold">animations</h2>
@@ -34,7 +112,19 @@
 		{#if items.filter((i) => i.animations).length}
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{#each items as item (item.id)}
-					{#if item.animations}<AnimationCard animation={item.animations} />{/if}
+					{#if item.animations}
+						<div class="space-y-2">
+							<AnimationCard animation={item.animations} />
+							{#if owner}
+								<button
+									class="btn-outline-sm w-full"
+									type="button"
+									disabled={busy}
+									onclick={() => remove_item(item.id)}>remove</button
+								>
+							{/if}
+						</div>
+					{/if}
 				{/each}
 			</div>
 		{:else}
