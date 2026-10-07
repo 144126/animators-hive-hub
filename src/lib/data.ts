@@ -118,3 +118,7 @@ export async function delete_playlist_item(id: string) {
 export async function change_password(o: string, n: string) {
 	await api('/api/auth/password', { method: 'POST', body: JSON.stringify({ o, n }) });
 }
+
+export async function delete_account(n: string) {
+	await api('/api/me', { method: 'DELETE', body: JSON.stringify({ n }) });
+}

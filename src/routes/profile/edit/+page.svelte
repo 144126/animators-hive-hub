@@ -3,7 +3,7 @@
 	import { ArrowLeft, User, Save } from '@lucide/svelte';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { auth, display_name } from '$lib/auth.svelte';
-	import { change_password, update_profile } from '$lib/data';
+	import { change_password, delete_account, update_profile } from '$lib/data';
 	import { toast } from '$lib/toast.svelte';
 	import { upload } from '$lib/upload';
 	import Avatar from '$components/Avatar.svelte';
@@ -20,6 +20,8 @@
 	let old_pass = $state('');
 	let new_pass = $state('');
 	let pass_busy = $state(false);
+	let gone = $state('');
+	let gone_busy = $state(false);
 
 	$effect(() => {
 		if (!a.user || primed) return;
@@ -64,6 +66,19 @@
 			toast('failed to update password', err instanceof Error ? err.message : '', 'err');
 		} finally {
 			pass_busy = false;
+		}
+	}
+
+	async function wipe(e: Event) {
+		e.preventDefault();
+		if (!a.user || !confirm('delete your account and everything you made?')) return;
+		gone_busy = true;
+		try {
+			await delete_account(gone.trim());
+			await goto(resolve('/'));
+		} catch (err) {
+			toast('failed to delete account', err instanceof Error ? err.message : '', 'err');
+			gone_busy = false;
 		}
 	}
 
@@ -189,6 +204,22 @@
 				</div>
 				<button class="btn" type="submit" disabled={pass_busy || new_pass.length < 6}
 					>{pass_busy ? 'saving...' : a.user.p ? 'change password' : 'set password'}</button
+				>
+			</form>
+		</div>
+		<div class="card mt-6 p-6">
+			<h2 class="text-lg font-semibold">delete account</h2>
+			<p class="mb-6 text-sm text-muted-foreground">
+				this removes your account, animations, comments and playlists. type your username to
+				confirm.
+			</p>
+			<form onsubmit={wipe} class="space-y-4">
+				<div class="space-y-2">
+					<label class="text-sm font-medium" for="gone">username</label>
+					<input id="gone" class="field" bind:value={gone} required />
+				</div>
+				<button class="btn" type="submit" disabled={gone_busy || !gone.trim()}
+					>{gone_busy ? 'deleting...' : 'delete account'}</button
 				>
 			</form>
 		</div>

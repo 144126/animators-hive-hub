@@ -221,5 +221,25 @@ const forged = await json(
 	await call('/api/me', { cookie: `ahh=${encodeURIComponent(`${msg}.${mac}`)}` })
 );
 if (forged.user !== null) fail('forged cookie rejected', forged);
+const bn = (await json(await call('/api/me', { cookie: b.cookie }))).user?.user_metadata
+	?.username as string;
+if (!bn) fail('b username', b.id);
+if (
+	(await call('/api/me', { method: 'DELETE', cookie: b.cookie, body: { n: 'nope' } })).status !==
+	400
+)
+	fail('delete account mismatch', bn);
+if ((await call('/api/me', { method: 'DELETE', cookie: b.cookie, body: { n: bn } })).status !== 200)
+	fail('delete account', bn);
+if ((await json(await call('/api/me', { cookie: b.cookie }))).user !== null)
+	fail('deleted cookie dead', bn);
+if (
+	(
+		await call('/api/auth/signin', {
+			body: { email: `${bn}@example.com`, password: 'smoke-pass-1' }
+		})
+	).status !== 400
+)
+	fail('deleted sign in fails', bn);
 
 console.log(`smoke ok ${an} ${video.split('/').pop()} ${image.split('/').pop()}`);

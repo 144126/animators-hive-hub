@@ -55,7 +55,7 @@
 	},
 	"ownership": {
 		"s": "edit and delete what you own",
-		"d": 0,
+		"d": 1,
 		"c": {
 			"anim_edit_delete": {
 				"s": "outcome: authors edit and delete their own animations, and deleted files leave r2.\n1. db.ts `update_anim(d, user_id, id, { title, description, community_id })` and `delete_anim(d, user_id, id)`; delete also returns the media paths of the row it removed.\n2. src/routes/api/animations/[id]/+server.ts PATCH and DELETE (401 signed out, 403 forbidden, 404 missing); DELETE removes both r2 keys with `M.delete`.\n3. src/components/AnimationDetailView.svelte, for the author: an inline 'edit' form (title, description) and 'delete' (confirm()), then goto the author's /u page.\n4. smoke, on a separate animation so earlier checks keep theirs: B's PATCH and DELETE get 403; A's title edit shows in GET; after A deletes, GET is 404 and its /media/ video is 404.",
@@ -83,7 +83,7 @@
 			},
 			"account_delete": {
 				"s": "outcome: users delete their account and everything they made.\n1. DELETE /api/me with json `{ n }` (n = the username typed to confirm; a mismatch gets 400).\n2. db.ts `delete_user(d, id)` collects the r2 keys of their animations' videos and thumbnails and of a /media/ avatar, then deletes the user row; the schema cascades to everything else, sessions included (communities they created go too, by design). the route deletes those r2 keys and the cookie.\n3. src/routes/profile/edit/+page.svelte: a 'delete account' section with a username input and a confirm button, then goto '/'.\n4. smoke: B deletes B; B's cookie gets user null and B's sign-in fails.",
-				"d": 0,
+				"d": 1,
 				"v": "test -f src/routes/api/auth/password/+server.ts",
 				"t": "grep -q 'export async function delete_user' src/lib/server/db.ts && grep -q 'DELETE' src/routes/api/me/+server.ts && pnpm lint && pnpm check && pnpm build && curl -sf localhost:8080/api/me >/dev/null && node scripts/smoke.ts"
 			}
