@@ -7,18 +7,33 @@
 	let {
 		items,
 		sort,
-		community_id
-	}: { items: Animation[]; sort: 'new' | 'top'; community_id?: string } = $props();
-	const query = $derived({ sort, community_id });
-	let list = $derived(items);
-	let done = $derived(items.length < 20);
+		community_id,
+		q = ''
+	}: { items: Animation[]; sort: 'new' | 'top'; community_id?: string; q?: string } = $props();
+	let extra = $state<Animation[]>([]);
+	let done = $state(false);
 	let busy = $state(false);
+	const list = $derived([...items, ...extra]);
+
+	$effect(() => {
+		void items;
+		void sort;
+		void community_id;
+		void q;
+		extra = [];
+		done = items.length < 20;
+	});
 
 	async function more() {
 		busy = true;
 		try {
-			const next = await list_animations({ ...query, offset: list.length });
-			list = [...list, ...next];
+			const next = await list_animations({
+				sort,
+				community_id,
+				q: q || undefined,
+				offset: items.length + extra.length
+			});
+			extra = [...extra, ...next];
 			done = next.length < 20;
 		} catch (e) {
 			toast('error', e instanceof Error ? e.message : 'failed to load more', 'err');
@@ -29,22 +44,33 @@
 </script>
 
 <div class="space-y-6">
-	<form method="GET" class="flex space-x-2">
-		<button class={sort === 'new' ? 'btn-sm' : 'btn-outline-sm'} name="sort" value="new">new</button
-		>
-		<button class={sort === 'top' ? 'btn-sm' : 'btn-outline-sm'} name="sort" value="top">top</button
-		>
-	</form>
+	<div class="flex flex-wrap items-center gap-2">
+		<form method="GET" class="flex min-w-0 gap-2">
+			<input type="hidden" name="sort" value={sort} />
+			<input class="field w-56" name="q" value={q} placeholder="search" aria-label="search" />
+		</form>
+		<form method="GET" class="flex gap-2">
+			<input type="hidden" name="q" value={q} />
+			<button class={sort === 'new' ? 'btn-sm' : 'btn-outline-sm'} name="sort" value="new"
+				>new</button
+			>
+			<button class={sort === 'top' ? 'btn-sm' : 'btn-outline-sm'} name="sort" value="top"
+				>top</button
+			>
+		</form>
+	</div>
 	{#if list.length}
-		<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+		<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
 			{#each list as animation (animation.id)}
 				<AnimationCard {animation} />
 			{/each}
 		</div>
 	{:else}
-		<div class="py-12 text-center">
-			<p class="text-muted-foreground">no content found</p>
-			<p class="mt-2 text-sm text-muted-foreground">be the first to share your work!</p>
+		<div class="py-16 text-center">
+			<p class="text-ink-soft">{q ? 'nothing matches' : 'nothing here yet'}</p>
+			{#if !q}
+				<p class="mt-2 text-sm text-mute">be the first to share a piece</p>
+			{/if}
 		</div>
 	{/if}
 	{#if !done}

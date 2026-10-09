@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { goto, invalidateAll } from '$app/navigation';
-	import { ArrowLeft, ListMusic } from '@lucide/svelte';
 	import { auth } from '$lib/auth.svelte';
 	import { delete_playlist, delete_playlist_item, update_playlist } from '$lib/data';
 	import { toast } from '$lib/toast.svelte';
@@ -67,12 +66,9 @@
 	<title>{playlist.name} · animators hive hub</title>
 </svelte:head>
 
-<main class="container mx-auto px-4 py-8">
-	<div class="mb-8 flex items-center space-x-4">
-		<a class="btn-icon" href={resolve('/profile')} aria-label="back"
-			><ArrowLeft class="h-5 w-5" /></a
-		>
-		<ListMusic class="h-8 w-8 text-primary" />
+<div class="wrap py-8">
+	<div class="mb-6">
+		<a class="btn-icon" href={resolve('/profile')} aria-label="back">←</a>
 	</div>
 	<div class="mb-8">
 		{#if editing}
@@ -99,12 +95,11 @@
 				</div>
 			</form>
 		{:else}
-			<h1 class="mb-4 text-4xl font-bold">{playlist.name}</h1>
-			{#if playlist.description}<p class="mb-4 text-lg text-muted-foreground">
-					{playlist.description}
-				</p>{/if}
+			<p class="eyebrow mb-3">playlist</p>
+			<h1 class="h1 mb-4">{playlist.name}</h1>
+			{#if playlist.description}<p class="mb-4 text-ink-soft">{playlist.description}</p>{/if}
 		{/if}
-		<p class="text-sm text-muted-foreground">
+		<p class="text-sm text-mute">
 			created {new Date(playlist.created_at).toLocaleDateString()} · {items.length} animations
 		</p>
 		{#if owner && !editing}
@@ -117,12 +112,9 @@
 		{/if}
 	</div>
 	<div class="card p-6">
-		<h2 class="text-lg font-semibold">animations</h2>
-		<p class="mb-4 text-sm text-muted-foreground">
-			{owner ? 'your saved animations' : 'animations in this playlist'}
-		</p>
+		<p class="eyebrow mb-4">{owner ? 'your saved animations' : 'animations in this playlist'}</p>
 		{#if items.filter((i) => i.animations).length}
-			<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+			<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
 				{#each items as item (item.id)}
 					{#if item.animations}
 						<div class="space-y-2">
@@ -140,10 +132,7 @@
 				{/each}
 			</div>
 		{:else}
-			<div class="py-12 text-center">
-				<ListMusic class="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-				<p class="text-muted-foreground">no animations in this playlist yet</p>
-			</div>
+			<div class="py-16 text-center text-mute">no animations in this playlist yet</div>
 		{/if}
 	</div>
-</main>
+</div>

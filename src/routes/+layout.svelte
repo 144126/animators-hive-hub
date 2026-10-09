@@ -9,7 +9,7 @@
 <svelte:head>
 	<title>animators hive hub</title>
 </svelte:head>
-<div class="flex min-h-screen flex-col bg-background">
+<div class="flex min-h-dvh flex-col">
 	<Header />
 	<main class="flex-1">{@render children()}</main>
 </div>

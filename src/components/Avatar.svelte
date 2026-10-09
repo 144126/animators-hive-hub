@@ -9,12 +9,10 @@
 	let broken = $state(false);
 </script>
 
-<span class="inline-flex shrink-0 overflow-hidden rounded-full bg-muted {cls}">
+<span class="inline-flex shrink-0 overflow-hidden rounded-full bg-panel-solid text-ink {cls}">
 	{#if src && !broken}
 		<img {src} alt="" class="h-full w-full object-cover" onerror={() => (broken = true)} />
 	{:else}
-		<span class="flex h-full w-full items-center justify-center text-xs font-medium"
-			>{initial(name)}</span
-		>
+		<span class="flex h-full w-full items-center justify-center text-xs">{initial(name)}</span>
 	{/if}
 </span>

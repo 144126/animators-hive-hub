@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Plus, Loader2 } from '@lucide/svelte';
 	import { auth } from '$lib/auth.svelte';
 	import { toast } from '$lib/toast.svelte';
 	import { add_to_playlist, user_playlists } from '$lib/data';
@@ -35,7 +34,7 @@
 		try {
 			await add_to_playlist(id, animation_id);
 			const p = playlists.find((x) => x.id === id);
-			toast('added to playlist!', `"${title}" was added to "${p?.name}"`);
+			toast('added to playlist', p?.name);
 			open = false;
 		} catch (e) {
 			const msg = e instanceof Error ? e.message : '';
@@ -49,13 +48,11 @@
 </script>
 
 {#if a.user}
-	<button class="btn-outline-sm" type="button" onclick={() => (open = true)}>
-		<Plus class="mr-2 h-4 w-4" /> add to playlist
-	</button>
+	<button class="btn-outline-sm" type="button" onclick={() => (open = true)}>save</button>
 	<Modal bind:open title="add to playlist">
-		<p class="mb-4 text-sm text-muted-foreground">choose a playlist to add "{title}" to</p>
+		<p class="mb-4 text-sm text-ink-soft">choose a playlist for "{title}"</p>
 		{#if loading}
-			<div class="flex justify-center py-8"><Loader2 class="h-6 w-6 animate-spin" /></div>
+			<div class="py-8 text-center text-mute">loading...</div>
 		{:else if playlists.length}
 			<div class="max-h-60 space-y-2 overflow-y-auto">
 				{#each playlists as p (p.id)}
@@ -67,7 +64,7 @@
 					>
 						<div class="text-left">
 							<div class="font-medium">{p.name}</div>
-							{#if p.description}<div class="line-clamp-2 text-sm text-muted-foreground">
+							{#if p.description}<div class="line-clamp-2 text-sm text-mute">
 									{p.description}
 								</div>{/if}
 						</div>
@@ -75,9 +72,8 @@
 				{/each}
 			</div>
 		{:else}
-			<div class="py-8 text-center text-muted-foreground">
-				<p class="mb-2">you don't have any playlists yet</p>
-				<p class="text-sm">create a playlist first to save animations</p>
+			<div class="py-8 text-center text-mute">
+				<p>you don't have any playlists yet</p>
 			</div>
 		{/if}
 	</Modal>

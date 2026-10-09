@@ -152,6 +152,10 @@ await Promise.all([create(), create(), create(), create(), create()]);
 if ((await mine()).length !== 6) fail('parallel creates all listed', (await mine()).length);
 const paged = (await json(await call(`/api/animations?author_id=${a.id}&offset=5`))).items;
 if (paged.length !== 1) fail('offset paging', paged.length);
+const found = (await json(await call('/api/animations?q=smoke'))).items as { title: string }[];
+if (!found.some((x) => x.title === 'smoke')) fail('search finds title', found.length);
+const miss = (await json(await call('/api/animations?q=zzzznohit'))).items;
+if (miss.length !== 0) fail('search miss', miss.length);
 
 const vote = async (on: boolean) => {
 	const r = await call('/api/upvotes', { cookie: a.cookie, body: { target: anim, on } });

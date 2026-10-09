@@ -10,3 +10,4 @@ bun.lockb
 plan/
 wip-plans/
 .e2e/
+tmp/

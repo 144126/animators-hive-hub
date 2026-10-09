@@ -19,7 +19,7 @@ export async function sign_up(email: string, password: string, username: string)
 			body: JSON.stringify({ email, password, username })
 		});
 		await invalidateAll();
-		toast('account created!', 'welcome to the animation community!');
+		toast('account created');
 	} catch (e) {
 		toast('error', e instanceof Error ? e.message : 'sign up failed', 'err');
 		throw e;
@@ -30,7 +30,7 @@ export async function sign_in(email: string, password: string) {
 	try {
 		await api('/api/auth/signin', { method: 'POST', body: JSON.stringify({ email, password }) });
 		await invalidateAll();
-		toast('welcome back!', 'you have been signed in successfully.');
+		toast('welcome back');
 	} catch (e) {
 		toast('error', e instanceof Error ? e.message : 'sign in failed', 'err');
 		throw e;
@@ -41,7 +41,7 @@ export async function sign_out() {
 	try {
 		await api('/api/auth/signout', { method: 'POST' });
 		await invalidateAll();
-		toast('signed out', 'you have been signed out successfully.');
+		toast('signed out');
 	} catch (e) {
 		toast('error', e instanceof Error ? e.message : 'sign out failed', 'err');
 	}

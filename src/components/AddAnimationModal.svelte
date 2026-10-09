@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
-	import { Plus, Upload } from '@lucide/svelte';
 	import { auth } from '$lib/auth.svelte';
 	import { toast } from '$lib/toast.svelte';
 	import { create_animation, create_community } from '$lib/data';
@@ -52,7 +51,7 @@
 			const video_url = await upload(video);
 			let thumbnail_url: string | null = null;
 			if (thumb) {
-				step = 'uploading video...';
+				step = 'uploading thumbnail...';
 				thumbnail_url = await upload(thumb);
 			} else {
 				try {
@@ -70,7 +69,7 @@
 				thumbnail_url,
 				community_id: cid
 			});
-			toast('animation uploaded successfully!');
+			toast('animation uploaded');
 			open = false;
 			reset();
 			await invalidateAll();
@@ -84,14 +83,12 @@
 </script>
 
 {#if a.user}
-	<button class="btn" type="button" onclick={() => (open = true)}>
-		<Plus class="mr-2 h-4 w-4" /> add video
-	</button>
-	<Modal bind:open title="upload new animation">
-		<p class="mb-4 text-sm text-muted-foreground">share your animation with the community</p>
+	<button class="btn" type="button" onclick={() => (open = true)}>add video</button>
+	<Modal bind:open title="upload new animation" wide>
+		<p class="mb-4 text-sm text-ink-soft">share your animation with the hive</p>
 		<form onsubmit={submit} class="space-y-6">
 			<div class="space-y-2">
-				<label class="text-sm font-medium" for="title">title *</label>
+				<label class="text-sm" for="title">title *</label>
 				<input
 					id="title"
 					class="field"
@@ -103,7 +100,7 @@
 				/>
 			</div>
 			<div class="space-y-2">
-				<label class="text-sm font-medium" for="desc">description</label>
+				<label class="text-sm" for="desc">description</label>
 				<textarea
 					id="desc"
 					class="area"
@@ -116,12 +113,12 @@
 			</div>
 			<FileUploadSection bind:video bind:thumb disabled={busy} />
 			<div class="space-y-2">
-				<span class="text-sm font-medium">community (optional)</span>
+				<span class="text-sm">community (optional)</span>
 				<CommunityCombobox bind:value={community_id} disabled={busy} />
 			</div>
 			{#if community_id === 'create-new'}
 				<div class="space-y-2">
-					<label class="text-sm font-medium" for="newc">new community name *</label>
+					<label class="text-sm" for="newc">new community name *</label>
 					<input
 						id="newc"
 						class="field"
@@ -132,12 +129,11 @@
 					/>
 				</div>
 			{/if}
-			<div class="flex justify-end space-x-3">
+			<div class="flex justify-end gap-3">
 				<button class="btn-outline" type="button" onclick={() => (open = false)} disabled={busy}
 					>cancel</button
 				>
 				<button class="btn" type="submit" disabled={busy}>
-					<Upload class="mr-2 h-4 w-4" />
 					{busy ? step || 'saving...' : 'upload animation'}
 				</button>
 			</div>

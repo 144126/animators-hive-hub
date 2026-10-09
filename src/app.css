@@ -1,78 +1,162 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/fraunces';
+@import '@fontsource-variable/space-grotesk';
 
 @theme {
-	--color-background: hsl(0 0% 100%);
-	--color-foreground: hsl(222.2 84% 4.9%);
-	--color-card: hsl(0 0% 100%);
-	--color-card-foreground: hsl(222.2 84% 4.9%);
-	--color-popover: hsl(0 0% 100%);
-	--color-popover-foreground: hsl(222.2 84% 4.9%);
-	--color-primary: hsl(222.2 47.4% 11.2%);
-	--color-primary-foreground: hsl(210 40% 98%);
-	--color-secondary: hsl(210 40% 96.1%);
-	--color-secondary-foreground: hsl(222.2 47.4% 11.2%);
-	--color-muted: hsl(210 40% 96.1%);
-	--color-muted-foreground: hsl(215.4 16.3% 46.9%);
-	--color-accent: hsl(210 40% 96.1%);
-	--color-accent-foreground: hsl(222.2 47.4% 11.2%);
-	--color-destructive: hsl(0 84.2% 60.2%);
-	--color-destructive-foreground: hsl(210 40% 98%);
-	--color-border: hsl(214.3 31.8% 91.4%);
-	--color-input: hsl(214.3 31.8% 91.4%);
-	--color-ring: hsl(222.2 84% 4.9%);
-	--radius-lg: 0.5rem;
-	--radius-md: calc(0.5rem - 2px);
-	--radius-sm: calc(0.5rem - 4px);
+	--color-base: #0b0b0c;
+	--color-base-2: #111113;
+	--color-panel: rgba(236, 231, 221, 0.022);
+	--color-panel-solid: #151517;
+	--color-ink: #ece7dd;
+	--color-ink-soft: #b8b2a6;
+	--color-mute: #6f6a60;
+	--color-faint: #43403a;
+	--color-ember: #d98b5f;
+	--color-ember-soft: rgba(217, 139, 95, 0.14);
+	--color-ember-ink: #1a110b;
+	--color-danger: #e2674c;
+	--color-line: rgba(236, 231, 221, 0.1);
+	--color-line-2: rgba(236, 231, 221, 0.18);
+
+	--color-background: #0b0b0c;
+	--color-foreground: #ece7dd;
+	--color-card: #151517;
+	--color-card-foreground: #ece7dd;
+	--color-popover: #151517;
+	--color-popover-foreground: #ece7dd;
+	--color-primary: #ece7dd;
+	--color-primary-foreground: #0b0b0c;
+	--color-secondary: #151517;
+	--color-secondary-foreground: #ece7dd;
+	--color-muted: #151517;
+	--color-muted-foreground: #6f6a60;
+	--color-accent: rgba(217, 139, 95, 0.14);
+	--color-accent-foreground: #ece7dd;
+	--color-destructive: #e2674c;
+	--color-destructive-foreground: #ece7dd;
+	--color-border: rgba(236, 231, 221, 0.1);
+	--color-input: rgba(236, 231, 221, 0.18);
+	--color-ring: #d98b5f;
+
+	--font-display: 'Fraunces Variable', 'Times New Roman', serif;
+	--font-ui: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
+	--ease-studio: cubic-bezier(0.16, 1, 0.3, 1);
+	--radius-lg: 14px;
+	--radius-md: 10px;
+	--radius-sm: 8px;
 }
 
-@layer base {
-	* {
-		border-color: var(--color-border);
-	}
-	body {
-		background: var(--color-background);
-		color: var(--color-foreground);
-	}
+html,
+body {
+	min-height: 100%;
+}
+
+body {
+	background-color: var(--color-base);
+	background-image: linear-gradient(90deg, var(--color-line) 1px, transparent 1px);
+	background-size: 25vw 100%;
+	background-attachment: fixed;
+	color: var(--color-ink);
+	font-family: var(--font-ui);
+	font-size: 13.5px;
+	letter-spacing: -0.01em;
+	-webkit-font-smoothing: antialiased;
+	font-feature-settings: 'ss01';
+}
+
+::selection {
+	background: var(--color-ember);
+	color: var(--color-ember-ink);
+}
+
+* {
+	border-color: var(--color-border);
+	scrollbar-width: thin;
+	scrollbar-color: var(--color-line-2) transparent;
 }
 
 @layer components {
+	.wrap {
+		@apply mx-auto w-full max-w-[1100px] px-5;
+	}
+
+	.eyebrow {
+		@apply text-[9.5px] font-medium uppercase tracking-[0.3em] text-mute;
+	}
+
+	.h1 {
+		@apply font-display text-[clamp(24px,3.6vw,34px)] font-normal leading-[1] tracking-[-0.02em];
+		font-optical-sizing: auto;
+	}
+
 	.btn {
-		@apply inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:pointer-events-none disabled:opacity-50;
+		@apply inline-flex h-[34px] shrink-0 items-center justify-center gap-1.5 rounded-full border border-line-2 bg-transparent px-3.5 text-[12.5px] text-ink transition-all duration-300 ease-studio disabled:pointer-events-none disabled:opacity-50;
 	}
+	.btn:hover {
+		@apply border-ink;
+	}
+
 	.btn-lg {
-		@apply inline-flex h-auto items-center justify-center rounded-md bg-primary px-8 py-4 text-lg font-medium text-primary-foreground disabled:pointer-events-none disabled:opacity-50;
+		@apply inline-flex h-auto items-center justify-center gap-1.5 rounded-full border border-ember bg-ember px-8 py-3.5 font-medium text-ember-ink transition-all duration-300 ease-studio disabled:pointer-events-none disabled:opacity-50;
 	}
+	.btn-lg:hover {
+		@apply border-[#e79a6c] bg-[#e79a6c];
+	}
+
 	.btn-sm {
-		@apply inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground disabled:pointer-events-none disabled:opacity-50;
+		@apply inline-flex h-[30px] items-center justify-center gap-1.5 rounded-full border border-transparent bg-ink px-3 text-[12px] text-[#0b0b0c] transition-all duration-300 ease-studio disabled:pointer-events-none disabled:opacity-50;
 	}
+
 	.btn-outline {
-		@apply inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent disabled:pointer-events-none disabled:opacity-50;
+		@apply inline-flex h-[34px] items-center justify-center gap-1.5 rounded-full border border-line-2 bg-transparent px-3.5 text-[12.5px] text-ink transition-all duration-300 ease-studio hover:border-ink disabled:pointer-events-none disabled:opacity-50;
 	}
+
 	.btn-outline-sm {
-		@apply inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-3 text-sm font-medium hover:bg-accent disabled:pointer-events-none disabled:opacity-50;
+		@apply inline-flex h-[30px] items-center justify-center gap-1.5 rounded-full border border-line-2 bg-transparent px-3 text-[12px] text-ink transition-all duration-300 ease-studio hover:border-ink disabled:pointer-events-none disabled:opacity-50;
 	}
+
 	.btn-ghost {
-		@apply inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium hover:bg-accent disabled:pointer-events-none disabled:opacity-50;
+		@apply inline-flex h-[34px] items-center justify-center gap-1.5 rounded-full border border-transparent px-3.5 text-[12.5px] text-ink-soft transition-colors duration-300 hover:text-ink disabled:pointer-events-none disabled:opacity-50;
 	}
+
 	.btn-ghost-sm {
-		@apply inline-flex h-9 items-center justify-center rounded-md px-3 text-sm font-medium hover:bg-accent disabled:pointer-events-none disabled:opacity-50;
+		@apply inline-flex h-[30px] items-center justify-center gap-1.5 rounded-full border border-transparent px-3 text-[12px] text-ink-soft transition-colors duration-300 hover:text-ink disabled:pointer-events-none disabled:opacity-50;
 	}
+
 	.btn-icon {
-		@apply inline-flex h-10 w-10 items-center justify-center rounded-md hover:bg-accent disabled:pointer-events-none disabled:opacity-50;
+		@apply inline-flex h-[34px] w-[34px] items-center justify-center rounded-full border border-transparent text-ink-soft transition-colors duration-300 hover:bg-ember-soft hover:text-ink disabled:pointer-events-none disabled:opacity-50;
 	}
+
 	.field {
-		@apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring disabled:opacity-50;
+		@apply flex h-10 w-full rounded-[10px] border border-line bg-panel-solid px-3 py-2 text-[13.5px] text-ink outline-none transition-colors duration-300 placeholder:text-mute focus:border-ember disabled:opacity-50;
 	}
+
 	.area {
-		@apply w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring disabled:opacity-50;
+		@apply w-full rounded-[10px] border border-line bg-panel-solid px-3 py-2 text-[13.5px] text-ink outline-none transition-colors duration-300 placeholder:text-mute focus:border-ember disabled:opacity-50;
 	}
+
 	.card {
-		@apply rounded-lg border bg-card text-card-foreground shadow-sm;
+		@apply rounded-[14px] border border-line bg-panel-solid text-ink;
 	}
+
 	.overlay {
-		@apply fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4;
+		@apply fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4;
 	}
+
 	.modal {
-		@apply relative w-full rounded-lg border bg-background p-6 shadow-lg;
+		@apply relative w-full max-w-md rounded-[14px] border border-line bg-base-2 p-6;
+	}
+}
+
+@media (max-width: 640px) {
+	body {
+		background-size: 50vw 100%;
+	}
+	.wrap {
+		@apply px-3.5;
+	}
+	.field,
+	.area {
+		@apply text-[16px];
 	}
 }

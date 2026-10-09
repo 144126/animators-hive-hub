@@ -7,6 +7,17 @@ export const load: PageServerLoad = async ({ params, locals, url, platform }) =>
 	const c = await comm_by_slug(d, params.communityName, locals.user?.id);
 	if (!c) error(404, 'community not found');
 	const s: 'new' | 'top' = url.searchParams.get('sort') === 'top' ? 'top' : 'new';
-	// c: community, a: its animations, s: sort
-	return { c, a: await list_anims(d, { sort: s, community_id: c.id, viewer: locals.user?.id }), s };
+	const q = url.searchParams.get('q')?.trim() || '';
+	// c: community, a: its animations, s: sort, q: search
+	return {
+		c,
+		a: await list_anims(d, {
+			sort: s,
+			community_id: c.id,
+			viewer: locals.user?.id,
+			q: q || undefined
+		}),
+		s,
+		q
+	};
 };

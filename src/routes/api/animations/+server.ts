@@ -9,7 +9,8 @@ export const GET: RequestHandler = async ({ url, locals, platform }) => {
 		community_id: url.searchParams.get('community_id') || undefined,
 		author_id: url.searchParams.get('author_id') || undefined,
 		viewer: locals.user?.id,
-		offset: Number(url.searchParams.get('offset')) || 0
+		offset: Number(url.searchParams.get('offset')) || 0,
+		q: url.searchParams.get('q')?.trim() || undefined
 	});
 	return j({ items });
 };

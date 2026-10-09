@@ -10,27 +10,28 @@
 	<title>{p.display_name || p.username} · animators hive hub</title>
 </svelte:head>
 
-<div class="container mx-auto px-4 py-8">
-	<div class="mb-8 flex items-start space-x-6">
+<div class="wrap py-8">
+	<div class="mb-8 flex items-start gap-6">
 		<Avatar src={p.avatar_url} name={p.username} class="h-24 w-24" />
 		<div class="space-y-2">
-			<h1 class="text-3xl font-bold">{p.display_name || p.username}</h1>
-			<p class="text-muted-foreground">@{p.username}</p>
-			{#if p.bio}<p class="text-lg text-muted-foreground">{p.bio}</p>{/if}
-			<div class="flex flex-wrap gap-x-4 text-sm text-muted-foreground">
+			<p class="eyebrow">animator</p>
+			<h1 class="h1">{p.display_name || p.username}</h1>
+			<p class="text-mute">@{p.username}</p>
+			{#if p.bio}<p class="text-ink-soft">{p.bio}</p>{/if}
+			<div class="flex flex-wrap gap-x-4 text-sm text-mute">
 				{#if p.location}<span>{p.location}</span>{/if}
 				{#if p.website_url}
 					<a
 						href={p.website_url}
 						target="_blank"
 						rel="nofollow noopener noreferrer external"
-						class="text-primary hover:underline">{p.website_url.replace(/^https?:\/\//, '')}</a
+						class="text-ember hover:text-ink">{p.website_url.replace(/^https?:\/\//, '')}</a
 					>
 				{/if}
 				<span>member since {new Date(p.created_at).toLocaleDateString()}</span>
 			</div>
 		</div>
 	</div>
-	<h2 class="mb-4 text-lg font-semibold">animations</h2>
+	<p class="eyebrow mb-4">animations</p>
 	<UserAnimationsGrid items={data.a} author_id={p.id} />
 </div>

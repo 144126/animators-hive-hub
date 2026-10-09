@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Check, ChevronsUpDown, Plus } from '@lucide/svelte';
 	import { search_communities } from '$lib/data';
 	import { cn } from '$lib/utils';
 
@@ -49,38 +48,40 @@
 		{disabled}
 	>
 		{label}
-		<ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+		<span class="ml-2 text-mute">▾</span>
 	</button>
 	{#if open}
-		<div class="absolute z-20 mt-1 w-full rounded-md border bg-background shadow">
+		<div
+			class="absolute z-20 mt-1 w-full overflow-hidden rounded-[10px] border border-line bg-base-2"
+		>
 			<input
-				class="field border-0 border-b"
+				class="field rounded-none border-0 border-b border-line"
 				placeholder="search communities..."
 				bind:value={term}
 			/>
 			<div class="max-h-56 overflow-y-auto py-1">
 				<button
 					type="button"
-					class="flex w-full items-center px-3 py-2 text-sm hover:bg-accent"
+					class="flex w-full items-center px-3 py-2 text-sm hover:bg-ember-soft"
 					onclick={() => pick('none')}
 				>
-					<Check class={cn('mr-2 h-4 w-4', value === 'none' ? 'opacity-100' : 'opacity-0')} /> no community
+					<span class={cn('mr-2 w-3', value === 'none' ? 'text-ember' : 'opacity-0')}>✓</span> no community
 				</button>
 				<button
 					type="button"
-					class="flex w-full items-center px-3 py-2 text-sm hover:bg-accent"
+					class="flex w-full items-center px-3 py-2 text-sm hover:bg-ember-soft"
 					onclick={() => pick('create-new')}
 				>
-					<Check class={cn('mr-2 h-4 w-4', value === 'create-new' ? 'opacity-100' : 'opacity-0')} />
-					<Plus class="mr-2 h-4 w-4" /> create new community
+					<span class={cn('mr-2 w-3', value === 'create-new' ? 'text-ember' : 'opacity-0')}>✓</span>
+					create new community
 				</button>
 				{#each communities as c (c.id)}
 					<button
 						type="button"
-						class="flex w-full items-center px-3 py-2 text-sm hover:bg-accent"
+						class="flex w-full items-center px-3 py-2 text-sm hover:bg-ember-soft"
 						onclick={() => pick(c.id, c.display_name)}
 					>
-						<Check class={cn('mr-2 h-4 w-4', value === c.id ? 'opacity-100' : 'opacity-0')} />
+						<span class={cn('mr-2 w-3', value === c.id ? 'text-ember' : 'opacity-0')}>✓</span>
 						{c.display_name}
 					</button>
 				{/each}

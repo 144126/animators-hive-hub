@@ -4,8 +4,9 @@
 	let {
 		open = $bindable(false),
 		title,
+		wide = false,
 		children
-	}: { open?: boolean; title: string; children: Snippet } = $props();
+	}: { open?: boolean; title: string; wide?: boolean; children: Snippet } = $props();
 
 	let box = $state<HTMLDivElement | undefined>();
 	let last: HTMLElement | null = null;
@@ -72,12 +73,13 @@
 	>
 		<div
 			bind:this={box}
-			class="modal max-h-[90vh] overflow-y-auto"
+			class="modal max-h-[90vh] overflow-y-auto {wide ? 'max-w-lg' : ''}"
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby={hid}
 			tabindex="-1"
 			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.key !== 'Escape' && e.stopPropagation()}
 		>
 			<h2 id={hid} class="text-lg font-semibold">{title}</h2>
 			{@render children()}

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { ArrowLeft, Play, MessageCircle } from '@lucide/svelte';
 	import type { Animation, Comment } from '$lib/types';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { auth } from '$lib/auth.svelte';
@@ -53,118 +52,111 @@
 	}
 </script>
 
-<div class="min-h-screen bg-background">
-	<div class="container mx-auto max-w-4xl px-4 py-6">
-		<button class="btn-ghost mb-6" type="button" onclick={() => history.back()}>
-			<ArrowLeft class="mr-2 h-4 w-4" /> back
-		</button>
-		<div class="space-y-6">
-			<div class="card overflow-hidden">
-				<div class="relative aspect-video bg-black">
-					{#if animation.video_url}
-						<video
-							src={animation.video_url}
-							poster={animation.thumbnail_url || undefined}
-							controls
-							class="h-full w-full"
-						>
-							<track kind="captions" />
-						</video>
-					{:else if animation.thumbnail_url}
-						<img
-							src={animation.thumbnail_url}
-							alt={animation.title}
-							class="h-full w-full object-cover"
-						/>
-					{:else}
-						<div
-							class="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/20 to-primary/10"
-						>
-							<Play class="h-16 w-16 text-primary/50" />
-						</div>
-					{/if}
-				</div>
-			</div>
-			<div class="space-y-4">
-				{#if editing}
-					<form onsubmit={save} class="space-y-3">
-						<input
-							class="field"
-							bind:value={title}
-							required
-							maxlength={title_max}
-							aria-label="title"
-						/>
-						<textarea
-							class="area"
-							rows="3"
-							bind:value={description}
-							maxlength={desc_max}
-							aria-label="description"
-						></textarea>
-						<div class="flex gap-2">
-							<button class="btn-sm" type="submit" disabled={busy || !title.trim()}>save</button>
-							<button class="btn-outline-sm" type="button" onclick={() => (editing = false)}
-								>cancel</button
-							>
-						</div>
-					</form>
-				{:else}
-					<h1 class="text-3xl font-bold">{animation.title}</h1>
-				{/if}
-				{#if mine && !editing}
-					<div class="flex gap-2">
-						<button class="btn-outline-sm" type="button" onclick={start_edit}>edit</button>
-						<button class="btn-outline-sm" type="button" onclick={remove} disabled={busy}
-							>delete</button
-						>
-					</div>
-				{/if}
-				<div class="flex items-center justify-between">
-					<a
-						href={resolve('/u/[username]', { username: animation.author.username })}
-						class="flex items-center space-x-3 hover:underline"
+<div class="wrap max-w-4xl py-8">
+	<button class="btn-ghost mb-6" type="button" onclick={() => history.back()}>back</button>
+	<div class="space-y-6">
+		<div class="card overflow-hidden">
+			<div class="relative aspect-video bg-base">
+				{#if animation.video_url}
+					<video
+						src={animation.video_url}
+						poster={animation.thumbnail_url || undefined}
+						controls
+						class="h-full w-full"
 					>
-						<Avatar
-							src={animation.author.avatar_url}
-							name={animation.author.username}
-							class="h-10 w-10"
-						/>
-						<div>
-							<p class="font-medium">
-								{animation.author.display_name || animation.author.username}
-							</p>
-							<p class="text-sm text-muted-foreground">@{animation.author.username}</p>
-						</div>
-					</a>
-					{#if animation.community}
-						<span class="rounded-full bg-secondary px-2 py-0.5 text-sm"
-							>{animation.community.display_name}</span
-						>
-					{/if}
-				</div>
-				<div class="flex items-center space-x-6">
-					<UpvoteButton
-						post_id={animation.id}
-						count={animation.upvote_count}
-						voted={animation.voted}
+						<track kind="captions" />
+					</video>
+				{:else if animation.thumbnail_url}
+					<img
+						src={animation.thumbnail_url}
+						alt={animation.title}
+						class="h-full w-full object-cover"
 					/>
-					<div class="flex items-center space-x-1 text-muted-foreground">
-						<MessageCircle class="h-4 w-4" />
-						<span>{animation.comment_count} comments</span>
-					</div>
-					<span class="text-sm text-muted-foreground"
-						>{new Date(animation.created_at).toLocaleDateString()}</span
+				{:else}
+					<div
+						class="flex h-full w-full items-center justify-center text-[10px] uppercase tracking-[0.2em] text-mute"
 					>
-				</div>
-				{#if animation.description}
-					<div class="card p-6">
-						<h3 class="mb-3 font-semibold">description</h3>
-						<p class="whitespace-pre-wrap text-muted-foreground">{animation.description}</p>
+						no video
 					</div>
 				{/if}
 			</div>
-			<CommentsSection post_id={animation.id} {comments} />
 		</div>
+		<div class="space-y-4">
+			{#if editing}
+				<form onsubmit={save} class="space-y-3">
+					<input
+						class="field"
+						bind:value={title}
+						required
+						maxlength={title_max}
+						aria-label="title"
+					/>
+					<textarea
+						class="area"
+						rows="3"
+						bind:value={description}
+						maxlength={desc_max}
+						aria-label="description"
+					></textarea>
+					<div class="flex gap-2">
+						<button class="btn-sm" type="submit" disabled={busy || !title.trim()}>save</button>
+						<button class="btn-outline-sm" type="button" onclick={() => (editing = false)}
+							>cancel</button
+						>
+					</div>
+				</form>
+			{:else}
+				<h1 class="h1">{animation.title}</h1>
+			{/if}
+			{#if mine && !editing}
+				<div class="flex gap-2">
+					<button class="btn-outline-sm" type="button" onclick={start_edit}>edit</button>
+					<button class="btn-outline-sm" type="button" onclick={remove} disabled={busy}
+						>delete</button
+					>
+				</div>
+			{/if}
+			<div class="flex items-center justify-between">
+				<a
+					href={resolve('/u/[username]', { username: animation.author.username })}
+					class="flex items-center gap-3 hover:text-ink"
+				>
+					<Avatar
+						src={animation.author.avatar_url}
+						name={animation.author.username}
+						class="h-10 w-10"
+					/>
+					<div>
+						<p class="font-medium">
+							{animation.author.display_name || animation.author.username}
+						</p>
+						<p class="text-sm text-mute">@{animation.author.username}</p>
+					</div>
+				</a>
+				{#if animation.community}
+					<a
+						href={resolve('/c/[communityName]', { communityName: animation.community.name })}
+						class="rounded-full border border-line px-2.5 py-0.5 text-[11px] uppercase tracking-[0.14em] text-ink-soft hover:border-ember hover:text-ember"
+						>{animation.community.display_name}</a
+					>
+				{/if}
+			</div>
+			<div class="flex items-center gap-6">
+				<UpvoteButton
+					post_id={animation.id}
+					count={animation.upvote_count}
+					voted={animation.voted}
+				/>
+				<span class="text-sm text-mute">{animation.comment_count} comments</span>
+				<span class="text-sm text-mute">{new Date(animation.created_at).toLocaleDateString()}</span>
+			</div>
+			{#if animation.description}
+				<div class="card p-6">
+					<p class="eyebrow mb-3">description</p>
+					<p class="whitespace-pre-wrap text-ink-soft">{animation.description}</p>
+				</div>
+			{/if}
+		</div>
+		<CommentsSection post_id={animation.id} {comments} />
 	</div>
 </div>

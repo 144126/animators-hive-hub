@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { ArrowLeft, User, Save } from '@lucide/svelte';
 	import { goto, invalidateAll } from '$app/navigation';
 	import { auth, display_name } from '$lib/auth.svelte';
 	import { change_password, delete_account, update_profile } from '$lib/data';
@@ -99,7 +98,7 @@
 				avatar_url: avatar
 			});
 			await invalidateAll();
-			toast('profile updated!', 'your profile has been successfully updated.');
+			toast('profile updated');
 			goto(resolve('/profile'));
 		} catch (err) {
 			toast('failed to update profile', err instanceof Error ? err.message : '', 'err');
@@ -114,31 +113,27 @@
 </svelte:head>
 
 {#if !a.user}
-	<div class="flex min-h-screen items-center justify-center">
+	<div class="wrap flex min-h-[60vh] items-center justify-center">
 		<div class="text-center">
-			<p class="mb-4 text-muted-foreground">please sign in to edit your profile.</p>
-			<a class="btn" href={resolve('/')}>go to homepage</a>
+			<p class="mb-4 text-mute">sign in to edit your profile</p>
+			<a class="btn" href={resolve('/')}>go home</a>
 		</div>
 	</div>
 {:else}
-	<main class="container mx-auto max-w-2xl px-4 py-8">
-		<div class="mb-6 flex items-center space-x-4">
-			<a class="btn-icon" href={resolve('/profile')} aria-label="back"
-				><ArrowLeft class="h-5 w-5" /></a
-			>
-			<User class="h-8 w-8 text-primary" />
-			<h1 class="text-2xl font-bold">edit profile</h1>
+	<div class="wrap max-w-2xl py-8">
+		<div class="mb-6 flex items-center gap-4">
+			<a class="btn-icon" href={resolve('/profile')} aria-label="back">←</a>
+			<div>
+				<p class="eyebrow mb-1">account</p>
+				<h1 class="h1">edit profile</h1>
+			</div>
 		</div>
 		<div class="card p-6">
-			<h2 class="text-lg font-semibold">edit your profile</h2>
-			<p class="mb-6 text-sm text-muted-foreground">
-				update your profile information and let others know more about you.
-			</p>
 			<form onsubmit={submit} class="space-y-6">
-				<div class="flex items-center space-x-4">
+				<div class="flex items-center gap-4">
 					<Avatar src={avatar} name={display_name(a.user)} class="h-20 w-20" />
 					<div>
-						<p class="text-sm font-medium">profile picture</p>
+						<p class="text-sm">profile picture</p>
 						<label class="btn-outline-sm mt-1 cursor-pointer">
 							{avatar_busy ? 'uploading...' : 'change picture'}
 							<input
@@ -152,20 +147,20 @@
 					</div>
 				</div>
 				<div class="space-y-2">
-					<label class="text-sm font-medium" for="dn">display name</label>
+					<label class="text-sm" for="dn">display name</label>
 					<input id="dn" class="field" bind:value={display} maxlength={display_max} required />
 				</div>
 				<div class="space-y-2">
-					<label class="text-sm font-medium" for="bio">bio</label>
+					<label class="text-sm" for="bio">bio</label>
 					<textarea id="bio" class="area min-h-[100px]" bind:value={bio} maxlength={bio_max}
 					></textarea>
 				</div>
 				<div class="space-y-2">
-					<label class="text-sm font-medium" for="loc">location</label>
+					<label class="text-sm" for="loc">location</label>
 					<input id="loc" class="field" bind:value={location} maxlength={loc_max} />
 				</div>
 				<div class="space-y-2">
-					<label class="text-sm font-medium" for="web">website</label>
+					<label class="text-sm" for="web">website</label>
 					<input
 						id="web"
 						class="field"
@@ -174,9 +169,8 @@
 						maxlength={web_max}
 					/>
 				</div>
-				<div class="flex space-x-4">
+				<div class="flex gap-4">
 					<button class="btn flex-1" type="submit" disabled={busy}>
-						<Save class="mr-2 h-4 w-4" />
 						{busy ? 'saving...' : 'save changes'}
 					</button>
 					<a class="btn-outline" href={resolve('/profile')}>cancel</a>
@@ -184,8 +178,8 @@
 			</form>
 		</div>
 		<div class="card mt-6 p-6">
-			<h2 class="text-lg font-semibold">password</h2>
-			<p class="mb-6 text-sm text-muted-foreground">
+			<h2 class="font-medium">password</h2>
+			<p class="mb-6 text-sm text-mute">
 				{a.user.p
 					? 'change your password. other sessions will end.'
 					: 'set a password for email sign in.'}
@@ -193,12 +187,12 @@
 			<form onsubmit={save_pass} class="space-y-4">
 				{#if a.user.p}
 					<div class="space-y-2">
-						<label class="text-sm font-medium" for="op">old password</label>
+						<label class="text-sm" for="op">old password</label>
 						<input id="op" class="field" type="password" bind:value={old_pass} required />
 					</div>
 				{/if}
 				<div class="space-y-2">
-					<label class="text-sm font-medium" for="np">new password</label>
+					<label class="text-sm" for="np">new password</label>
 					<input
 						id="np"
 						class="field"
@@ -215,14 +209,14 @@
 			</form>
 		</div>
 		<div class="card mt-6 p-6">
-			<h2 class="text-lg font-semibold">delete account</h2>
-			<p class="mb-6 text-sm text-muted-foreground">
+			<h2 class="font-medium">delete account</h2>
+			<p class="mb-6 text-sm text-mute">
 				this removes your account, animations, comments and playlists. type your username to
 				confirm.
 			</p>
 			<form onsubmit={wipe} class="space-y-4">
 				<div class="space-y-2">
-					<label class="text-sm font-medium" for="gone">username</label>
+					<label class="text-sm" for="gone">username</label>
 					<input id="gone" class="field" bind:value={gone} required />
 				</div>
 				<button class="btn" type="submit" disabled={gone_busy || !gone.trim()}
@@ -230,5 +224,5 @@
 				>
 			</form>
 		</div>
-	</main>
+	</div>
 {/if}

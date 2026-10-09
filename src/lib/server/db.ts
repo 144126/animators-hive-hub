@@ -212,6 +212,7 @@ export async function list_anims(
 		author_id?: string;
 		viewer?: string;
 		offset?: number;
+		q?: string;
 	}
 ) {
 	const w: string[] = [];
@@ -223,6 +224,11 @@ export async function list_anims(
 	if (o.author_id) {
 		w.push('a.u = ?');
 		b.push(o.author_id);
+	}
+	if (o.q) {
+		w.push('(a.ti like ? or ifnull(a.d, "") like ?)');
+		const like = `%${o.q.replace(/[%_]/g, '')}%`;
+		b.push(like, like);
 	}
 	const q = `${anim_sel}${w.length ? ` where ${w.join(' and ')}` : ''} order by ${o.sort === 'top' ? 'a.p desc, ' : ''}a.t desc limit 20 offset ${Math.min(Math.max(0, Math.floor(o.offset || 0)), 2000)}`;
 	const { results } = await d
