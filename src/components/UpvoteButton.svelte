@@ -51,7 +51,7 @@
 	disabled={busy}
 	class={cn(
 		'btn-outline-sm',
-		voted && 'border-ember bg-ember text-ember-ink hover:border-[#e79a6c] hover:bg-[#e79a6c]'
+		voted && 'border-ember bg-ember text-ember-ink hover:border-[#7aa2f5] hover:bg-[#7aa2f5]'
 	)}
 >
 	<span>{n}</span>

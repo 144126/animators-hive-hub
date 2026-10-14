@@ -11,9 +11,9 @@
 	--color-ink-soft: #b8b2a6;
 	--color-mute: #6f6a60;
 	--color-faint: #43403a;
-	--color-ember: #d98b5f;
-	--color-ember-soft: rgba(217, 139, 95, 0.14);
-	--color-ember-ink: #1a110b;
+	--color-ember: #5b8def;
+	--color-ember-soft: rgba(91, 141, 239, 0.14);
+	--color-ember-ink: #0a1020;
 	--color-danger: #e2674c;
 	--color-line: rgba(236, 231, 221, 0.1);
 	--color-line-2: rgba(236, 231, 221, 0.18);
@@ -30,13 +30,13 @@
 	--color-secondary-foreground: #ece7dd;
 	--color-muted: #151517;
 	--color-muted-foreground: #6f6a60;
-	--color-accent: rgba(217, 139, 95, 0.14);
+	--color-accent: rgba(91, 141, 239, 0.14);
 	--color-accent-foreground: #ece7dd;
 	--color-destructive: #e2674c;
 	--color-destructive-foreground: #ece7dd;
 	--color-border: rgba(236, 231, 221, 0.1);
 	--color-input: rgba(236, 231, 221, 0.18);
-	--color-ring: #d98b5f;
+	--color-ring: #5b8def;
 
 	--font-display: 'Fraunces Variable', 'Times New Roman', serif;
 	--font-ui: 'Space Grotesk Variable', ui-sans-serif, system-ui, sans-serif;
@@ -56,8 +56,8 @@ html.light {
 	--color-ink-soft: #4a463e;
 	--color-mute: #8a8478;
 	--color-faint: #c9c3b6;
-	--color-ember: #c9693a;
-	--color-ember-soft: rgba(201, 105, 58, 0.14);
+	--color-ember: #2f6fe0;
+	--color-ember-soft: rgba(47, 111, 224, 0.14);
 	--color-ember-ink: #ffffff;
 	--color-line: rgba(26, 24, 20, 0.1);
 	--color-line-2: rgba(26, 24, 20, 0.2);
@@ -73,11 +73,11 @@ html.light {
 	--color-secondary-foreground: #1a1814;
 	--color-muted: #ffffff;
 	--color-muted-foreground: #8a8478;
-	--color-accent: rgba(201, 105, 58, 0.14);
+	--color-accent: rgba(47, 111, 224, 0.14);
 	--color-accent-foreground: #1a1814;
 	--color-border: rgba(26, 24, 20, 0.1);
 	--color-input: rgba(26, 24, 20, 0.2);
-	--color-ring: #c9693a;
+	--color-ring: #2f6fe0;
 }
 
 html,
@@ -93,6 +93,7 @@ body {
 	color: var(--color-ink);
 	font-family: var(--font-ui);
 	font-size: 13.5px;
+	zoom: 1.12;
 	letter-spacing: -0.01em;
 	-webkit-font-smoothing: antialiased;
 	font-feature-settings: 'ss01';
@@ -134,7 +135,7 @@ body {
 		@apply inline-flex h-auto items-center justify-center gap-1.5 rounded-full border border-ember bg-ember px-8 py-3.5 font-medium text-ember-ink transition-all duration-300 ease-studio disabled:pointer-events-none disabled:opacity-50;
 	}
 	.btn-lg:hover {
-		@apply border-[#e79a6c] bg-[#e79a6c];
+		@apply border-[#7aa2f5] bg-[#7aa2f5];
 	}
 
 	.btn-sm {

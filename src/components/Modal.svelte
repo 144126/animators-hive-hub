@@ -73,7 +73,7 @@
 	>
 		<div
 			bind:this={box}
-			class="modal max-h-[90vh] overflow-y-auto {wide ? 'max-w-lg' : ''}"
+			class="modal max-h-[calc(90vh/1.12)] overflow-y-auto {wide ? 'max-w-lg' : ''}"
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby={hid}
