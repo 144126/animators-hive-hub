@@ -61,14 +61,14 @@
 		<div class="grid w-full grid-cols-2 rounded-full border border-line p-1">
 			<button
 				class="rounded-full px-3 py-1.5 text-[12px] {tab === 'animations'
-					? 'bg-ink text-[#0b0b0c]'
+					? 'bg-ink text-base'
 					: 'text-mute'}"
 				type="button"
 				onclick={() => (tab = 'animations')}>animations</button
 			>
 			<button
 				class="rounded-full px-3 py-1.5 text-[12px] {tab === 'playlists'
-					? 'bg-ink text-[#0b0b0c]'
+					? 'bg-ink text-base'
 					: 'text-mute'}"
 				type="button"
 				onclick={() => (tab = 'playlists')}>playlists</button

@@ -46,6 +46,40 @@
 	--radius-sm: 8px;
 }
 
+html.light {
+	color-scheme: light;
+	--color-base: #f6f3ec;
+	--color-base-2: #fbf9f4;
+	--color-panel: rgba(26, 24, 20, 0.03);
+	--color-panel-solid: #ffffff;
+	--color-ink: #1a1814;
+	--color-ink-soft: #4a463e;
+	--color-mute: #8a8478;
+	--color-faint: #c9c3b6;
+	--color-ember: #c9693a;
+	--color-ember-soft: rgba(201, 105, 58, 0.14);
+	--color-ember-ink: #ffffff;
+	--color-line: rgba(26, 24, 20, 0.1);
+	--color-line-2: rgba(26, 24, 20, 0.2);
+	--color-background: #f6f3ec;
+	--color-foreground: #1a1814;
+	--color-card: #ffffff;
+	--color-card-foreground: #1a1814;
+	--color-popover: #ffffff;
+	--color-popover-foreground: #1a1814;
+	--color-primary: #1a1814;
+	--color-primary-foreground: #f6f3ec;
+	--color-secondary: #ffffff;
+	--color-secondary-foreground: #1a1814;
+	--color-muted: #ffffff;
+	--color-muted-foreground: #8a8478;
+	--color-accent: rgba(201, 105, 58, 0.14);
+	--color-accent-foreground: #1a1814;
+	--color-border: rgba(26, 24, 20, 0.1);
+	--color-input: rgba(26, 24, 20, 0.2);
+	--color-ring: #c9693a;
+}
+
 html,
 body {
 	min-height: 100%;
@@ -104,7 +138,7 @@ body {
 	}
 
 	.btn-sm {
-		@apply inline-flex h-[30px] items-center justify-center gap-1.5 rounded-full border border-transparent bg-ink px-3 text-[12px] text-[#0b0b0c] transition-all duration-300 ease-studio disabled:pointer-events-none disabled:opacity-50;
+		@apply inline-flex h-[30px] items-center justify-center gap-1.5 rounded-full border border-transparent bg-ink px-3 text-[12px] text-base transition-all duration-300 ease-studio disabled:pointer-events-none disabled:opacity-50;
 	}
 
 	.btn-outline {

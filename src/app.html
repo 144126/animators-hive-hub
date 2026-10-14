@@ -5,6 +5,13 @@
 		<link rel="icon" href="%sveltekit.assets%/logo.svg" type="image/svg+xml" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="description" content="a place for animators to show work and find each other" />
+		<script>
+			try {
+				var t = localStorage.getItem('theme');
+				if (t === 'light' || (!t && matchMedia('(prefers-color-scheme: light)').matches))
+					document.documentElement.classList.add('light');
+			} catch (e) {}
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

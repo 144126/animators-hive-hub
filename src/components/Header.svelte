@@ -1,12 +1,17 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { auth, display_name, sign_out } from '$lib/auth.svelte';
 	import AuthModal from './auth/AuthModal.svelte';
 	import Avatar from './Avatar.svelte';
+	import { theme } from '$lib/theme.svelte';
 
 	const a = auth();
+	const th = theme();
+
+	onMount(th.sync);
 	let menu = $state(false);
 	let auth_open = $state(false);
 	const name = $derived(display_name(a.user));
@@ -51,7 +56,32 @@
 				aria-label="communities">communities</a
 			>
 		</nav>
-		<div class="ml-auto flex items-center">
+		<div class="ml-auto flex items-center gap-1">
+			<button
+				class="btn-icon"
+				type="button"
+				onclick={th.toggle}
+				aria-label={th.light ? 'switch to dark theme' : 'switch to light theme'}
+			>
+				<svg
+					viewBox="0 0 24 24"
+					class="h-4 w-4"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.6"
+					stroke-linecap="round"
+					aria-hidden="true"
+				>
+					{#if th.light}
+						<path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z" />
+					{:else}
+						<circle cx="12" cy="12" r="4" />
+						<path
+							d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+						/>
+					{/if}
+				</svg>
+			</button>
 			{#if a.user}
 				<div class="relative" bind:this={wrap}>
 					<button
