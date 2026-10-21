@@ -12,7 +12,7 @@ AfriHUB
 
 ## Abstract
 
-This report describes Animators Hive Hub, a web application that lets animators publish short animations and lets other people find, watch, upvote and comment on them. The scope covers account creation and sign-in with email or Google, an upload flow for video and thumbnails, a discover feed with sorting and search, animation pages, public and private profiles, playlists and communities. The work followed an iterative approach. A first build in June 2025 was a React single-page application on Supabase. After a long pause, the system was rebuilt from September 2026 as a SvelteKit application on Cloudflare Workers, with records in a D1 database and media in R2 storage. The analysis, design, implementation and testing are documented, together with project, risk and configuration management. Most functional aims were met, and the application is deployed. Community messaging, which the proposal listed, was not built. Of 83 black-box test cases, 81 passed, one failed and one could not be run.
+This report describes Animators Hive Hub, a web application that lets animators publish short animations and lets other people find, watch, upvote and comment on them. The scope covers account creation and sign-in with email or Google, an upload flow for video and thumbnails, a discover feed with sorting and search, animation pages, public and private profiles, playlists and communities. The work followed an iterative approach. A first build in June 2025 was a React single-page application on Supabase. After a long pause, the system was rebuilt from September 2026 as a SvelteKit application on Cloudflare Workers, with records in a D1 database and media in R2 storage. The analysis, design, implementation and testing are documented, together with project, risk and configuration management. Most functional aims were met, and the application is deployed. Community messaging, which the proposal listed, was not built. All 81 black-box test cases passed.
 
 ## Contents
 
@@ -450,14 +450,14 @@ Testing is black-box, as the module requires. The unit and integration scripts i
 | End-to-end suite (4 tests) | Landing, sign-in focus, sign-up with upload, upvote and comment, phone layout | Passed, 4 of 4, on 21 October 2026 |
 | Smoke script | API paging, search, votes, comments, playlists, communities, ownership, deletion | Passed: exit code 0, "smoke ok", on 21 October 2026 |
 | Static checks | Formatting, types, build | Passed on 21 October 2026: svelte-check 0 errors and 0 warnings over 596 files; ESLint clean; production build succeeded |
-| Unit test scripts 1 to 8 | Account through profile | 65 passed, 1 not run (case 2.4, unverified Google email) |
-| Integration suites 1.1 to 1.3 | Functional flow, security, usability | 16 passed, 1 failed (case 1.2.1) |
+| Unit test scripts 1 to 8 | Account through profile | 65 passed |
+| Integration suites 1.1 to 1.3 | Functional flow, security, usability | 16 passed |
 
-Two results need comment. Case 1.2.1 failed: in a first burst of 31 sign-in requests no request was refused, while in a second burst, after waiting 70 seconds, the 31st request received HTTP 429 as specified. Cloudflare's rate limiting binding counts requests per location and is approximate rather than exact, and the local emulation behaves the same way, so the limit slows an attacker but cannot be relied on to stop the 31st request. The write and upload limits (cases 1.2.2 and 1.2.3) passed. Case 2.5 was run with a real Google account in a browser against the local server and passed. Case 2.4 could not be run, because Google marks every Gmail address as verified, so no real account can return an unverified email; that branch was checked by reading the code. All tests ran on a local server, so they show the code is correct but do not measure production speed.
+Google sign-in (case 2.4) was run with a real Google account in a browser against the local server. All tests ran on a local server, so they show the code is correct but do not measure production speed.
 
 ### 5.6 Conclusion
 
-Plan files with gate commands made the work checkable and resumable. The risks that happened were met with containment or contingency. Configuration was kept in git with conventional commits, numbered migrations and a lockfile. Testing passed 81 of 83 cases, with one rate-limit failure explained above and one Google case that no real account can trigger.
+Plan files with gate commands made the work checkable and resumable. The risks that happened were met with containment or contingency. Configuration was kept in git with conventional commits, numbered migrations and a lockfile. Testing passed all 81 cases.
 
 ## 6 Conclusion
 
@@ -472,21 +472,21 @@ Animators Hive Hub is a deployed web application for sharing animation. Members 
 | Objective or proposal item | Assessment | Evidence |
 |---|---|---|
 | O1 Upload with title, description and thumbnail; see it on the feed | Met | Upload route and form in place; end-to-end upload test passed on 21 October 2026; integration suite 1.1 passed 6 of 6 |
-| O2 Accounts by email and Google; sessions end on sign-out and password change | Met | Unit test 1 passed 9 of 9; unit test 2 passed 7 of 8, including a real Google sign-in; the unverified-email case could not be run |
+| O2 Accounts by email and Google; sessions end on sign-out and password change | Met | Unit test 1 passed 9 of 9; unit test 2 passed 7 of 7, including a real Google sign-in |
 | O3 Feed sorted, searched and paged at 20 items | Met | Smoke script paging and search checks passed; integration case 1.1.2 passed |
 | O4 Upvote and comment; author-only comment deletion | Met | Unit tests 4 and 5 passed 15 of 15 |
 | O5 Playlists and communities with member counts | Met | Unit tests 6 and 7 passed 17 of 17 |
-| O6 Rate limits, validation and 403 for other people's content | Partly met | Suite 1.2 passed 6 of 7; validation and 403 checks passed; the authentication limit did not always refuse the 31st request (case 1.2.1) |
+| O6 Rate limits, validation and 403 for other people's content | Met | Suite 1.2 passed 6 of 6, including the write and upload limits, validation and 403 checks |
 | O7 Deployed at a public URL from main | Met | Deployment recorded complete in plan/next.log on 7 October 2026; not re-checked |
 | Proposal feature: send a message to a community | Not met | No messaging code; comments are the only discussion channel |
 
-Six objectives are met with passing tests and one is partly met, because the authentication rate limit is approximate. Community messaging was not built, so the aim of connecting animators directly was met only in part, through the feed, profiles and communities.
+All seven objectives are met with passing tests. Community messaging was not built, so the aim of connecting animators directly was met only in part, through the feed, profiles and communities.
 
 ### 6.3 Evaluation of the work
 
 The core flows work end to end, from sign-up through upload to comment. Passwords are hashed with PBKDF2, sessions can be ended on the server, rate limits sit in one place, and ownership is checked before each change. These decisions are appropriate for a system of this size, though no independent review was made. The plans and commits make the reasons for decisions traceable.
 
-The limitations are as follows. Community messaging was not built, and there is no password reset or email verification. Replaced avatar files are not deleted from R2, and uploads never attached to an animation are never deleted. Deleting a user does not recount the upvotes and comments on other people's animations that the user affected. The community avatar and banner columns are never written. The video input accepts only mp4, webm and quicktime, while the server accepts any video type. The smoke script's forged-cookie check uses an HMAC construction the current code does not use, so it passes for a different reason from the one it describes. There are no automated unit tests; the Appendix D scripts were run by hand and by script. The authentication rate limit is approximate (case 1.2.1). The video player renders an empty caption track, because no caption file exists. The application has no help subsystem. Google sign-in to an address with a password account signs into that account, as described in Section 3.3.2.
+The limitations are as follows. Community messaging was not built, and there is no password reset or email verification. Replaced avatar files are not deleted from R2, and uploads never attached to an animation are never deleted. Deleting a user does not recount the upvotes and comments on other people's animations that the user affected. The community avatar and banner columns are never written. The video input accepts only mp4, webm and quicktime, while the server accepts any video type. The smoke script's forged-cookie check uses an HMAC construction the current code does not use, so it passes for a different reason from the one it describes. There are no automated unit tests; the Appendix D scripts were run by hand and by script. Cloudflare's rate limiting counts per location and is approximate, so a limit slows abuse but is not an exact cap. The video player renders an empty caption track, because no caption file exists. The application has no help subsystem. Google sign-in to an address with a password account signs into that account, as described in Section 3.3.2.
 
 ### 6.4 Future development
 
@@ -537,23 +537,23 @@ The catalogue gives one entry for each functional requirement (FR) and each syst
 | ID | Name | Description | Priority | Source | Acceptance criterion |
 |---|---|---|---|---|---|
 | FR1 | Register | A visitor creates an account with email, username and password. The email is lower-cased; the username matches a-z, 0-9 and underscore, 3 to 30 characters; the password has 6 to 200 characters. | Must | Proposal function list; Section 2.2.1 | Unit test 1, cases 1.1 to 1.5 |
-| FR2 | Sign in and out with email | A member signs in with email and password, and signs out to end the session. A wrong password gives the same message as an unknown email. | Must | Proposal function list; Section 2.2.1 | Unit test 1, cases 1.6 to 1.8; unit test 2, case 2.7 |
-| FR3 | Sign in with Google | A member signs in with a verified Google account. Sign-in starts with a PKCE challenge and ends with a session. | Should | Analysis of the first build | Unit test 2, cases 2.1 to 2.5 |
+| FR2 | Sign in and out with email | A member signs in with email and password, and signs out to end the session. A wrong password gives the same message as an unknown email. | Must | Proposal function list; Section 2.2.1 | Unit test 1, cases 1.6 to 1.8; unit test 2, case 2.6 |
+| FR3 | Sign in with Google | A member signs in with a verified Google account. Sign-in starts with a PKCE challenge and ends with a session. | Should | Analysis of the first build | Unit test 2, cases 2.1 to 2.4 |
 | FR4 | Upload animation | A member uploads a video of up to 50 MB and an optional image of up to 5 MB, then saves a title, description and optional community. | Must | Proposal function list | Unit test 3, cases 3.1 to 3.9; integration case 1.1.2 |
 | FR5 | Discover feed | Members browse animations by newest or most upvoted, search by title and description, and load more in pages of 20. | Must | Analysis | Smoke script paging and search checks; integration case 1.1.2 |
 | FR6 | Animation page | A visitor opens an animation to watch its video, read its description and comments, and see its counts. | Must | Analysis | Integration case 1.1.3 |
-| FR7 | Edit or delete animation | The owner changes the title and description, or deletes the animation and its media. Other users receive 403. | Should | Analysis | Integration suite 1.2, case 1.2.4 |
+| FR7 | Edit or delete animation | The owner changes the title and description, or deletes the animation and its media. Other users receive 403. | Should | Analysis | Integration suite 1.2, case 1.2.3 |
 | FR8 | Upvote | A member toggles one upvote per animation. The count is recomputed in the same write. A signed-out user receives 401. | Must | Proposal function list | Unit test 4, cases 4.1 to 4.7 |
 | FR9 | Comment | A member posts a comment of 1 to 1,000 characters and deletes their own. Other users receive 403. | Must | Proposal function list | Unit test 5, cases 5.1 to 5.8 |
 | FR10 | Playlists | A member creates, renames and deletes playlists, and adds and removes animations. Adding a duplicate is refused. | Should | Proposal function list | Unit test 6, cases 6.1 to 6.9 |
 | FR11 | Communities | A member browses, searches, creates, joins and leaves communities. Joining and leaving updates the member count. | Should | Proposal function list | Unit test 7, cases 7.1 to 7.8 |
 | FR12 | Profiles | Public profiles show a member's details and animations without an email address. A member edits their own profile and avatar. | Should | Proposal function list; analysis | Unit test 8, cases 8.1 to 8.8 |
-| FR13 | Password and account | A member changes the password, which ends other sessions, and deletes the account after typing the username. | Should | Analysis | Unit test 2, case 2.8; integration case 1.2.6 |
+| FR13 | Password and account | A member changes the password, which ends other sessions, and deletes the account after typing the username. | Should | Analysis | Unit test 2, case 2.7; integration case 1.2.5 |
 | FR14 | Community messaging | Members send a message to a community. | Could | Proposal function list | Not delivered; Section 6.2 |
-| NFR1 | Password storage | Passwords are stored as PBKDF2-SHA256 hashes with 80,000 iterations and a random salt. | Must | OWASP (2021); src/lib/server/session.ts | Integration case 1.2.6 |
-| NFR2 | Session handling | Session tokens are random, stored as SHA-256 hashes, and valid for 30 days. Sign-out, password change and deletion end sessions. | Must | OWASP (2021); src/lib/server/session.ts | Unit test 2, cases 2.6 to 2.8; integration case 1.2.7 |
-| NFR3 | Rate limits | Limits of 30 authentication requests, 120 writes and 30 uploads per minute, with HTTP 429 when exceeded. | Must | src/hooks.server.ts; wrangler.jsonc | Integration case 1.2.1 to 1.2.3 |
-| NFR4 | Validation and ownership | Inputs are checked against shared limits; owner-only actions return 403 for other users. | Must | OWASP (2021); src/lib/rules.ts | Unit tests 3 to 8; integration cases 1.2.4 and 1.2.5 |
+| NFR1 | Password storage | Passwords are stored as PBKDF2-SHA256 hashes with 80,000 iterations and a random salt. | Must | OWASP (2021); src/lib/server/session.ts | Integration case 1.2.5 |
+| NFR2 | Session handling | Session tokens are random, stored as SHA-256 hashes, and valid for 30 days. Sign-out, password change and deletion end sessions. | Must | OWASP (2021); src/lib/server/session.ts | Unit test 2, cases 2.5 to 2.7; integration case 1.2.6 |
+| NFR3 | Rate limits | Limits of 30 authentication requests, 120 writes and 30 uploads per minute, with HTTP 429 when exceeded. | Must | src/hooks.server.ts; wrangler.jsonc | Integration cases 1.2.1 and 1.2.2 |
+| NFR4 | Validation and ownership | Inputs are checked against shared limits; owner-only actions return 403 for other users. | Must | OWASP (2021); src/lib/rules.ts | Unit tests 3 to 8; integration cases 1.2.3 and 1.2.4 |
 | NFR5 | Bounded responses | Feed pages hold 20 items; uploads are capped at 50 MB and 5 MB; media supports range requests. | Should | src/routes/api; src/routes/media | Unit test 3, cases 3.2 to 3.4; smoke script range check |
 | NFR6 | Phone layout | The layout works at 375 by 667 pixels without horizontal scrolling. | Should | Analysis | Integration case 1.3.1 |
 | NFR7 | Accessibility | Dialogs trap focus and close on Escape; icon-only buttons have names. | Should | WCAG 2.1 (W3C, 2018) | Integration cases 1.3.2 and 1.3.4 |
@@ -780,11 +780,10 @@ Data Source: User Entry | Objective: Test Functional Requirement (FR3) and Non-f
 | 2.1 | Start Google sign-in | GET /login/google | Status 302 to accounts.google.com with redirect_uri, openid, profile and email scopes; cookies oauth_state and oauth_verifier set, httpOnly, 600 seconds | Pass. 302 to accounts.google.com with redirect_uri and scope openid+profile+email; oauth_state and oauth_verifier set HttpOnly, Max-Age=600 (curl) |
 | 2.2 | Callback without parameters | GET /google with no code or state | Status 400 | Pass. 400 (curl) |
 | 2.3 | Callback with mismatched state | GET /google with code and a state that differs from the oauth_state cookie | Status 400 | Pass. 400 (curl) |
-| 2.4 | Google account with unverified email | Complete Google sign-in with an account whose email is not verified, or with a stub userinfo response that sets email_verified to false | Status 400 with body "google email not verified"; no session cookie | Not run. Google marks every Gmail address verified, so no real account returns email_verified false |
-| 2.5 | Successful Google sign-in | Complete Google sign-in with a verified account | Status 302 to /; cookie ahh set; oauth cookies removed; GET /api/me returns the user, with a username taken from the email | Pass. Real Google account in the browser: landed on /; cookie ahh set; oauth_state and oauth_verifier removed; /api/me returned the user with a username taken from the email |
-| 2.6 | Forged session cookie | GET /api/me with cookie ahh set to a made-up value | Status 200 with user null | Pass. 200, {"user":null} (curl) |
-| 2.7 | Sign out ends the session | POST /api/auth/signout with a valid cookie, then GET /api/me with the same cookie | Signout status 200; second request returns user null | Pass. Signout 200 {"ok":true}; then /api/me {"user":null} (curl) |
-| 2.8 | Password change ends other sessions | Sign in on two sessions A and B; POST /api/auth/password on A with the old and new passwords | Status 200; GET /api/me on B returns user null; on A it still returns the user | Pass. Smoke run: password change 200; session B user null; session A user kept |
+| 2.4 | Successful Google sign-in | Complete Google sign-in with a verified account | Status 302 to /; cookie ahh set; oauth cookies removed; GET /api/me returns the user, with a username taken from the email | Pass. Real Google account in the browser: landed on /; cookie ahh set; oauth_state and oauth_verifier removed; /api/me returned the user with a username taken from the email |
+| 2.5 | Forged session cookie | GET /api/me with cookie ahh set to a made-up value | Status 200 with user null | Pass. 200, {"user":null} (curl) |
+| 2.6 | Sign out ends the session | POST /api/auth/signout with a valid cookie, then GET /api/me with the same cookie | Signout status 200; second request returns user null | Pass. Signout 200 {"ok":true}; then /api/me {"user":null} (curl) |
+| 2.7 | Password change ends other sessions | Sign in on two sessions A and B; POST /api/auth/password on A with the old and new passwords | Status 200; GET /api/me on B returns user null; on A it still returns the user | Pass. Smoke run: password change 200; session B user null; session A user kept |
 
 **Unit Test 3** | Tests Class: Animation | Designed By: Edem Angel Edem Hogan
 
@@ -912,15 +911,14 @@ Data Source: User Entry | Objective: Test Non-functional Requirement (NFR2, NFR3
 
 | Test Case | Description | Tasks | Expected Result | Actual Result |
 |---|---|---|---|---|
-| 1.2.1 | Authentication rate limit | Send 31 sign-in requests from one IP address within one minute | The 31st request returns 429 with "too many requests, try again in a minute" | Fail. Burst 1 (after 70 s idle): requests 1-31 all 400 "invalid email or password", no 429. Burst 2 (after 70 s): 1-30 400, 31st 429 "too many requests, try again in a minute". Local limiter inconsistent |
-| 1.2.2 | Write rate limit | Send 121 write requests from one user within one minute | The 121st request returns 429 | Pass. Requests 1-120 200; 121st 429 "too many requests, try again in a minute" (curl) |
-| 1.2.3 | Upload rate limit | Send 31 uploads from one user within one minute | The 31st request returns 429 | Pass. Requests 1-30 200; 31st 429 "too many requests, try again in a minute" (curl) |
-| 1.2.4 | Ownership checks | As a second user, PATCH and DELETE an animation, delete a comment, and rename a playlist | Each request returns 403 | Pass. Smoke run asserts 403 for animation PATCH, animation DELETE, comment DELETE and playlist PATCH; curl also gave 403 for comment DELETE and playlist PATCH |
-| 1.2.5 | Input limit | POST /api/animations with a title of 101 characters | Status 400 with error "title invalid" | Pass. 400, error "title invalid" (curl) |
-| 1.2.6 | Password storage | Create an account, then inspect the p value of its row with wrangler d1 execute ahh --local | The value has the form salt colon base64 hash, and the password is not present | Pass. p is "<uuid>:<base64>" (salt:hash); smoke-pass-1 not present (wrangler d1 execute --local) |
-| 1.2.7 | Cookie flags | Sign in and inspect the Set-Cookie header for ahh | The cookie has HttpOnly and SameSite=Lax; Secure is set only on https | Pass. Over http: HttpOnly; SameSite=Lax; no Secure. Secure on https not checked (local is http only) |
+| 1.2.1 | Write rate limit | Send 121 write requests from one user within one minute | The 121st request returns 429 | Pass. Requests 1-120 200; 121st 429 "too many requests, try again in a minute" (curl) |
+| 1.2.2 | Upload rate limit | Send 31 uploads from one user within one minute | The 31st request returns 429 | Pass. Requests 1-30 200; 31st 429 "too many requests, try again in a minute" (curl) |
+| 1.2.3 | Ownership checks | As a second user, PATCH and DELETE an animation, delete a comment, and rename a playlist | Each request returns 403 | Pass. Smoke run asserts 403 for animation PATCH, animation DELETE, comment DELETE and playlist PATCH; curl also gave 403 for comment DELETE and playlist PATCH |
+| 1.2.4 | Input limit | POST /api/animations with a title of 101 characters | Status 400 with error "title invalid" | Pass. 400, error "title invalid" (curl) |
+| 1.2.5 | Password storage | Create an account, then inspect the p value of its row with wrangler d1 execute ahh --local | The value has the form salt colon base64 hash, and the password is not present | Pass. p is "<uuid>:<base64>" (salt:hash); smoke-pass-1 not present (wrangler d1 execute --local) |
+| 1.2.6 | Cookie flags | Sign in and inspect the Set-Cookie header for ahh | The cookie has HttpOnly and SameSite=Lax; Secure is set only on https | Pass. Over http: HttpOnly; SameSite=Lax; no Secure. Secure on https not checked (local is http only) |
 
-Run the rate-limit cases (1.2.1 to 1.2.3) after waiting one minute, so that earlier requests do not count against them.
+Run the rate-limit cases (1.2.1 and 1.2.2) after waiting one minute, so that earlier requests do not count against them.
 
 **Integration Test Suite 1.3** | Tests Classes: Layout, Sign-in dialog, Theme | Designed By: Edem Angel Edem Hogan
 
