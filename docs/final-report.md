@@ -12,7 +12,7 @@ AfriHUB
 
 ## Abstract
 
-This report describes Animators Hive Hub, a web application that lets animators publish short animations and lets other people find, watch, upvote and comment on them. The scope covers account creation and sign-in with email or Google, an upload flow for video and thumbnails, a discover feed with sorting and search, animation pages, public and private profiles, playlists and communities. The work followed an iterative approach. A first build in June 2025 was a React single-page application on Supabase. After a long pause, the system was rebuilt from September 2026 as a SvelteKit application on Cloudflare Workers, with records in a D1 database and media in R2 storage. The analysis, design, implementation and testing are documented, together with project, risk and configuration management. Most functional aims were met, and the application is deployed. Community messaging, which the proposal listed, was not built. Of 83 black-box test cases, 80 passed, one failed and two could not be run.
+This report describes Animators Hive Hub, a web application that lets animators publish short animations and lets other people find, watch, upvote and comment on them. The scope covers account creation and sign-in with email or Google, an upload flow for video and thumbnails, a discover feed with sorting and search, animation pages, public and private profiles, playlists and communities. The work followed an iterative approach. A first build in June 2025 was a React single-page application on Supabase. After a long pause, the system was rebuilt from September 2026 as a SvelteKit application on Cloudflare Workers, with records in a D1 database and media in R2 storage. The analysis, design, implementation and testing are documented, together with project, risk and configuration management. Most functional aims were met, and the application is deployed. Community messaging, which the proposal listed, was not built. Of 83 black-box test cases, 81 passed, one failed and one could not be run.
 
 ## Contents
 
@@ -450,14 +450,14 @@ Testing is black-box, as the module requires. The unit and integration scripts i
 | End-to-end suite (4 tests) | Landing, sign-in focus, sign-up with upload, upvote and comment, phone layout | Passed, 4 of 4, on 21 October 2026 |
 | Smoke script | API paging, search, votes, comments, playlists, communities, ownership, deletion | Passed: exit code 0, "smoke ok", on 21 October 2026 |
 | Static checks | Formatting, types, build | Passed on 21 October 2026: svelte-check 0 errors and 0 warnings over 596 files; ESLint clean; production build succeeded |
-| Unit test scripts 1 to 8 | Account through profile | 64 passed, 2 not run (Google sign-in cases 2.4 and 2.5) |
+| Unit test scripts 1 to 8 | Account through profile | 65 passed, 1 not run (case 2.4, unverified Google email) |
 | Integration suites 1.1 to 1.3 | Functional flow, security, usability | 16 passed, 1 failed (case 1.2.1) |
 
-Two results need comment. Case 1.2.1 failed: in a first burst of 31 sign-in requests no request was refused, while in a second burst, after waiting 70 seconds, the 31st request received HTTP 429 as specified. Cloudflare's rate limiting binding counts requests per location and is approximate rather than exact, and the local emulation behaves the same way, so the limit slows an attacker but cannot be relied on to stop the 31st request. The write and upload limits (cases 1.2.2 and 1.2.3) passed. Cases 2.4 and 2.5 need a real Google sign-in, which cannot be automated against the local server; the Google flow was checked by reading the code and by case 1.9, which uses a Google-shaped account row. All tests ran on a local server, so they show the code is correct but do not measure production speed.
+Two results need comment. Case 1.2.1 failed: in a first burst of 31 sign-in requests no request was refused, while in a second burst, after waiting 70 seconds, the 31st request received HTTP 429 as specified. Cloudflare's rate limiting binding counts requests per location and is approximate rather than exact, and the local emulation behaves the same way, so the limit slows an attacker but cannot be relied on to stop the 31st request. The write and upload limits (cases 1.2.2 and 1.2.3) passed. Case 2.5 was run with a real Google account in a browser against the local server and passed. Case 2.4 could not be run, because Google marks every Gmail address as verified, so no real account can return an unverified email; that branch was checked by reading the code. All tests ran on a local server, so they show the code is correct but do not measure production speed.
 
 ### 5.6 Conclusion
 
-Plan files with gate commands made the work checkable and resumable. The risks that happened were met with containment or contingency. Configuration was kept in git with conventional commits, numbered migrations and a lockfile. Testing passed 80 of 83 cases, with one rate-limit failure explained above and two Google cases that need a live account.
+Plan files with gate commands made the work checkable and resumable. The risks that happened were met with containment or contingency. Configuration was kept in git with conventional commits, numbered migrations and a lockfile. Testing passed 81 of 83 cases, with one rate-limit failure explained above and one Google case that no real account can trigger.
 
 ## 6 Conclusion
 
@@ -472,7 +472,7 @@ Animators Hive Hub is a deployed web application for sharing animation. Members 
 | Objective or proposal item | Assessment | Evidence |
 |---|---|---|
 | O1 Upload with title, description and thumbnail; see it on the feed | Met | Upload route and form in place; end-to-end upload test passed on 21 October 2026; integration suite 1.1 passed 6 of 6 |
-| O2 Accounts by email and Google; sessions end on sign-out and password change | Met | Unit test 1 passed 9 of 9; unit test 2 passed 6, with the two live Google cases not run |
+| O2 Accounts by email and Google; sessions end on sign-out and password change | Met | Unit test 1 passed 9 of 9; unit test 2 passed 7 of 8, including a real Google sign-in; the unverified-email case could not be run |
 | O3 Feed sorted, searched and paged at 20 items | Met | Smoke script paging and search checks passed; integration case 1.1.2 passed |
 | O4 Upvote and comment; author-only comment deletion | Met | Unit tests 4 and 5 passed 15 of 15 |
 | O5 Playlists and communities with member counts | Met | Unit tests 6 and 7 passed 17 of 17 |
@@ -780,8 +780,8 @@ Data Source: User Entry | Objective: Test Functional Requirement (FR3) and Non-f
 | 2.1 | Start Google sign-in | GET /login/google | Status 302 to accounts.google.com with redirect_uri, openid, profile and email scopes; cookies oauth_state and oauth_verifier set, httpOnly, 600 seconds | Pass. 302 to accounts.google.com with redirect_uri and scope openid+profile+email; oauth_state and oauth_verifier set HttpOnly, Max-Age=600 (curl) |
 | 2.2 | Callback without parameters | GET /google with no code or state | Status 400 | Pass. 400 (curl) |
 | 2.3 | Callback with mismatched state | GET /google with code and a state that differs from the oauth_state cookie | Status 400 | Pass. 400 (curl) |
-| 2.4 | Google account with unverified email | Complete Google sign-in with an account whose email is not verified, or with a stub userinfo response that sets email_verified to false | Status 400 with body "google email not verified"; no session cookie | Not run. Needs a Google authorization code and userinfo response; no Google access from this run |
-| 2.5 | Successful Google sign-in | Complete Google sign-in with a verified account | Status 302 to /; cookie ahh set; oauth cookies removed; GET /api/me returns the user, with a username taken from the email | Not run. Needs a real verified Google account sign-in; no Google access from this run |
+| 2.4 | Google account with unverified email | Complete Google sign-in with an account whose email is not verified, or with a stub userinfo response that sets email_verified to false | Status 400 with body "google email not verified"; no session cookie | Not run. Google marks every Gmail address verified, so no real account returns email_verified false |
+| 2.5 | Successful Google sign-in | Complete Google sign-in with a verified account | Status 302 to /; cookie ahh set; oauth cookies removed; GET /api/me returns the user, with a username taken from the email | Pass. Real Google account in the browser: landed on /; cookie ahh set; oauth_state and oauth_verifier removed; /api/me returned the user with a username taken from the email |
 | 2.6 | Forged session cookie | GET /api/me with cookie ahh set to a made-up value | Status 200 with user null | Pass. 200, {"user":null} (curl) |
 | 2.7 | Sign out ends the session | POST /api/auth/signout with a valid cookie, then GET /api/me with the same cookie | Signout status 200; second request returns user null | Pass. Signout 200 {"ok":true}; then /api/me {"user":null} (curl) |
 | 2.8 | Password change ends other sessions | Sign in on two sessions A and B; POST /api/auth/password on A with the old and new passwords | Status 200; GET /api/me on B returns user null; on A it still returns the user | Pass. Smoke run: password change 200; session B user null; session A user kept |
