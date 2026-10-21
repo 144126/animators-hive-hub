@@ -1,0 +1,64 @@
+@startuml seq-google
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam sequenceMessageAlign center
+skinparam sequenceParticipantBorderColor #222222
+skinparam sequenceLifeLineBorderColor #222222
+skinparam ArrowColor #222222
+skinparam NoteBorderColor #222222
+skinparam NoteBackgroundColor #FFFFFF
+
+actor "Browser" as B
+participant "/login/google" as L
+participant "Google" as G
+participant "/google" as C
+database "D1" as D
+
+B -> L : GET /login/google
+activate L
+note right of L : RL_AUTH limit
+L -> L : create state and verifier
+L --> B : 302 to Google, sets cookies
+deactivate L
+
+B -> G : authorisation request
+activate G
+G --> B : 302 to /google with code and state
+deactivate G
+
+B -> C : GET /google with code and state
+activate C
+alt state does not match
+  C --> B : 400
+else state matches
+  C -> G : exchange code
+  activate G
+  alt exchange fails
+    G --> C : error
+    C --> B : 400
+  else exchange succeeds
+    G --> C : access token
+    C -> G : GET userinfo
+    G --> C : profile, email_verified
+  end
+  deactivate G
+  alt email_verified is not true
+    C --> B : 400
+  else email verified
+    C -> D : find user by email
+    activate D
+    D --> C : user or none
+    opt no user
+      C -> D : insert user
+      D --> C : ok
+    end
+    C -> D : insert session
+    D --> C : ok
+    deactivate D
+    C --> B : 302 to / with session cookie
+  end
+end
+deactivate C
+@enduml

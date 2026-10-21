@@ -1,0 +1,46 @@
+@startuml seq-upvote
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam sequenceMessageAlign center
+skinparam sequenceParticipantBorderColor #222222
+skinparam sequenceLifeLineBorderColor #222222
+skinparam ArrowColor #222222
+skinparam NoteBorderColor #222222
+skinparam NoteBackgroundColor #FFFFFF
+
+actor "Browser" as B
+participant "hooks" as H
+participant "/api/upvotes" as R
+database "D1" as D
+
+note over B : signed out: no request sent
+B -> H : POST {target, on}
+activate H
+H -> D : session lookup
+activate D
+D --> H : user row or none
+deactivate D
+H -> H : rate limit RL_WRITE
+
+alt limit exceeded
+  H --> B : 429
+else within limit
+  H -> R : forward request
+  activate R
+  alt no user
+    R --> H : 401
+  else user present
+    R -> D : batch: vote and recount
+    activate D
+    D --> R : ok
+    deactivate D
+    R --> H : 200 {ok: true}
+  end
+  deactivate R
+  H --> B : 200 or error
+  deactivate H
+  B -> B : on success, set voted state and count
+end
+@enduml

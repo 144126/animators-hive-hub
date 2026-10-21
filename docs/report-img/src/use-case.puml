@@ -1,0 +1,57 @@
+@startuml use-case
+!pragma layout smetana
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam usecase {
+  BorderColor #222222
+  BackgroundColor #FFFFFF
+}
+skinparam actorBorderColor #222222
+skinparam ArrowColor #222222
+left to right direction
+
+actor "Guest\n(not signed in)" as Guest
+actor "Member\n(signed in)" as Member
+actor "Google\n(external)" as Google
+
+rectangle "Animators Hive Hub" {
+  usecase "UC1 Sign up" as UC1
+  usecase "UC2 Sign in with email" as UC2
+  usecase "UC3 Sign in with Google" as UC3
+  usecase "UC4 Browse discover feed" as UC4
+  usecase "UC5 Upload animation" as UC5
+  usecase "UC6 View animation" as UC6
+  usecase "UC7 Edit or delete animation" as UC7
+  usecase "UC8 Upvote" as UC8
+  usecase "UC9 Comment" as UC9
+  usecase "UC10 Manage playlists" as UC10
+  usecase "UC11 Browse and join communities" as UC11
+  usecase "UC12 View public profile" as UC12
+  usecase "UC13 Edit profile and password" as UC13
+  usecase "UC14 Delete account" as UC14
+  usecase "UC15 Sign out" as UC15
+}
+
+Member --|> Guest
+
+Guest -- UC1
+Guest -- UC2
+Guest -- UC3
+Guest -- UC6
+Guest -- UC11
+Guest -- UC12
+
+Member -- UC4
+Member -- UC5
+Member -- UC7
+Member -- UC8
+Member -- UC9
+Member -- UC10
+Member -- UC13
+Member -- UC14
+Member -- UC15
+
+UC3 -- Google
+@enduml

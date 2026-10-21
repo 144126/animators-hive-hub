@@ -1,0 +1,45 @@
+@startuml initial-class
+!pragma layout smetana
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam ClassBorderColor #222222
+skinparam ArrowColor #222222
+hide members
+skinparam nodesep 30
+skinparam ranksep 50
+hide circle
+
+class User
+class Community
+class Animation
+class Playlist
+class Membership
+class Comment
+class Upvote
+class PlaylistItem
+
+User -[hidden]down- Animation
+Community -[hidden]right- Animation
+Animation -[hidden]right- Playlist
+Community -[hidden]down- Membership
+Animation -[hidden]down- Comment
+Animation -[hidden]down- Upvote
+Playlist -[hidden]down- PlaylistItem
+Membership -[hidden]right- Comment
+Comment -[hidden]right- Upvote
+
+User "1" -- "0..*" Animation : uploads
+User "1" -- "0..*" Community : creates
+Community "0..1" -- "0..*" Animation : optional community
+User "1" -- "0..*" Playlist : owns
+Community "1" -- "0..*" Membership : members
+User "1" -- "0..*" Membership : joins
+User "1" -- "0..*" Comment : writes
+Animation "1" -- "0..*" Comment : has
+User "1" -- "0..*" Upvote : casts
+Animation "1" -- "0..*" Upvote : receives
+Playlist "1" -- "0..*" PlaylistItem : contains
+Animation "1" -- "0..*" PlaylistItem : references
+@enduml

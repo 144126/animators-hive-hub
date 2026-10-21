@@ -1,0 +1,11 @@
+flowchart LR
+    OLD["Supabase project of the 2025 prototype (host no longer resolves)"]
+    M1["migrations/0001_init.sql"]
+    M2["migrations/0002_sessions.sql"]
+    M3["migrations/0003_members.sql"]
+    D1["D1 database ahh (remote)"]
+    R2["R2 bucket ahh (new media store)"]
+    OLD -. "not copied: nothing to migrate" .-> D1
+    M1 -- "applied first" --> D1
+    M2 -- "applied second" --> D1
+    M3 -- "applied third, with membership backfill" --> D1

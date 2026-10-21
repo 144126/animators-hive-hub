@@ -1,0 +1,171 @@
+@startuml class
+!pragma layout smetana
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam classFontSize 13
+skinparam classAttributeFontSize 12
+skinparam classBorderColor #222222
+skinparam ArrowColor #222222
+skinparam classAttributeIconSize 0
+hide circle
+
+class User <<table u>> {
+  id : text {PK}
+  email : text {unique}
+  username : text {unique, nocase}
+  display_name : text
+  bio : text
+  avatar_url : text
+  location : text
+  website : text
+  password_hash : text
+  created_at : integer
+  --
+  + insert_user()
+  + find_or_create_google()
+  + user_by_id()
+  + user_by_email()
+  + user_by_username()
+  + save_profile()
+  + set_pass()
+  + delete_user()
+  + person()
+  + public_user()
+  + hash()
+  + check()
+}
+
+class Session <<table s>> {
+  id : text {PK}
+  user_id : text {FK}
+  expires_at : integer
+  created_at : integer
+  --
+  + insert_session()
+  + session_user()
+  + user_by_session()
+  + delete_session()
+  + delete_other_sessions()
+  + write_session()
+  + read_session()
+  + clear_session()
+  + token_id()
+  + rand_tok()
+}
+
+class Community <<table c>> {
+  id : text {PK}
+  slug : text {unique}
+  name : text
+  description : text {nullable}
+  avatar_url : text {nullable}
+  banner_url : text {nullable}
+  member_count : integer {counter}
+  creator_id : text {FK}
+  created_at : integer
+  --
+  + list_comms()
+  + comm_by_slug()
+  + insert_comm()
+  + set_member()
+}
+
+class Membership <<table cm>> {
+  community_id : text {PK, FK}
+  user_id : text {PK, FK}
+  created_at : integer
+  --
+  + set_member()
+  + comm_by_slug()
+  + insert_comm()
+}
+
+class Animation <<table a>> {
+  id : text {PK}
+  author_id : text {FK}
+  community_id : text {FK, nullable}
+  title : text
+  description : text {nullable}
+  video_url : text {nullable}
+  thumbnail_url : text {nullable}
+  upvote_count : integer {counter}
+  comment_count : integer {counter}
+  created_at : integer
+  --
+  + list_anims()
+  + get_anim()
+  + insert_anim()
+  + update_anim()
+  + delete_anim()
+  + media_key()
+}
+
+class Upvote <<table v>> {
+  user_id : text {PK, FK}
+  animation_id : text {PK, FK}
+  created_at : integer
+  --
+  + set_vote()
+  + has_vote()
+}
+
+class Comment <<table n>> {
+  id : text {PK}
+  animation_id : text {FK}
+  author_id : text {FK}
+  content : text
+  created_at : integer
+  --
+  + list_notes()
+  + insert_note()
+  + delete_note()
+}
+
+class Playlist <<table l>> {
+  id : text {PK}
+  owner_id : text {FK}
+  name : text
+  description : text {nullable}
+  created_at : integer
+  --
+  + list_lists()
+  + get_list()
+  + insert_list()
+  + update_list()
+  + delete_list()
+  + owner_of()
+}
+
+class PlaylistItem <<table li>> {
+  id : text {PK}
+  playlist_id : text {FK}
+  animation_id : text {FK}
+  created_at : integer
+  --
+  + insert_item()
+  + delete_item()
+}
+
+User "1" -- "0..*" Session : holds
+User "1" -- "0..*" Community : creates
+User "1" -- "0..*" Animation : uploads
+Community "0..1" -- "0..*" Animation : optional community
+User "1" -- "0..*" Playlist : owns
+Playlist "1" -- "0..*" PlaylistItem : contains
+Animation "1" -- "0..*" PlaylistItem : references
+User "1" -- "0..*" Comment : writes
+Animation "1" -- "0..*" Comment : has
+User "1" -- "0..*" Upvote : casts
+Animation "1" -- "0..*" Upvote : receives
+Community "1" -- "0..*" Membership : members
+User "1" -- "0..*" Membership : joins
+
+legend bottom left
+  Attribute names are descriptive; Appendix C maps each to its short column name.
+  PK primary key, FK foreign key, nullable column may be null, unique unique index.
+  counter is recomputed in the same batch as the write that changes it.
+  Media is not a class: files are held in R2 and referenced from video_url, thumbnail_url and avatar_url.
+endlegend
+@enduml

@@ -1,0 +1,23 @@
+flowchart TB
+    subgraph DEV["Development: author's computer"]
+        VITE["pnpm dev (Vite on port 8080)"]
+        LOCALD1["Local D1 (wrangler migrations --local)"]
+        LOCALR2["Local R2 emulation"]
+        TESTS["pnpm test:e2e and node scripts/smoke.ts"]
+    end
+    subgraph IMPL["Implementation: Cloudflare"]
+        WORKER["Worker animators-hive-hub"]
+        PROD_D1["D1 database ahh (binding DB)"]
+        PROD_R2["R2 bucket ahh (binding M)"]
+        RL["Rate limits RL_AUTH, RL_WRITE, RL_MEDIA"]
+    end
+    BROWSER["Browser"]
+    GITHUB["GitHub remote mine, branch main"]
+    VITE --> LOCALD1
+    VITE --> LOCALR2
+    TESTS --> VITE
+    GITHUB -- "push triggers Workers Builds" --> WORKER
+    BROWSER --> WORKER
+    WORKER --> PROD_D1
+    WORKER --> PROD_R2
+    WORKER --> RL

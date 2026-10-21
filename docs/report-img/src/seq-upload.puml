@@ -1,0 +1,75 @@
+@startuml seq-upload
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam sequenceMessageAlign center
+skinparam sequenceParticipantBorderColor #222222
+skinparam sequenceLifeLineBorderColor #222222
+skinparam ArrowColor #222222
+skinparam NoteBorderColor #222222
+skinparam NoteBackgroundColor #FFFFFF
+
+participant "Browser" as B
+participant "/api/communities" as RC
+participant "/api/media" as RM
+participant "/api/animations" as RA
+database "D1" as D
+database "R2" as R
+
+opt new community selected
+  B -> RC : POST {name}
+  activate RC
+  RC -> D : batch: insert community and membership
+  activate D
+  D --> RC : ok
+  deactivate D
+  RC --> B : 200 {item}
+  deactivate RC
+end
+
+B -> RM : POST video body, video/*
+activate RM
+note right of RM : session, type, 50 MB limit
+RM -> R : put(random UUID, bytes)
+activate R
+R --> RM : stored
+deactivate R
+RM --> B : 200 {u: /media/UUID}
+deactivate RM
+
+alt thumbnail chosen
+  B -> RM : POST image body, image/*
+  activate RM
+  note right of RM : 5 MB limit
+  RM -> R : put(random UUID, bytes)
+  RM --> B : 200 {u: /media/UUID}
+  deactivate RM
+else no thumbnail chosen
+  B -> B : capture still frame as JPEG
+  alt capture and upload succeed
+    B -> RM : POST image/jpeg body
+    activate RM
+    RM -> R : put(random UUID, bytes)
+    RM --> B : 200 {u: /media/UUID}
+    deactivate RM
+  else capture or upload fails
+    B -> B : save with no thumbnail
+  end
+end
+
+B -> RA : POST JSON {title, description, video_url, thumbnail_url, community_id}
+activate RA
+note right of RA : title and description checked;\nmedia URLs match UUID pattern
+RA -> D : insert animation row
+activate D
+alt insert succeeds
+  D --> RA : row read back
+  RA --> B : 200 {item}
+else unknown community (foreign key)
+  D --> RA : error
+  RA --> B : 404 not found
+end
+deactivate D
+deactivate RA
+@enduml

@@ -1,0 +1,17 @@
+flowchart TB
+    subgraph DEVARCH["Development architecture"]
+        LAP["Local repository and pnpm dev"]
+    end
+    subgraph IMPLARCH["Implementation architecture"]
+        GH["GitHub remote mine, branch main"]
+        WB["Workers Builds: build and deploy"]
+        PW["Worker animators-hive-hub"]
+        PD1["Remote D1 ahh (wrangler migrations --remote)"]
+        SEC["Worker secrets (wrangler secret put)"]
+    end
+    LAP -- "0 apply new migration first" --> PD1
+    LAP -- "1 git push" --> GH
+    GH -- "2 push triggers build" --> WB
+    WB -- "3 deploys code" --> PW
+    PD1 -. "schema used by" .-> PW
+    SEC -. "secrets read by" .-> PW

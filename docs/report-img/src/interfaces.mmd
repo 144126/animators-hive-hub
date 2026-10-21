@@ -1,0 +1,19 @@
+flowchart TB
+    Browser["Browser (animator or visitor)"]
+    subgraph APP["Animators Hive Hub (Cloudflare Worker)"]
+        SK["SvelteKit server and pages"]
+    end
+    Google["Google OAuth and userinfo"]
+    D1["Cloudflare D1 database ahh"]
+    R2["Cloudflare R2 bucket ahh"]
+    GH["GitHub repository (main)"]
+    WB["Cloudflare Workers Builds"]
+    Browser -- "HTTPS requests and JSON" --> SK
+    SK -- "HTML, JSON and media" --> Browser
+    SK -- "redirect with PKCE challenge" --> Google
+    Google -- "authorisation code, then profile" --> SK
+    SK -- "SQL queries" --> D1
+    D1 -- "rows" --> SK
+    SK -- "put, get and delete objects" --> R2
+    GH -- "push triggers build" --> WB
+    WB -- "deploys Worker" --> SK
